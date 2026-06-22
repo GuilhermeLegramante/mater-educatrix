@@ -1,0 +1,71 @@
+.select2-container--default .select2-selection--single {
+    height: 48px;
+    border-radius: 14px;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    padding: 6px 12px;
+    transition: all .2s ease;
+}
+
+/* texto interno */
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #0f172a;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1;
+}
+
+/* seta */
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 48px;
+}
+
+/* foco estilo ouro */
+.select2-container--default.select2-container--focus .select2-selection--single {
+    border-color: #c8a75d;
+    box-shadow: 0 0 0 3px rgba(200, 167, 93, 0.15);
+    background: #fff;
+}
+
+/* dropdown */
+.select2-dropdown {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15);
+}
+
+/* itens */
+.select2-container--default .select2-results__option {
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+/* hover */
+.select2-container--default .select2-results__option--highlighted {
+    background-color: #0f172a !important;
+    color: #c8a75d !important;
+}
+
+/* item selecionado */
+.select2-container--default .select2-results__option[aria-selected=true] {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+/* search input */
+.select2-search--dropdown .select2-search__field {
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 8px 10px;
+    outline: none;
+}
+
+.select2-search--dropdown .select2-search__field:focus {
+    border-color: #c8a75d;
+    box-shadow: 0 0 0 3px rgba(200, 167, 93, 0.15);
+}

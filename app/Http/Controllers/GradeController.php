@@ -69,6 +69,6 @@ class GradeController extends Controller
 
         // Redireciona para o 'show' da avaliação para ver o resultado
         return redirect()->route('evaluations.show', $evaluation->id)
-            ->with('success', 'Scores processados com sucesso!');
+            ->with('success', 'Notas processadas com sucesso!');
     }
 }

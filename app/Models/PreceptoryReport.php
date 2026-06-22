@@ -10,7 +10,7 @@ class PreceptoryReport extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id', 'bimester', 'content'];
+    protected $fillable = ['student_id', 'bimester', 'subject_id', 'content'];
 
     public function student(): BelongsTo
     {

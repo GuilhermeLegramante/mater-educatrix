@@ -13,6 +13,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('registration_number')->unique();
+            $table->date('birth_date')->nullable();
             $table->timestamps();
         });
 
@@ -20,7 +21,6 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->string('name'); // Ex: Latim, Matemática, Gramática Portuguesa
-            $table->integer('workload')->nullable();
             $table->timestamps();
         });
 
@@ -46,6 +46,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('classroom_id')->constrained()->onDelete('cascade');
             $table->foreignId('subject_id')->constrained()->onDelete('cascade');
+            $table->integer('workload')->nullable();
             $table->timestamps();
         });
 

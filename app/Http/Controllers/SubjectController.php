@@ -18,11 +18,10 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|unique:subjects',
-            'workload' => 'nullable|integer',
         ]);
 
         Subject::create($validated);
-        return back()->with('success', 'Disciplina criada no catálogo.');
+        return back()->with('success', 'Disciplina criada com sucesso.');
     }
 
     // Método especial para vincular disciplina a uma turma específica

@@ -4,7 +4,7 @@
     <div class="max-w-4xl mx-auto">
         <div class="mb-8 flex justify-between items-end">
             <div>
-                <h2 class="font-classic text-2xl text-navy-900 dark:text-gold-500 uppercase tracking-widest">Editar Notas
+                <h2 class="font-classic text-2xl text-navy-900 uppercase tracking-widest">Editar Notas
                 </h2>
                 <p class="text-slate-500">{{ $evaluation->title }} | Máximo: {{ $evaluation->max_score }} pts</p>
             </div>

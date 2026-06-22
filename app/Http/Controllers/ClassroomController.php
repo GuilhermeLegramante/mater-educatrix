@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Classroom;
+use App\Models\SchoolSetting;
 use App\Models\Subject;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -15,22 +16,44 @@ class ClassroomController extends Controller
     public function index()
     {
         $classrooms = Classroom::withCount('students')->get();
-        $allSubjects = Subject::all(); // Para o modal de criação
 
-        return view('classrooms.index', compact('classrooms', 'allSubjects'));
+        $allSubjects = Subject::all();
+
+        $settings = SchoolSetting::first();
+    
+        return view('classrooms.index', compact('classrooms', 'allSubjects', 'settings'));
     }
 
     /**
      * Exibe os detalhes de uma turma específica
      */
-    public function show(Classroom $classroom)
+    public function show(Request $request, $id)
     {
-        $classroom->load(['students', 'subjects', 'evaluations.subject']);
-        $availableStudents = Student::whereDoesntHave('classrooms', function ($q) use ($classroom) {
-            $q->where('classroom_id', $classroom->id);
-        })->get();
+        // 1. Busca a turma com os alunos e as disciplinas já vinculadas a ela
+        $classroom = Classroom::with(['students', 'subjects'])->findOrFail($id);
 
-        return view('classrooms.show', compact('classroom', 'availableStudents'));
+        // 2. BUSCA TODAS AS DISCIPLINAS (Isso corrige o erro da variável indefinida!)
+        $allSubjects = Subject::orderBy('name')->get();
+
+        // 3. Busca as configurações para saber o bimestre ativo (ajuste conforme seu projeto)
+        $settings = SchoolSetting::first();
+
+        // 4. Captura o bimestre selecionado no filtro (padrão é o ativo ou 1)
+        $selectedBimester = $request->get('bimester', $settings?->active_bimester ?? 1);
+
+        $classrooms = Classroom::with(['students', 'subjects'])->get(); // Para o modal de matrícula, se necessário
+       
+        $students = Student::orderBy('name')->get(); // Para o modal de matrícula
+
+        // 5. Retorna a view passando TODAS as variáveis necessárias pelo compact
+        return view('classrooms.show', compact(
+            'classroom',
+            'allSubjects', // <-- ENVIANDO PARA A VIEW AQUI
+            'settings',
+            'selectedBimester',
+            'classrooms', // Para o modal de matrícula
+            'students'    // Para o modal de matrícula
+        ));
     }
 
     // Vincular Disciplinas à Turma
@@ -38,13 +61,6 @@ class ClassroomController extends Controller
     {
         $classroom->subjects()->sync($request->subjects); // Boas práticas: sync remove o que não foi marcado
         return back()->with('success', 'Grade curricular atualizada!');
-    }
-
-    // Matricular Aluno
-    public function enrollStudent(Request $request, Classroom $classroom)
-    {
-        $classroom->students()->attach($request->student_id, ['status' => 'active']);
-        return back()->with('success', 'Aluno matriculado com sucesso!');
     }
 
     /**
@@ -69,12 +85,13 @@ class ClassroomController extends Controller
      */
     public function enroll(Request $request, Classroom $classroom)
     {
-        $request->validate(['student_id' => 'required|exists:students,id']);
+        $request->validate([
+            'student_id' => ['required', 'exists:students,id'],
+        ]);
 
-        // Evita duplicidade de matrícula na mesma turma
-        if (!$classroom->students()->where('student_id', $request->student_id)->exists()) {
-            $classroom->students()->attach($request->student_id, ['status' => 'active']);
-        }
+        $classroom->students()->syncWithoutDetaching([
+            $request->student_id => ['status' => 'active']
+        ]);
 
         return back()->with('success', 'Aluno matriculado com sucesso!');
     }
@@ -122,5 +139,30 @@ class ClassroomController extends Controller
         );
 
         return back()->with('success', 'Conceito da disciplina atualizado!');
+    }
+
+    public function updateCurriculum(Request $request, Classroom $classroom)
+    {
+        $syncData = [];
+
+        // Verifica se vieram disciplinas do formulário do modal
+        if ($request->has('subjects')) {
+            foreach ($request->input('subjects') as $subjectId => $data) {
+                // Se o usuário digitou uma carga horária válida (maior que zero), preparamos para salvar
+                if (!empty($data['workload']) && $data['workload'] > 0) {
+                    $syncData[$subjectId] = [
+                        'workload' => (int) $data['workload']
+                    ];
+                }
+            }
+        }
+
+        // O método sync() remove as matérias que ficaram com carga horária vazia/zero
+        // e insere ou atualiza as que possuem carga horária na tabela pivô
+        $classroom->subjects()->sync($syncData);
+
+        // Redireciona de volta para a página da turma com uma mensagem de sucesso
+        return redirect()->route('classrooms.show', $classroom->id)
+            ->with('success', 'Grade curricular atualizada com sucesso!');
     }
 }

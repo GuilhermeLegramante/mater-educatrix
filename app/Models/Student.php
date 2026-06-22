@@ -10,7 +10,11 @@ class Student extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'registration_number'];
+    protected $fillable = [
+        'name',
+        'registration_number',
+        'birth_date'
+    ];
 
     /**
      * Relacionamento: Um aluno pode estar matriculado em várias turmas 
@@ -98,12 +102,12 @@ class Student extends Model
                 ->where('bimester', $bimester);
         })->get();
 
-        if ($grades->isEmpty()) return 'N/A';
+        if ($grades->isEmpty()) return '-';
 
         $totalScore = $grades->sum('score');
         $totalMax = $grades->sum(fn($g) => $g->evaluation->max_score);
 
-        if ($totalMax == 0) return 'N/A';
+        if ($totalMax == 0) return '-';
 
         $percentage = ($totalScore / $totalMax) * 100;
 
@@ -123,5 +127,71 @@ class Student extends Model
             $percentage >= 30 => 'E',
             default           => 'F',
         };
+    }
+
+    /**
+     * Retorna a turma atual do aluno
+     */
+    public function currentClassroom()
+    {
+        return $this->classrooms()
+            ->wherePivot('status', 'active');
+    }
+
+    public function getCurrentClassroomNameAttribute()
+    {
+        return $this->classrooms()
+            ->wherePivot('status', 'active')
+            ->first()
+            ?->name;
+    }
+
+    /**
+     * Relacionamento com os Resultados Consolidados/Manuais lançados pelos professores
+     */
+    public function bimesterResults()
+    {
+        return $this->hasMany(BimesterResult::class);
+    }
+
+    /**
+     * Relacionamento: Um aluno possui muitos registros de ocorrências
+     */
+    public function occurrences()
+    {
+        return $this->hasMany(Occurrence::class)->orderBy('date', 'desc');
+    }
+
+    /**
+     * Define a relação de um estudante com os seus registros de presença/falta.
+     */
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * Calcula o total de faltas do aluno em uma disciplina e bimestre específicos.
+     */
+    public function getBimesterAbsences(int $classroomId, int $subjectId, int $bimester): int
+    {
+        // 1. Busca as configurações globais de datas
+        $settings = SchoolSetting::first();
+        if (!$settings) return 0;
+
+        $period = $settings->getBimesterPeriod($bimester);
+
+        // Se as datas do bimestre não estiverem cadastradas, aborta
+        if (!$period['start'] || !$period['end']) return 0;
+
+        // 2. Faz a query buscando presenças onde is_absent = true dentro do período do dia letivo
+        return $this->hasMany(Attendance::class)
+            ->where('subject_id', $subjectId)
+            ->where('is_absent', true)
+            ->whereHas('schoolDay', function ($query) use ($classroomId, $period) {
+                $query->where('classroom_id', $classroomId)
+                    ->whereBetween('date', [$period['start'], $period['end']]);
+            })
+            ->count();
     }
 }

@@ -2,11 +2,10 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-
 use App\Models\Classroom;
 use App\Models\Evaluation;
 use App\Models\Grade;
+use App\Models\SchoolSetting;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
@@ -19,8 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Limpar dados antigos para evitar duplicados
+        // Limpar tabelas com segurança de constraints
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
+        DB::table('school_days')->truncate(); // Limpa o calendário antigo ao dar refresh
         DB::table('grades')->truncate();
         DB::table('evaluations')->truncate();
         DB::table('enrollments')->truncate();
@@ -28,102 +29,256 @@ class DatabaseSeeder extends Seeder
         DB::table('classrooms')->truncate();
         DB::table('subjects')->truncate();
         DB::table('students')->truncate();
+
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // 2. Criar Disciplinas (O currículo clássico da Mater Educatrix)
+        /*
+        |--------------------------------------------------------------------------
+        | Disciplinas
+        |--------------------------------------------------------------------------
+        */
         $subjects = [
-            ['name' => 'Latim e Gramática', 'workload' => 80],
-            ['name' => 'Filosofia e Lógica', 'workload' => 60],
-            ['name' => 'História da Civilização', 'workload' => 60],
-            ['name' => 'Matemática e Aritmética', 'workload' => 100],
-            ['name' => 'Literatura Clássica', 'workload' => 80],
-            ['name' => 'Religião e Virtudes', 'workload' => 40],
+            ['name' => 'Português'],
+            ['name' => 'Artes'],
+            ['name' => 'Ciências'],
+            ['name' => 'Matemática'],
+            ['name' => 'Música'],
+            ['name' => 'Religião'],
+            ['name' => 'História'],
+            ['name' => 'Geografia'],
+            ['name' => 'Educação Física'],
+            ['name' => 'Inglês'],
+            ['name' => 'Latim'],
         ];
 
-        foreach ($subjects as $s) {
-            Subject::create($s);
+        foreach ($subjects as $subject) {
+            Subject::create($subject);
         }
+
         $allSubjects = Subject::all();
 
-        // 3. Criar Turmas
+        /*
+        |--------------------------------------------------------------------------
+        | Turmas
+        |--------------------------------------------------------------------------
+        */
         $classrooms = [
-            ['name' => '5º Ano A', 'year' => 2024],
-            ['name' => '6º Ano A', 'year' => 2024],
-            ['name' => '7º Ano A', 'year' => 2024],
+            '1º Ano',
+            '2º Ano',
+            '3º Ano',
+            '4º Ano',
+            '5º Ano',
+            '6º Ano',
+            '7º Ano',
+            '8º Ano',
         ];
 
-        foreach ($classrooms as $c) {
-            $classroom = Classroom::create($c);
-
-            // Vincular todas as disciplinas a cada turma (Grade Curricular)
-            $classroom->subjects()->attach($allSubjects->pluck('id'));
-        }
-
-        // 4. Criar Alunos (Nomes Clássicos/Históricos)
+        /*
+        |--------------------------------------------------------------------------
+        | Banco de nomes aleatórios
+        |--------------------------------------------------------------------------
+        */
         $studentNames = [
-            'Agostinho de Hipona',
-            'Tomás de Aquino',
-            'Bento de Núrsia',
-            'Teresa de Ávila',
-            'Catarina de Sena',
-            'Luís de Camões',
-            'Dante Alighieri',
-            'Isabel de Castela',
-            'Francisco de Assis'
+            'Ana Clara Souza',
+            'Miguel Oliveira',
+            'Helena Martins',
+            'Arthur Costa',
+            'Laura Almeida',
+            'Heitor Ferreira',
+            'Alice Rodrigues',
+            'Theo Carvalho',
+            'Valentina Gomes',
+            'Davi Ribeiro',
+            'Maria Eduarda Lopes',
+            'Gabriel Santos',
+            'Sophia Barbosa',
+            'Bernardo Lima',
+            'Isabella Fernandes',
+            'Samuel Rocha',
+            'Manuela Dias',
+            'Pedro Henrique Melo',
+            'Liz Monteiro',
+            'Lucas Teixeira',
+            'Cecília Cardoso',
+            'Matheus Nunes',
+            'Emanuelly Pinto',
+            'João Guilherme Castro',
+            'Heloísa Freitas',
+            'Benjamin Correia',
+            'Yasmin Vieira',
+            'Enzo Moraes',
+            'Antonella Batista',
+            'Rafael Duarte',
+            'Giovanna Peixoto',
+            'Murilo Campos',
+            'Clara Farias',
+            'Gustavo Cunha',
+            'Melissa Andrade',
+            'Nicolas Braga',
+            'Beatriz Rezende',
+            'João Pedro Tavares',
+            'Esther Moreira',
+            'Felipe Azevedo',
+            'Lavínia Barros',
+            'Daniel Guimarães',
+            'Mariana Silveira',
+            'Caio Vinícius',
+            'Lorena Pacheco',
+            'Vinicius Siqueira',
+            'Amanda Fonseca',
+            'Eduardo Xavier',
+            'Julia Menezes',
+            'Henrique Ramos',
+            'Bianca Moura',
+            'Levi Santana',
+            'Rebeca Matos',
+            'Otávio Neves',
+            'Luna Araújo',
+            'Thiago Cavalcante',
+            'Camila Assunção',
+            'Bruno Valente',
+            'Nicole Borges',
+            'André Salgado',
+            'Elisa Machado',
+            'Pietro Leal',
+            'Mirella Torres',
+            'Joaquim Figueiredo',
+            'Sara Macedo',
+            'Ryan Viana',
+            'Alana Porto',
+            'Leonardo Rezende',
+            'Agatha Moretti',
+            'Diego Prado',
+            'Vitória Severo',
+            'José Henrique',
+            'Aurora Antunes',
+            'Lorenzo Bueno',
+            'Milena Garcia',
+            'Igor Medeiros',
+            'Emily Domingues',
+            'Nathan Albuquerque',
+            'Carolina Rios',
+            'Alexandre Pires',
         ];
 
-        foreach ($studentNames as $name) {
-            $student = Student::create([
-                'name' => $name,
-                'registration_number' => 'MAT-' . rand(1000, 9999)
+        shuffle($studentNames);
+        $nameIndex = 0;
+
+        /*
+        |--------------------------------------------------------------------------
+        | Criar turmas + alunos + avaliações
+        |--------------------------------------------------------------------------
+        */
+        foreach ($classrooms as $index => $classroomName) {
+
+            $classroom = Classroom::create([
+                'name' => $classroomName,
+                'year' => 2026,
             ]);
 
-            // Matricular aluno em uma turma aleatória
-            $randomClassroom = Classroom::inRandomOrder()->first();
-            $randomClassroom->students()->attach($student->id, ['status' => 'active']);
-        }
+            /* | Monta a grade de disciplinas injetando o "workload" na tabela pivô.
+            | Simulamos cargas horárias diferentes baseadas na relevância da disciplina.
+            */
+            $pivotData = [];
+            foreach ($allSubjects as $subject) {
+                // Define cargas horárias padrão diferenciadas
+                if (in_array($subject->name, ['Português', 'Matemática'])) {
+                    $workload = ($index < 5) ? 160 : 200; // Anos finais ganham mais carga
+                } elseif (in_array($subject->name, ['História', 'Geografia', 'Ciências'])) {
+                    $workload = 80;
+                } else {
+                    $workload = 40; // Disciplinas menores (Artes, Música, Religião, Latim...)
+                }
 
-        // 5. Criar Algumas Avaliações e Notas Reais
-        $activeClassrooms = Classroom::all();
+                $pivotData[$subject->id] = ['workload' => $workload];
+            }
 
-        foreach ($activeClassrooms as $classroom) {
+            // Executa o vínculo em massa inserindo o atributo 'workload' em cada linha da tabela pivô
+            $classroom->subjects()->attach($pivotData);
+
+            $minAge = 6 + $index;
+            $maxAge = 7 + $index;
+
+            // Criar 10 alunos por turma
+            for ($i = 1; $i <= 10; $i++) {
+                $age = rand($minAge, $maxAge);
+                $birthDate = now()->subYears($age)->subDays(rand(0, 364));
+
+                $student = Student::create([
+                    'name' => $studentNames[$nameIndex],
+                    'registration_number' => fake()->unique()->numerify('2026####'),
+                    'birth_date' => $birthDate->format('Y-m-d'),
+                ]);
+
+                $nameIndex++;
+
+                $classroom->students()->attach($student->id, [
+                    'status' => 'active',
+                ]);
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | Avaliações por disciplina
+            |--------------------------------------------------------------------------
+            */
             foreach ($classroom->subjects as $subject) {
-                // Criar 2 avaliações por disciplina no 1º Bimestre
-                $eval1 = Evaluation::create([
-                    'classroom_id' => $classroom->id,
-                    'subject_id'   => $subject->id,
-                    'title'        => 'Prova Mensal I',
-                    'weight'       => 1.0,
-                    'max_score'    => 100,
-                    'bimester'     => 1,
-                    'applied_at'   => now()->subDays(15),
-                ]);
 
-                $eval2 = Evaluation::create([
-                    'classroom_id' => $classroom->id,
-                    'subject_id'   => $subject->id,
-                    'title'        => 'Trabalho Escrito',
-                    'weight'       => 0.5,
-                    'max_score'    => 100,
-                    'bimester'     => 1,
-                    'applied_at'   => now()->subDays(5),
-                ]);
+                $evaluations = [
+                    [
+                        'title' => 'Prova Mensal I',
+                        'weight' => 1.0,
+                        'max_score' => 100,
+                        'bimester' => 1,
+                        'applied_at' => now()->subDays(rand(25, 20)),
+                    ],
+                    [
+                        'title' => 'Trabalho Escrito',
+                        'weight' => 0.5,
+                        'max_score' => 100,
+                        'bimester' => 1,
+                        'applied_at' => now()->subDays(rand(15, 10)),
+                    ],
+                    [
+                        'title' => 'Avaliação Oral',
+                        'weight' => 0.7,
+                        'max_score' => 100,
+                        'bimester' => 1,
+                        'applied_at' => now()->subDays(rand(7, 3)),
+                    ],
+                ];
 
-                // Lançar notas para todos os alunos daquela turma nestas avaliações
-                foreach ($classroom->students as $student) {
-                    Grade::create([
-                        'student_id'    => $student->id,
-                        'evaluation_id' => $eval1->id,
-                        'score'         => rand(60, 100), // Notas entre 6 e 10
+                $numberOfEvaluations = rand(2, 3);
+
+                for ($e = 0; $e < $numberOfEvaluations; $e++) {
+                    $evalData = $evaluations[$e];
+
+                    $evaluation = Evaluation::create([
+                        'classroom_id' => $classroom->id,
+                        'subject_id' => $subject->id,
+                        'title' => $evalData['title'],
+                        'weight' => $evalData['weight'],
+                        'max_score' => $evalData['max_score'],
+                        'bimester' => $evalData['bimester'],
+                        'applied_at' => $evalData['applied_at'],
                     ]);
 
-                    Grade::create([
-                        'student_id'    => $student->id,
-                        'evaluation_id' => $eval2->id,
-                        'score'         => rand(40, 100),
-                    ]);
+                    foreach ($classroom->students as $student) {
+                        Grade::create([
+                            'student_id' => $student->id,
+                            'evaluation_id' => $evaluation->id,
+                            'score' => rand(55, 100),
+                        ]);
+                    }
                 }
             }
         }
+
+        // Chamar o Seeder de Calendário e de Tipos de Ocorrência após as turmas e alunos existirem
+        $this->call([
+            FullSchoolCalendarSeeder::class,
+            OccurrenceTypeSeeder::class,
+            SchoolSettingSeeder::class,
+        ]);
     }
 }

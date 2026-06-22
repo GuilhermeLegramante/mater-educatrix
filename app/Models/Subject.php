@@ -11,7 +11,7 @@ class Subject extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'workload'];
+    protected $fillable = ['name'];
 
     /**
      * Uma disciplina possui muitas avaliações ao longo do ano.

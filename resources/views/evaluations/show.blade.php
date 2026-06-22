@@ -9,7 +9,7 @@
                     <span class="mx-2">/</span>
                     <span class="text-gold-600">Detalhes do Score</span>
                 </nav>
-                <h2 class="font-classic text-3xl text-navy-900 dark:text-white">{{ $evaluation->title }}</h2>
+                <h2 class="font-classic text-3xl text-navy-900">{{ $evaluation->title }}</h2>
                 <p class="text-slate-500 font-bold text-xs uppercase tracking-tighter">
                     {{ $evaluation->subject->name }} • {{ $evaluation->classroom->name }} • {{ $evaluation->bimester }}º
                     Bimestre
@@ -51,16 +51,16 @@
         </div>
 
         <div
-            class="bg-white dark:bg-navy-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-            <div class="p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/50">
-                <h3 class="font-classic text-lg text-navy-900 dark:text-gold-500">Resultados Consolidados</h3>
+            class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-slate-100 bg-slate-50/50">
+                <h3 class="font-classic text-lg text-navy-900">Resultados Consolidados</h3>
             </div>
 
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr class="bg-slate-50/50 dark:bg-navy-950/50">
-                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Estudante
+                        <tr class="bg-slate-50/50">
+                            <th class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Aluno
                             </th>
                             <th
                                 class="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-center">
@@ -73,7 +73,7 @@
                                 Conceito</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+                    <tbody class="divide-y divide-slate-100">
                         @foreach ($evaluation->classroom->students->sortBy('name') as $student)
                             @php
                                 // Busca a nota deste aluno especificamente para esta avaliação
@@ -83,15 +83,15 @@
                                 // Usando o método de cálculo de conceito que você tem no model Student
                                 $concept = $grade ? $student->calculateGradeConcept($percentage) : '--';
                             @endphp
-                            <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors group">
+                            <tr class="hover:bg-slate-50/50 transition-colors group">
                                 <td class="px-6 py-4">
-                                    <div class="font-bold text-navy-900 dark:text-slate-200">{{ $student->name }}</div>
+                                    <div class="font-bold text-navy-900">{{ $student->name }}</div>
                                     <div class="text-[9px] text-slate-400 uppercase tracking-tighter">Matrícula:
                                         #{{ $student->id }}</div>
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     @if ($grade)
-                                        <span class="font-mono font-black text-navy-900 dark:text-gold-500 text-lg">
+                                        <span class="font-mono font-black text-navy-900 text-lg">
                                             {{ number_format($grade->score, 1) }}
                                         </span>
                                         <span class="text-slate-300 text-xs">/ {{ $evaluation->max_score }}</span>
@@ -103,7 +103,7 @@
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-3">
                                         <div
-                                            class="w-24 bg-slate-100 dark:bg-navy-950 h-2 rounded-full overflow-hidden shadow-inner">
+                                            class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
                                             <div class="h-full transition-all duration-1000 {{ $percentage >= 60 ? 'bg-emerald-500' : 'bg-gold-500' }}"
                                                 style="width: {{ $percentage }}%"></div>
                                         </div>

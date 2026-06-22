@@ -17,7 +17,9 @@ class Classroom extends Model
 
     public function subjects()
     {
-        return $this->belongsToMany(Subject::class, 'classroom_subject');
+        return $this->belongsToMany(Subject::class, 'classroom_subject')
+            ->withPivot('workload') // Permite acessar $subject->pivot->workload
+            ->withTimestamps();
     }
 
     public function evaluations()

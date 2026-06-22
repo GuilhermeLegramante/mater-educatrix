@@ -1,16 +1,40 @@
 <header
-    class="h-20 bg-white dark:bg-navy-900 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between px-4 md:px-8 transition-all">
+    class="h-20 bg-white border-b border-slate-100 flex items-center justify-between px-4 md:px-8 transition-all">
     <div class="flex items-center">
         <button @click="sidebarOpen = !sidebarOpen"
-            class="block md:hidden p-2 mr-4 text-slate-600 dark:text-gold-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
+            class="block md:hidden p-2 mr-4 text-slate-600 hover:bg-slate-100 rounded-lg transition-colors">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
         </button>
 
+        @php
+            $settings = \App\Models\SchoolSetting::first();
+        @endphp
+
         <div class="hidden sm:block">
-            <p class="text-[10px] font-black text-gold-500 uppercase tracking-[0.2em]">Mater Educatrix</p>
-            <h2 class="text-sm font-bold text-navy-900 dark:text-white">Painel do Professor</h2>
+            <p class="text-[10px] font-black text-gold-500 uppercase tracking-[0.2em]">
+                Mater Educatrix
+            </p>
+
+            <h2 class="text-sm font-bold text-navy-900">
+                Painel do Professor
+            </h2>
+
+            <div class="flex items-center gap-2 mt-1 flex-wrap">
+
+                <span
+                    class="px-2 py-1 rounded-lg bg-gold-500/10 text-gold-600 text-[10px] font-black uppercase tracking-widest border border-gold-500/20">
+                    Ano Letivo:
+                    {{ $settings?->current_year ?? date('Y') }}
+                </span>
+
+                <span
+                    class="px-2 py-1 rounded-lg bg-navy-900/5 text-slate-500 text-[10px] font-black uppercase tracking-widest border border-slate-200">
+                    {{ $settings?->active_bimester ?? 1 }}º Bimestre
+                </span>
+
+            </div>
         </div>
     </div>
 
@@ -24,7 +48,7 @@
         </a> --}}
 
         <button @click="darkMode = !darkMode"
-            class="p-2.5 bg-slate-50 dark:bg-navy-950 rounded-xl text-slate-500 dark:text-gold-500 border border-slate-200 dark:border-slate-800 hover:bg-slate-100 dark:hover:bg-navy-900 transition-colors focus:outline-none">
+            class="p-2.5 bg-slate-50 rounded-xl text-slate-500 border border-slate-200 hover:bg-slate-100 transition-colors focus:outline-none">
 
             <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
                 viewBox="0 0 24 24" stroke="currentColor">
@@ -39,9 +63,9 @@
             </svg>
         </button>
 
-        <div class="flex items-center pl-4 border-l border-slate-100 dark:border-slate-800">
+        <div class="flex items-center pl-4 border-l border-slate-100">
             <div
-                class="w-10 h-10 rounded-xl bg-navy-900 dark:bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-black text-gold-500">
+                class="w-10 h-10 rounded-xl bg-navy-900 border border-gold-500/30 flex items-center justify-center font-black text-gold-500">
                 AD
             </div>
         </div>
