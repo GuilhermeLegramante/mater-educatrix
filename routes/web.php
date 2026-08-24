@@ -12,6 +12,7 @@ use App\Http\Controllers\PreceptoryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SchoolSettingController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\DescriptiveEvaluationController;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\OccurrenceController;
 use App\Http\Controllers\OccurrenceTypeController;
@@ -60,6 +61,10 @@ Route::middleware('auth')->group(function () {
         // Preceptoria
         Route::resource('preceptory', PreceptoryController::class);
     });
+
+    // Pareceres Descritivos (Avaliações até o 4° ano)
+    Route::get('students/{student}/descriptive-evaluation', [DescriptiveEvaluationController::class, 'edit'])->name('descriptive-evaluation.edit');
+    Route::put('students/{student}/descriptive-evaluation', [DescriptiveEvaluationController::class, 'update'])->name('descriptive-evaluation.update');
 
     Route::get('/classrooms/{classroom}/students/{student}/report-card-pdf', [ReportCardController::class, 'generatePDF'])
         ->name('students.report-card.pdf');

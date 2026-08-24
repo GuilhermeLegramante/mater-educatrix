@@ -85,13 +85,16 @@ class StudentController extends Controller
             $reports = collect();
         }
 
+        $occurrenceTypes = \App\Models\OccurrenceType::all();
+
         return view('students.show', compact(
             'student',
             'activeClassroom',
             'grades',
             'reports',
             'bimester',
-            'subjectId'
+            'subjectId',
+            'occurrenceTypes'
         ));
     }
 

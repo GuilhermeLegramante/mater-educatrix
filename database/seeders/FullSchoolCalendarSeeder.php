@@ -24,7 +24,7 @@ class FullSchoolCalendarSeeder extends Seeder
         }
 
         // 2. Define o ano letivo atual dinamicamente ou fixo (Ex: 2026)
-        $year = 2026;
+        $year = date('Y'); // Pode ser alterado para um ano específico, se necessário
 
         // Período letivo padrão: de 01 de Fevereiro a 22 de Dezembro
         $startOfYear = Carbon::create($year, 2, 1);
