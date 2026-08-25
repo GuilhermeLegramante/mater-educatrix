@@ -219,10 +219,14 @@ class DatabaseSeeder extends Seeder
 
             // Criar e matricular os estudantes
             foreach ($students as $studentData) {
+                // Gera 4 dígitos aleatórios garantindo zeros à esquerda (ex: 0042, 1234, 9876)
+                $randomNumber = str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
+                $registrationNumber = '2026' . $randomNumber;
+
                 $student = Student::create([
-                    'name' => $studentData['name'],
-                    'registration_number' => fake()->unique()->numerify('2026####'),
-                    'birth_date' => $studentData['birth_date'],
+                    'name'                => $studentData['name'],
+                    'registration_number' => $registrationNumber,
+                    'birth_date'          => $studentData['birth_date'],
                 ]);
 
                 $classroom->students()->attach($student->id, [
