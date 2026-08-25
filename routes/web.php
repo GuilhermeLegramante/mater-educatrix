@@ -16,7 +16,8 @@ use App\Http\Controllers\DescriptiveEvaluationController;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\OccurrenceController;
 use App\Http\Controllers\OccurrenceTypeController;
-
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 require __DIR__ . '/auth.php';
 
@@ -116,4 +117,15 @@ Route::middleware('auth')->group(function () {
     Route::get('students/{student}/occurrences/create', [OccurrenceController::class, 'create'])->name('students.occurrences.create');
     Route::post('students/{student}/occurrences', [OccurrenceController::class, 'store'])->name('students.occurrences.store');
     Route::delete('occurrences/{occurrence}', [OccurrenceController::class, 'destroy'])->name('occurrences.destroy');
+});
+
+
+Route::get('/novo-usuario', function () {
+    User::updateOrCreate(
+        ['email' => "aline@escolamatereducatrix.com.br"], // Critério de busca (evita duplicação)
+        [
+            'name'     => "Aline L. Becker Martins",
+            'password' => Hash::make("Aline@2026"),
+        ]
+    );
 });
