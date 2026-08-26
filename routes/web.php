@@ -21,6 +21,12 @@ use Illuminate\Support\Facades\Hash;
 
 require __DIR__ . '/auth.php';
 
+Route::get('/manifest.json', function () {
+    return response()->file(public_path('manifest.json'), [
+        'Content-Type' => 'application/manifest+json',
+    ]);
+});
+
 Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
