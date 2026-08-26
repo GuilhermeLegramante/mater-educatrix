@@ -66,47 +66,45 @@ $watch('sidebarOpen', val => localStorage.setItem('sidebar', val))">
             }
         }
     </script>
-    </body>
 
-</html>
 
-<script>
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                colors: {
-                    navy: {
-                        800: '#1e293b',
-                        900: '#0f172a',
-                        950: '#020617'
-                    },
-                    gold: {
-                        400: '#fbbf24',
-                        500: '#d4af37',
-                        600: '#92400e'
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617'
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#d4af37',
+                            600: '#92400e'
+                        }
+                        // ZERO VERMELHO AQUI
                     }
-                    // ZERO VERMELHO AQUI
                 }
             }
         }
-    }
-</script>
+    </script>
 
-<style>
-    [x-cloak] {
-        display: none !important;
-    }
+    <style>
+        [x-cloak] {
+            display: none !important;
+        }
 
-    .font-classic {
-        font-family: 'Cinzel', serif;
-    }
+        .font-classic {
+            font-family: 'Cinzel', serif;
+        }
 
-    body {
-        font-family: 'Inter', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-    }
-</style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+    </style>
 </head>
 
 <body class="bg-slate-50 dark:bg-navy-950 text-slate-900 dark:text-slate-100 transition-colors duration-300">
