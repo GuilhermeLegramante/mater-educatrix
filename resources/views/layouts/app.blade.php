@@ -10,7 +10,7 @@ $watch('sidebarOpen', val => localStorage.setItem('sidebar', val))">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mater Educatrix</title>
 
-    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2b2c43">
 
     <script src="https://cdn.tailwindcss.com"></script>
