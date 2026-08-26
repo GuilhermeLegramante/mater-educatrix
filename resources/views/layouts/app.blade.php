@@ -12,13 +12,13 @@ $watch('sidebarOpen', val => localStorage.setItem('sidebar', val))">
 
     <link rel="icon" href="/img/icone.png">
 
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="{{ asset('manifest.json') }}" crossorigin="use-credentials">
+
     <meta name="theme-color" content="#2b2c43">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="apple-touch-icon" href="/img/icone.png">
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Inter:wght@400;600;800&display=swap"
         rel="stylesheet">
@@ -68,6 +68,8 @@ $watch('sidebarOpen', val => localStorage.setItem('sidebar', val))">
     </script>
 
 
+    <!-- Tailwind Play CDN e Configuração Corrigida -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -84,7 +86,6 @@ $watch('sidebarOpen', val => localStorage.setItem('sidebar', val))">
                             500: '#d4af37',
                             600: '#92400e'
                         }
-                        // ZERO VERMELHO AQUI
                     }
                 }
             }
