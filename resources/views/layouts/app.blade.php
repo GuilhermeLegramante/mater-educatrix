@@ -10,7 +10,7 @@ $watch('sidebarOpen', val => localStorage.setItem('sidebar', val))">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mater Educatrix</title>
 
-    <link rel="icon" href="https://ead.atitudeidiomas.com/img/icone.png">
+    <link rel="icon" href="/img/icone.png">
 
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#2b2c43">
