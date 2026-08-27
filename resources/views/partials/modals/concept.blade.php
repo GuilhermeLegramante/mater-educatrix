@@ -14,58 +14,50 @@
             @csrf
             <input type="hidden" name="student_id" value="{{ $student->id }}">
 
+            {{-- SELEÇÃO DA DISCIPLINA --}}
             <div>
-                <label
-                    class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-wider">Disciplina</label>
-                <select name="subject_id" required
+                <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-wider">
+                    Disciplina
+                </label>
+                <select name="subject_id" id="concept_subject_id" required onchange="updateSelectedConcept()"
                     class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 font-bold text-navy-900 outline-none focus:border-gold-500 transition-colors">
                     @foreach ($activeClassroom->subjects as $subject)
-                        <option value="{{ $subject->id }}" {{ $subject->id == $subjectId ? 'selected' : '' }}
-                            class="dark:bg-navy-950">{{ $subject->name }}</option>
+                        <option value="{{ $subject->id }}" {{ $subject->id == $subjectId ? 'selected' : '' }}>
+                            {{ $subject->name }}
+                        </option>
                     @endforeach
                 </select>
             </div>
 
             <div class="grid grid-cols-2 gap-4">
+                {{-- SELEÇÃO DO BIMESTRE --}}
                 <div>
-                    <label
-                        class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-wider">Período</label>
-                    <select name="bimester"
+                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-wider">
+                        Período
+                    </label>
+                    <select name="bimester" id="concept_bimester" onchange="updateSelectedConcept()"
                         class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl px-4 py-3 font-bold text-navy-900 outline-none focus:border-gold-500 transition-colors">
-                        <option value="1" class="dark:bg-navy-950" {{ $bimester == 1 ? 'selected' : '' }}>1º
-                            Bimestre</option>
-                        <option value="2" class="dark:bg-navy-950" {{ $bimester == 2 ? 'selected' : '' }}>2º
-                            Bimestre</option>
-                        <option value="3" class="dark:bg-navy-950" {{ $bimester == 3 ? 'selected' : '' }}>3º
-                            Bimestre</option>
-                        <option value="4" class="dark:bg-navy-950" {{ $bimester == 4 ? 'selected' : '' }}>4º
-                            Bimestre</option>
+                        @for ($b = 1; $b <= 4; $b++)
+                            <option value="{{ $b }}" {{ $bimester == $b ? 'selected' : '' }}>
+                                {{ $b }}º Bimestre
+                            </option>
+                        @endfor
                     </select>
                 </div>
 
+                {{-- SELEÇÃO DO CONCEITO --}}
                 <div>
                     <label
-                        class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-wider text-center">Conceito</label>
-                    <select name="concept"
+                        class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-wider text-center">
+                        Conceito
+                    </label>
+                    <select name="concept" id="concept_select"
                         class="w-full bg-navy-900 text-gold-500 border-none rounded-xl px-4 py-3 font-black text-center outline-none focus:ring-2 focus:ring-gold-500/50">
-                        <option value="A" {{ $concept == 'A' ? 'selected' : '' }}
-                            class="bg-navy-900 text-gold-500 font-bold">CONCEITO A
-                        </option>
-                        <option value="B" {{ $concept == 'B' ? 'selected' : '' }}
-                            class="bg-navy-900 text-gold-500 font-bold">CONCEITO B
-                        </option>
-                        <option value="C" {{ $concept == 'C' ? 'selected' : '' }}
-                            class="bg-navy-900 text-gold-500 font-bold">CONCEITO C
-                        </option>
-                        <option value="D" {{ $concept == 'D' ? 'selected' : '' }}
-                            class="bg-navy-900 text-gold-500 font-bold">CONCEITO D
-                        </option>
-                        <option value="E" {{ $concept == 'E' ? 'selected' : '' }}
-                            class="bg-navy-900 text-gold-500 font-bold">CONCEITO E
-                        </option>
-                        <option value="F" {{ $concept == 'F' ? 'selected' : '' }}
-                            class="bg-navy-900 text-gold-500 font-bold">CONCEITO F
-                        </option>
+                        @foreach (['A', 'B', 'C', 'D', 'E', 'F'] as $c)
+                            <option value="{{ $c }}" class="bg-navy-900 text-gold-500 font-bold">
+                                CONCEITO {{ $c }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -83,3 +75,46 @@
         </form>
     </div>
 </div>
+
+@php
+    // Monta a estrutura de conceitos agrupados por [subject_id][bimester]
+    $conceptsMap = [];
+    if ($activeClassroom) {
+        foreach ($activeClassroom->subjects as $subj) {
+            for ($b = 1; $b <= 4; $b++) {
+                $conceptsMap[$subj->id][$b] = $student->getConsolidatedConcept($activeClassroom->id, $subj->id, $b);
+            }
+        }
+    }
+@endphp
+
+<script>
+    // Injeta o mapa de conceitos calculado no PHP para o JS
+    const studentConceptsMap = @json($conceptsMap);
+
+    function updateSelectedConcept() {
+        const subjectSelect = document.getElementById('concept_subject_id');
+        const bimesterSelect = document.getElementById('concept_bimester');
+        const conceptSelect = document.getElementById('concept_select');
+
+        if (!subjectSelect || !bimesterSelect || !conceptSelect) return;
+
+        const subjectId = subjectSelect.value;
+        const bimester = bimesterSelect.value;
+
+        // Busca o conceito no mapa ou define 'A' como padrão caso não exista
+        let currentConcept = 'A';
+        if (studentConceptsMap[subjectId] && studentConceptsMap[subjectId][bimester]) {
+            currentConcept = studentConceptsMap[studentConceptsMap[subjectId][bimester] ? subjectId : ''][bimester] ||
+                studentConceptsMap[subjectId][bimester];
+        }
+
+        // Atualiza a seleção do campo conceito
+        conceptSelect.value = currentConcept;
+    }
+
+    // Atualiza a seleção do conceito logo ao abrir a modal
+    document.addEventListener('DOMContentLoaded', function() {
+        updateSelectedConcept();
+    });
+</script>

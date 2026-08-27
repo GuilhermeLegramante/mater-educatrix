@@ -600,6 +600,9 @@
 
         function openConceptModal() {
             openModal('modal-conceito');
+            if (typeof updateSelectedConcept === 'function') {
+                updateSelectedConcept();
+            }
         }
 
         function openOccurrenceModal() {
