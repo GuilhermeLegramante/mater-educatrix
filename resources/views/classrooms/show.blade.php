@@ -102,7 +102,7 @@
                                     </td>
                                 </tr>
                             @endforeach
-                        </tbody>s
+                        </tbody>
                     </table>
                 </div>
             </div>
