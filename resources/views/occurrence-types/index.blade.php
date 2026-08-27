@@ -52,7 +52,7 @@
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
                                     <span
                                         class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-{{ $type->color }}-50 $type->color }}-950/40 text-{{ $type->color }}-600 $type->color }}-400 border border-{{ $type->color }}-200 $type->color }}-800/60">
-                                        Exemplo {{ $type->name }}
+                                        {{ $type->name }}
                                     </span>
                                 </td>
 
