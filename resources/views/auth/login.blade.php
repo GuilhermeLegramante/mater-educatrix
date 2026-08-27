@@ -59,40 +59,41 @@
                         {{-- Senha --}}
                         <div>
                             <div class="flex justify-between items-center mb-2">
-                                <label for="password" class="text-sm text-slate-300">
+                                <label for="password" class="text-sm font-medium text-slate-300">
                                     Senha
                                 </label>
 
                                 @if (Route::has('password.request'))
                                     <a href="{{ route('password.request') }}"
-                                        class="text-sm text-slate-500 hover:text-slate-300">
+                                        class="text-xs font-semibold text-amber-500/80 hover:text-amber-400 transition-colors">
                                         Esqueceu?
                                     </a>
                                 @endif
                             </div>
 
-                            {{-- Contêiner do Input com Alpine.js --}}
-                            <div x-data="{ showPassword: false }" class="relative w-full">
+                            {{-- Campo de Senha com Botão Embutido --}}
+                            <div x-data="{ showPassword: false }" class="relative flex items-center">
                                 <input id="password" :type="showPassword ? 'text' : 'password'" name="password" required
-                                    placeholder="Digite sua senha"
-                                    class="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-500 transition">
+                                    placeholder="••••••••"
+                                    class="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200">
 
-                                <button type="button" @click="showPassword = !showPassword"
-                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-500 focus:outline-none transition">
-                                    <!-- Ícone Olho Aberto -->
+                                <button type="button" @click="showPassword = !showPassword" tabindex="-1"
+                                    class="absolute right-1 top-1/2 -translate-y-1/2 h-10 w-10 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800/50 focus:outline-none transition-all duration-200"
+                                    title="Alternar visibilidade da senha">
+                                    <!-- Ícone Olho Aberto (Senha Visível) -->
                                     <svg x-show="showPassword" class="w-5 h-5" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24" x-cloak>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        stroke-width="1.75" viewBox="0 0 24 24" x-cloak>
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.036 123c2.7 5.467 7.28 8.036 9.964 8.036 5.284 0 9.864-2.569 12.564-8.036-2.7-5.467-7.28-8.036-9.964-8.036-5.284 0-9.864 2.569-12.564 8.036z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
 
-                                    <!-- Ícone Olho Fechado -->
+                                    <!-- Ícone Olho Fechado (Senha Oculta) -->
                                     <svg x-show="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor"
-                                        viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858-5.908a10.018 10.018 0 014.122-.963c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21f-9-9m0 0L3 3" />
+                                        stroke-width="1.75" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                                     </svg>
                                 </button>
                             </div>
