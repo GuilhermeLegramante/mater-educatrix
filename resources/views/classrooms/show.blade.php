@@ -17,13 +17,17 @@
             </div>
         </div>
 
+        @include('partials.modals.enrollment', [
+            'classroom' => $classroom,
+            'students' => $students,
+            'classrooms' => $classrooms,
+        ])
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-6">
-                <div
-                    class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden backdrop-blur-sm">
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden backdrop-blur-sm">
 
-                    <div
-                        class="p-6 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
+                    <div class="p-6 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
                         <h3 class="font-bold text-navy-900 uppercase text-xs tracking-widest">Alunos
                         </h3>
                         <div class="flex gap-2">
@@ -36,8 +40,7 @@
                     </div>
 
                     <table class="w-full text-left">
-                        <thead
-                            class="bg-slate-50 text-slate-400 text-[10px] uppercase font-black">
+                        <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-black">
                             <tr>
                                 <th class="px-8 py-4">Aluno</th>
                                 <th class="px-8 py-4 text-center">Status</th>
@@ -119,8 +122,7 @@
         <div
             class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-200 overflow-hidden transform scale-95 transition-transform duration-300">
 
-            <div
-                class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+            <div class="p-6 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
                 <div>
                     <h3 class="text-lg font-bold text-navy-900">Definir Grade Curricular</h3>
                     <p class="text-xs text-slate-400 mt-0.5">Defina as cargas horárias das disciplinas para esta turma.</p>
@@ -149,7 +151,8 @@
                             class="flex items-center justify-between p-3 rounded-2xl border border-slate-100 bg-slate-50/30 hover:border-slate-200 transition-colors">
                             <div class="flex flex-col">
                                 <span class="text-sm font-bold text-navy-900">{{ $allSub->name }}</span>
-                                <span class="text-[10px] text-slate-400 uppercase tracking-tight">Carga Horária Semanal</span>
+                                <span class="text-[10px] text-slate-400 uppercase tracking-tight">Carga Horária
+                                    Semanal</span>
                             </div>
 
                             <div class="w-32 flex items-center gap-2">
@@ -162,8 +165,7 @@
                     @endforeach
                 </div>
 
-                <div
-                    class="pt-4 border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 bg-white">
+                <div class="pt-4 border-t border-slate-100 flex justify-end gap-3 sticky bottom-0 bg-white">
                     <button type="button" onclick="closeModal('modal-curriculum')"
                         class="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold uppercase text-slate-500 hover:bg-slate-50 transition-all">
                         Cancelar
