@@ -23,6 +23,10 @@
             'classrooms' => $classrooms,
         ])
 
+        @include('partials.modals.unenrollment', [
+            'classroom' => $classroom,
+        ])
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden backdrop-blur-sm">
@@ -50,43 +54,55 @@
                         <tbody class="divide-y divide-slate-50">
                             @foreach ($classroom->students as $student)
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
+                                    <!-- Coluna: Nome e Matrícula do Aluno -->
                                     <td class="px-8 py-4">
-                                        <span
-                                            class="font-bold text-navy-900 group-hover:text-gold-500 transition-colors">{{ $student->name }}</span>
+                                        <span class="font-bold text-navy-900 group-hover:text-gold-500 transition-colors">
+                                            {{ $student->name }}
+                                        </span>
                                         <p class="text-[10px] text-slate-400 font-mono mt-0.5">
-                                            {{ $student->registration_number }}</p>
+                                            {{ $student->registration_number }}
+                                        </p>
                                     </td>
+
+                                    <!-- Coluna: Status -->
                                     <td class="px-8 py-4 text-center">
                                         <span
                                             class="px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-tighter bg-green-100 text-green-700">
                                             Ativo
                                         </span>
                                     </td>
-                                    <td class="px-8 py-4 text-right">
-                                        <a href="{{ route('students.show', $student) }}"
-                                            class="inline-flex items-center gap-2 px-4 py-2 bg-slate-50 text-navy-900 hover:bg-gold-50 rounded-xl transition-all border border-slate-200 font-bold text-[10px] uppercase tracking-widest group-hover:border-gold-300">
-                                            Detalhes
-                                            <svg class="w-4 h-4 text-slate-400 group-hover:text-gold-500 transition-colors"
-                                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-width="2" d="M9 5l7 7-7 7" />
-                                            </svg>
-                                        </a>
 
-                                        {{-- Botão de Desmatrícula --}}
-                                        <button type="button"
-                                            onclick="confirmUnenroll('{{ route('classrooms.unenroll', [$classroom, $student]) }}', '{{ $student->name }}')"
-                                            class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest"
-                                            title="Desmatricular Aluno">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6h12a6 6 0 00-6-6zM21 12h-6" />
-                                            </svg>
-                                            Desmatricular
-                                        </button>
+                                    <!-- Coluna: Ações (Botões Lado a Lado) -->
+                                    <td class="px-8 py-4 text-right whitespace-nowrap">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <!-- Botão 1: Detalhes -->
+                                            <a href="{{ route('students.show', $student) }}"
+                                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-navy-900 hover:bg-gold-50 rounded-xl transition-all border border-slate-200 font-bold text-[10px] uppercase tracking-widest group-hover:border-gold-300">
+                                                Detalhes
+                                                <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-gold-500 transition-colors"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M9 5l7 7-7 7" />
+                                                </svg>
+                                            </a>
+
+                                            <!-- Botão 2: Desmatricular -->
+                                            <button type="button"
+                                                onclick="confirmUnenroll('{{ route('classrooms.unenroll', [$classroom, $student]) }}', '{{ $student->name }}')"
+                                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest"
+                                                title="Desmatricular Aluno">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6h12a6 6 0 00-6-6zM21 12h-6" />
+                                                </svg>
+                                                Desmatricular
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
-                        </tbody>
+                        </tbody>s
                     </table>
                 </div>
             </div>
