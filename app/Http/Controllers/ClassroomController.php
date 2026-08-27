@@ -20,7 +20,7 @@ class ClassroomController extends Controller
         $allSubjects = Subject::all();
 
         $settings = SchoolSetting::first();
-    
+
         return view('classrooms.index', compact('classrooms', 'allSubjects', 'settings'));
     }
 
@@ -42,7 +42,7 @@ class ClassroomController extends Controller
         $selectedBimester = $request->get('bimester', $settings?->active_bimester ?? 1);
 
         $classrooms = Classroom::with(['students', 'subjects'])->get(); // Para o modal de matrícula, se necessário
-       
+
         $students = Student::orderBy('name')->get(); // Para o modal de matrícula
 
         // 5. Retorna a view passando TODAS as variáveis necessárias pelo compact
@@ -94,6 +94,20 @@ class ClassroomController extends Controller
         ]);
 
         return back()->with('success', 'Aluno matriculado com sucesso!');
+    }
+
+    /**
+     * Remove a vinculação de um aluno com a turma (Desmatrícula).
+     */
+    public function unenroll(Classroom $classroom, Student $student)
+    {
+        // 1. Remove a associação entre o aluno e a turma na tabela pivô
+        $classroom->students()->detach($student->id);
+
+        // 2. Redireciona de volta para a tela da turma com mensagem de sucesso
+        return redirect()
+            ->route('classrooms.show', $classroom)
+            ->with('success', 'Aluno desmatriculado da turma com sucesso!');
     }
 
     /**

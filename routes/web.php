@@ -47,6 +47,9 @@ Route::middleware('auth')->group(function () {
     // Ações específicas da Turma
     Route::post('/classrooms/{classroom}/enroll', [ClassroomController::class, 'enroll'])
         ->name('classrooms.enroll');
+    // Rota para desmatricular/remover o aluno da turma
+    Route::delete('/classrooms/{classroom}/students/{student}', [ClassroomController::class, 'unenroll'])
+        ->name('classrooms.unenroll');
     Route::post('classrooms/{classroom}/subjects', [ClassroomController::class, 'attachSubject'])->name('classrooms.attachSubject');
     Route::post('classrooms/{classroom}/concepts', [ClassroomController::class, 'updateConcept'])->name('concepts.update');
 
