@@ -12,6 +12,7 @@ use App\Http\Controllers\PreceptoryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SchoolSettingController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BookController;
 use App\Http\Controllers\DescriptiveEvaluationController;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\OccurrenceController;
@@ -126,6 +127,15 @@ Route::middleware('auth')->group(function () {
     Route::get('students/{student}/occurrences/create', [OccurrenceController::class, 'create'])->name('students.occurrences.create');
     Route::post('students/{student}/occurrences', [OccurrenceController::class, 'store'])->name('students.occurrences.store');
     Route::delete('occurrences/{occurrence}', [OccurrenceController::class, 'destroy'])->name('occurrences.destroy');
+
+    // Rotas de Livros vinculados ao Acervo
+    Route::resource('books', BookController::class);
+
+    // Rota para o PDF da ficha
+    Route::get('/books/{book}/pdf-card', [BookController::class, 'generateCardPdf'])->name('books.pdf-card');
+
+    Route::patch('/books/{book}/toggle-printed', [BookController::class, 'togglePrinted'])
+        ->name('books.toggle-printed');
 });
 
 
