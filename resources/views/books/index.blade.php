@@ -65,18 +65,75 @@
                     <table class="w-full text-left border-collapse">
                         <thead class="bg-slate-50 text-slate-400 text-[9px] uppercase font-black tracking-wider">
                             <tr>
-                                <th class="px-8 py-4">Título & Autor</th>
+                                <th class="px-6 py-4 text-center">Ficha Impressa?</th>
+                                <th class="px-8 py-4 text-center">Ações</th>
+                                <th class="px-8 py-4 w-1/3 min-w-[280px]">Título & Autor</th>
                                 <th class="px-6 py-4">Editora / Cidade</th>
                                 <th class="px-6 py-4">Tipo & Disciplina</th>
                                 <th class="px-6 py-4">Estante / Localização</th>
                                 <th class="px-6 py-4 text-center">Status</th>
-                                <th class="px-6 py-4 text-center">Ficha Impressa?</th>
-                                <th class="px-8 py-4 text-right">Ações</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
                             @forelse($books as $book)
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
+                                    {{-- COLUNA DE STATUS DE IMPRESSÃO --}}
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <form action="{{ route('books.toggle-printed', $book) }}" method="POST">
+                                            @csrf
+                                            @method('PATCH')
+
+                                            @if ($book->is_printed)
+                                                <button type="submit" title="Clique para marcar como NÃO impressa a Ficha Catalográfica"
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold hover:bg-emerald-200 transition-all cursor-pointer">
+                                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                                    Sim
+                                                </button>
+                                            @else
+                                                <button type="submit" title="Clique para marcar como impressa a Ficha Catalográfica"
+                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold hover:bg-amber-200 transition-all cursor-pointer">
+                                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                                    Não
+                                                </button>
+                                            @endif
+                                        </form>
+                                    </td>
+
+                                    <td class="px-8 py-4 text-right whitespace-nowrap">
+                                        <div class="flex items-center justify-end gap-2">
+                                            {{-- BOTÃO VER DETALHES --}}
+                                            <a href="{{ route('books.show', $book) }}" title="Ver Detalhes do Livro"
+                                                class="inline-flex items-center px-3 py-1.5 bg-slate-100 text-navy-900 rounded-xl font-bold text-[10px] uppercase hover:bg-gold-500 hover:text-navy-950 transition-all whitespace-nowrap shrink-0">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                    fill="currentColor" class="bi bi-eye" viewBox="0 0 16 16">
+                                                    <path
+                                                        d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8M1.173 8a13 13 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5s3.879 1.168 5.168 2.457A13 13 0 0 1 14.828 8q-.086.13-.195.288c-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5s-3.879-1.168-5.168-2.457A13 13 0 0 1 1.172 8z" />
+                                                    <path
+                                                        d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5M4.5 8a3.5 3.5 0 1 1 7 0 3.5 3.5 0 0 1-7 0" />
+                                                </svg>
+                                            </a>
+
+                                            {{-- BOTÃO IMPRIMIR FICHA PDF --}}
+                                            <a href="{{ route('books.pdf-card', $book) }}" target="_blank"
+                                                title="Imprimir Ficha Catalográfica"
+                                                class="inline-flex items-center px-3 py-1.5 bg-navy-900 text-white rounded-xl font-bold text-[10px] uppercase hover:bg-gold-500 hover:text-navy-950 transition-all whitespace-nowrap shrink-0">
+                                                🖨️
+                                            </a>
+
+                                            {{-- BOTÃO EXCLUIR (ESTILO ÍCONE SVG) --}}
+                                            <button type="button"
+                                                @click="deleteUrl = '{{ route('books.destroy', $book) }}'; bookTitle = '{{ addslashes($book->title) }}'; showDeleteModal = true"
+                                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest shrink-0 cursor-pointer"
+                                                title="Excluir Livro">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+
                                     <td class="px-8 py-4">
                                         <span
                                             class="font-bold text-navy-900 text-sm block group-hover:text-gold-600 transition-colors">
@@ -121,55 +178,8 @@
                                                 class="px-3 py-1 rounded-full text-[9px] font-black uppercase bg-amber-100 text-amber-700">Emprestado</span>
                                         @endif
                                     </td>
-                                    {{-- COLUNA DE STATUS DE IMPRESSÃO --}}
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <form action="{{ route('books.toggle-printed', $book) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
 
-                                            @if ($book->is_printed)
-                                                <button type="submit" title="Clique para marcar como NÃO impresso"
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold hover:bg-emerald-200 transition-all cursor-pointer">
-                                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                                    Sim
-                                                </button>
-                                            @else
-                                                <button type="submit" title="Clique para marcar como impresso"
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold hover:bg-amber-200 transition-all cursor-pointer">
-                                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                                                    Não
-                                                </button>
-                                            @endif
-                                        </form>
-                                    </td>
-                                    <td class="px-8 py-4 text-right whitespace-nowrap">
-                                        <div class="flex items-center justify-end gap-2">
-                                            {{-- BOTÃO VER DETALHES --}}
-                                            <a href="{{ route('books.show', $book) }}"
-                                                class="inline-flex items-center px-3 py-1.5 bg-slate-100 text-navy-900 rounded-xl font-bold text-[10px] uppercase hover:bg-gold-500 hover:text-navy-950 transition-all whitespace-nowrap shrink-0">
-                                                Detalhes
-                                            </a>
 
-                                            {{-- BOTÃO IMPRIMIR FICHA PDF --}}
-                                            <a href="{{ route('books.pdf-card', $book) }}" target="_blank"
-                                                title="Imprimir Ficha Catalográfica"
-                                                class="inline-flex items-center px-3 py-1.5 bg-navy-900 text-white rounded-xl font-bold text-[10px] uppercase hover:bg-gold-500 hover:text-navy-950 transition-all whitespace-nowrap shrink-0">
-                                                🖨️ Ficha
-                                            </a>
-
-                                            {{-- BOTÃO EXCLUIR (ESTILO ÍCONE SVG) --}}
-                                            <button type="button"
-                                                @click="deleteUrl = '{{ route('books.destroy', $book) }}'; bookTitle = '{{ addslashes($book->title) }}'; showDeleteModal = true"
-                                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest shrink-0 cursor-pointer"
-                                                title="Excluir Livro">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
