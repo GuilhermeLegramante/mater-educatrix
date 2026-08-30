@@ -255,10 +255,11 @@
                     </div>
 
                     {{-- BLOCO: OCORRÊNCIAS --}}
-                    <div
+                    <div x-data="{ showDeleteModal: false, deleteUrl: '' }"
                         class="bg-navy-900 rounded-3xl p-8 shadow-2xl relative overflow-hidden border border-transparent transition-all">
 
                         <div class="relative z-10">
+                            {{-- CABEÇALHO DO CARD --}}
                             <div class="flex justify-between items-center mb-8">
                                 <div>
                                     <h3 class="font-classic text-2xl text-gold-500 uppercase tracking-tight">
@@ -281,6 +282,7 @@
                                 </button>
                             </div>
 
+                            {{-- GRID DE OCORRÊNCIAS --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 @forelse($student->occurrences as $occurrence)
                                     <div
@@ -303,20 +305,18 @@
                                                     {{ $occurrence->time ? ' ' . substr($occurrence->time, 0, 5) : '' }}
                                                 </span>
 
-                                                <form action="{{ route('occurrences.destroy', $occurrence->id) }}"
-                                                    method="POST" class="form-delete md:hidden">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                        class="p-2 -mr-2 text-slate-400 hover:text-rose-400 active:scale-95 transition-all">
-                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                            viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                                stroke-width="2"
-                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                        </svg>
-                                                    </button>
-                                                </form>
+                                                {{-- BOTÃO EXCLUIR (MOBILE) --}}
+                                                <button type="button"
+                                                    @click="deleteUrl = '{{ route('occurrences.destroy', $occurrence->id) }}'; showDeleteModal = true"
+                                                    class="p-2 -mr-2 text-slate-400 hover:text-rose-400 active:scale-95 transition-all md:hidden cursor-pointer"
+                                                    title="Excluir Ocorrência">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
                                             </div>
                                         </div>
 
@@ -336,20 +336,17 @@
                                             </div>
                                         @endif
 
-                                        <form action="{{ route('occurrences.destroy', $occurrence->id) }}" method="POST"
-                                            class="form-delete hidden md:block absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="flex items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 transition-all shadow-md"
-                                                title="Excluir Ocorrência">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                </svg>
-                                            </button>
-                                        </form>
+                                        {{-- BOTÃO EXCLUIR (DESKTOP) --}}
+                                        <button type="button"
+                                            @click="deleteUrl = '{{ route('occurrences.destroy', $occurrence->id) }}'; showDeleteModal = true"
+                                            class="hidden md:flex absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20 items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 shadow-md cursor-pointer"
+                                            title="Excluir Ocorrência">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 @empty
                                     <div
@@ -362,19 +359,58 @@
                             </div>
                         </div>
 
+                        {{-- MARCA D'ÁGUA DE FUNDO --}}
                         <div
                             class="absolute -right-10 -bottom-10 text-white/[0.03] text-9xl font-classic pointer-events-none select-none">
                             REGISTRUM
                         </div>
 
+                        {{-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO --}}
+                        <div x-show="showDeleteModal" x-transition.opacity
+                            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+                            style="display: none;">
 
+                            <div @click.away="showDeleteModal = false"
+                                class="bg-navy-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl relative text-center">
+
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+
+                                <h4 class="text-lg font-bold text-white mb-2">Confirmar Exclusão</h4>
+                                <p class="text-slate-400 text-xs mb-6">
+                                    Tem certeza que deseja apagar esta ocorrência? Esta ação não poderá ser desfeita.
+                                </p>
+
+                                <form :action="deleteUrl" method="POST"
+                                    class="flex items-center justify-center gap-3">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="button" @click="showDeleteModal = false"
+                                        class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit"
+                                        class="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-rose-600/30 cursor-pointer">
+                                        Sim, Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- BLOCO: RELATOS DE PRECEPTORIA --}}
-                    <div
+                    <div x-data="{ showDeleteModal: false, deleteUrl: '' }"
                         class="bg-navy-900 rounded-3xl p-8 shadow-2xl relative overflow-hidden border border-transparent transition-all">
-                        <div class="relative z-10">
 
+                        <div class="relative z-10">
+                            {{-- CABEÇALHO DO CARD --}}
                             <div class="flex justify-between items-center mb-8">
                                 <div>
                                     <h3 class="font-classic text-2xl text-gold-500 uppercase tracking-tight">
@@ -384,6 +420,7 @@
                                         {{ $bimester }}º Bimestre
                                     </p>
                                 </div>
+
                                 <button type="button" onclick="openPreceptoryModal()"
                                     class="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-gold-500 hover:bg-white/10 transition-all cursor-pointer">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -396,21 +433,60 @@
                                 </button>
                             </div>
 
+                            {{-- GRID DE RELATOS --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 @forelse($reports as $report)
+                                    {{-- Montagem da rota aninhada (Preceptoria dentro de Turma) --}}
+                                    @php
+                                        $destroyUrl = route('preceptory.destroy', [
+                                            'classroom' => $classroom->id ?? $report->classroom_id,
+                                            'preceptory' => $report->id,
+                                        ]);
+                                    @endphp
+
                                     <div
-                                        class="bg-white/5 border-l-4 border-gold-500 p-6 rounded-r-2xl hover:bg-white/[0.08] transition-colors">
-                                        <div class="flex justify-between items-start mb-3">
-                                            <span class="text-gold-500 font-bold text-[10px] uppercase tracking-widest">
+                                        class="bg-white/5 border-l-4 border-gold-500 p-6 rounded-r-2xl hover:bg-white/[0.08] transition-colors relative group">
+                                        <div class="flex justify-between items-start mb-3 gap-4">
+                                            <span
+                                                class="text-gold-500 font-bold text-[10px] uppercase tracking-widest truncate">
                                                 {{ $report->subject->name ?? 'Desenvolvimento Geral' }}
                                             </span>
-                                            <span class="text-white/30 text-[10px] font-mono">
-                                                {{ $report->created_at->format('d/m/Y') }}
-                                            </span>
+
+                                            <div class="flex items-center gap-2 flex-shrink-0">
+                                                <span class="text-white/30 text-[10px] font-mono">
+                                                    {{ $report->created_at->format('d/m/Y') }}
+                                                </span>
+
+                                                {{-- BOTÃO EXCLUIR (MOBILE) --}}
+                                                <button type="button"
+                                                    @click="deleteUrl = '{{ $destroyUrl }}'; showDeleteModal = true"
+                                                    class="p-1 -mr-1 text-slate-400 hover:text-rose-400 active:scale-95 transition-all md:hidden cursor-pointer"
+                                                    title="Excluir Relato">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </div>
                                         </div>
-                                        <p class="text-white/80 font-serif italic text-lg leading-relaxed">
+
+                                        <p class="text-white/80 font-serif italic text-lg leading-relaxed break-words">
                                             "{!! nl2br(e($report->content)) !!}"
                                         </p>
+
+                                        {{-- BOTÃO EXCLUIR (DESKTOP - VISÍVEL NO HOVER) --}}
+                                        <button type="button"
+                                            @click="deleteUrl = '{{ $destroyUrl }}'; showDeleteModal = true"
+                                            class="hidden md:flex absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20 items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 shadow-md cursor-pointer"
+                                            title="Excluir Relato">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                            </svg>
+                                        </button>
                                     </div>
                                 @empty
                                     <div
@@ -423,13 +499,52 @@
                             </div>
                         </div>
 
-                        {{-- Marca d'água decorativa de fundo --}}
+                        {{-- MARCA D'ÁGUA DE FUNDO --}}
                         <div
                             class="absolute -right-10 -bottom-10 text-white/[0.03] text-9xl font-classic pointer-events-none select-none">
                             MATER
                         </div>
-                    </div>
 
+                        {{-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO --}}
+                        <div x-show="showDeleteModal" x-transition.opacity
+                            class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm"
+                            style="display: none;">
+
+                            <div @click.away="showDeleteModal = false"
+                                class="bg-navy-900 border border-white/10 rounded-3xl p-6 max-w-md w-full shadow-2xl relative text-center">
+
+                                <div
+                                    class="w-12 h-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                                    </svg>
+                                </div>
+
+                                <h4 class="text-lg font-bold text-white mb-2">Confirmar Exclusão</h4>
+                                <p class="text-slate-400 text-xs mb-6">
+                                    Tem certeza que deseja apagar este relato de preceptoria? Esta ação não poderá ser
+                                    desfeita.
+                                </p>
+
+                                <form :action="deleteUrl" method="POST"
+                                    class="flex items-center justify-center gap-3">
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button type="button" @click="showDeleteModal = false"
+                                        class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-xl text-slate-300 hover:bg-white/10 text-xs font-bold uppercase tracking-wider transition-all cursor-pointer">
+                                        Cancelar
+                                    </button>
+
+                                    <button type="submit"
+                                        class="px-5 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold uppercase tracking-wider transition-all shadow-lg shadow-rose-600/30 cursor-pointer">
+                                        Sim, Excluir
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -438,126 +553,7 @@
         @include('partials.modals.preceptory')
         @include('partials.modals.concept')
         @include('partials.modals.occurrence')
-
-
-        {{-- MODAL NATIVO: GERAR BOLETIM PDF --}}
-        <div id="modal-boletim" class="fixed inset-0 z-50 overflow-y-auto hidden">
-            {{-- Backdrop escurecido com clique para fechar --}}
-            <div class="fixed inset-0 bg-navy-950/80 backdrop-blur-sm transition-opacity"
-                onclick="closeModal('modal-boletim')"></div>
-
-            <div class="flex min-h-full items-center justify-center p-4">
-                <div id="modal-content"
-                    class="relative w-full max-w-lg transform overflow-hidden rounded-3xl bg-[#0f1a34] border border-amber-500/20 p-8 text-left shadow-2xl transition-all scale-95 opacity-0">
-
-                    {{-- Header do Modal --}}
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-5 mb-6">
-                        <div class="flex items-center gap-3">
-                            <div
-                                class="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 class="font-serif text-xl font-bold text-amber-400">Gerar Boletim Acadêmico</h3>
-                                <p class="text-[10px] text-slate-400 uppercase tracking-widest font-mono">Exportação
-                                    oficial em PDF</p>
-                            </div>
-                        </div>
-                        <button type="button" onclick="closeModal('modal-boletim')"
-                            class="text-slate-400 hover:text-white transition-colors">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    {{-- Formulário de Configuração do Boletim --}}
-                    <form
-                        action="{{ route('students.report-card.pdf', ['classroom' => $activeClassroom->id, 'student' => $student->id]) }}"
-                        method="GET" target="_blank" class="space-y-6">
-
-                        <div class="space-y-4 mb-6">
-                            <span
-                                class="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-1">Componentes
-                                Adicionais</span>
-
-                            <div
-                                class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div>
-                                    <span class="block text-xs font-bold text-navy-900">Rendimento
-                                        Escolar</span>
-                                    <span class="text-[10px] text-slate-400">Notas, médias e faltas das
-                                        disciplinas básicas.</span>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="include_grades" value="1" checked
-                                        class="sr-only peer">
-                                    <div
-                                        class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-500">
-                                    </div>
-                                </label>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div>
-                                    <span class="block text-xs font-bold text-navy-900">Ocorrências
-                                        & Atendimentos</span>
-                                    <span class="text-[10px] text-slate-400">Histórico disciplinar e
-                                        prontuários
-                                        médicos.</span>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="include_occurrences" value="1"
-                                        class="sr-only peer">
-                                    <div
-                                        class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-500">
-                                    </div>
-                                </label>
-                            </div>
-
-                            <div
-                                class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                                <div>
-                                    <span class="block text-xs font-bold text-navy-900">Relatos
-                                        de Preceptoria</span>
-                                    <span class="text-[10px] text-slate-400">Acompanhamento do tutor e
-                                        desenvolvimento pessoal.</span>
-                                </div>
-                                <label class="relative inline-flex items-center cursor-pointer">
-                                    <input type="checkbox" name="include_preceptory" value="1"
-                                        class="sr-only peer">
-                                    <div
-                                        class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-500">
-                                    </div>
-                                </label>
-                            </div>
-                        </div>
-
-                        {{-- Ações do Rodapé do Modal --}}
-                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                            <button type="button" @click="openExportModal = false"
-                                class="px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
-                                Cancelar
-                            </button>
-                            <button type="submit"
-                                class="bg-gold-500 text-navy-950 px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-lg shadow-gold-500/20 flex items-center justify-center gap-2">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                                </svg>
-                                Compilar & Imprimir
-                            </button>
-                        </div>
-                    </form>
-
-                </div>
-            </div>
-        </div>
+        @include('partials.modals.boletim')
     @endif
 
     <script>

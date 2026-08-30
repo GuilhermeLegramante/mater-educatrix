@@ -42,4 +42,16 @@ class PreceptoryController extends Controller
     {
         return view('preceptory.show', compact('report'));
     }
+
+    /**
+     * Remove uma preceptoria caso tenha sido lançada errada
+     */
+    public function destroy(PreceptoryReport $report)
+    {
+        $studentId = $report->student_id;
+        $report->delete();
+
+        return redirect()->route('students.show', $studentId)
+            ->with('success', 'Registro de preceptoria removido.');
+    }
 }
