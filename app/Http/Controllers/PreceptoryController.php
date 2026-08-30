@@ -44,14 +44,23 @@ class PreceptoryController extends Controller
     }
 
     /**
-     * Remove uma preceptoria caso tenha sido lançada errada
+     * Remove um relato de preceptoria do banco de dados.
+     *
+     * @param  \App\Models\Classroom  $classroom  Model da turma injetado pela rota aninhada
+     * @param  \App\Models\PreceptoryReport  $preceptory  Model do relato a ser excluído
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy(PreceptoryReport $report)
+    public function destroy(Classroom $classroom, PreceptoryReport $preceptory)
     {
-        $studentId = $report->student_id;
-        $report->delete();
+        // 1. Guarda o ID do estudante antes de apagar o registro para usar no redirecionamento
+        $studentId = $preceptory->student_id;
 
-        return redirect()->route('students.show', $studentId)
-            ->with('success', 'Registro de preceptoria removido.');
+        // 2. Executa a exclusão da ocorrência/relato no banco de dados
+        $preceptory->delete();
+
+        // 3. Redireciona de volta para o perfil do estudante com mensagem de sucesso
+        return redirect()
+            ->route('students.show', $studentId)
+            ->with('success', 'Registro de preceptoria removido com sucesso.');
     }
 }
