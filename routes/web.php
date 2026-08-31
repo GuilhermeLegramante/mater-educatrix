@@ -17,6 +17,7 @@ use App\Http\Controllers\DescriptiveEvaluationController;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\OccurrenceController;
 use App\Http\Controllers\OccurrenceTypeController;
+use App\Http\Controllers\UserController;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -37,13 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
     // Dashboard e Turmas
     // Route::get('/', [ClassroomController::class, 'index'])->name('dashboard');
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('classrooms', ClassroomController::class);
-
-
 
     // Ações específicas da Turma
     Route::post('/classrooms/{classroom}/enroll', [ClassroomController::class, 'enroll'])
@@ -83,14 +81,6 @@ Route::middleware('auth')->group(function () {
     // Gestão de Conceitos Bimestrais
     Route::post('classrooms/{classroom}/concepts', [ClassroomController::class, 'updateConcept'])->name('concepts.update');
 
-    // Configurações da Escola
-    Route::get('/settings/school', [SchoolSettingController::class, 'edit'])
-        ->name('settings.school');
-
-    Route::put('/settings/school', [SchoolSettingController::class, 'update'])
-        ->name('settings.school.update');
-
-
     // 1. Rota Genérica (Nomeada para o Menu): Tela de seleção de turmas
     Route::get('/diarios', [AttendanceController::class, 'dashboard'])->name('attendance.index');
 
@@ -99,29 +89,6 @@ Route::middleware('auth')->group(function () {
 
     // 3. Rota API/AJAX Inline para salvar a falta sem dar reload
     Route::post('/diario/toggle', [AttendanceController::class, 'toggle'])->name('attendance.toggle');
-
-    // Tela com o formulário de geração e listagem resumida
-    Route::get('/calendario', [CalendarController::class, 'index'])->name('admin.calendar.index');
-
-    // Processamento da geração automática de dias
-    Route::post('/calendario/gerar', [CalendarController::class, 'generate'])->name('admin.calendar.generate');
-
-    // Ação rápida para deletar um dia específico (caso de emenda de feriado)
-    Route::delete('/calendario/dia/{id}', [CalendarController::class, 'destroy'])->name('admin.calendar.day.destroy');
-
-    // Ação para limpar todo o calendário do ano (caso de mudança de ano letivo ou erro na geração)
-    Route::delete('/calendario/limpar-ano', [CalendarController::class, 'clearYear'])->name('admin.calendar.clearYear');
-
-
-
-    // Rota customizada para alternar o status (deve vir antes ou junto ao resource)
-    Route::patch('occurrence-types/{occurrence_type}/toggle', [OccurrenceTypeController::class, 'toggleStatus'])
-        ->name('occurrence-types.toggle');
-
-    // Painel de Configuração dos Tipos de Ocorrência (Apenas Gestores)
-    Route::resource('occurrence-types', OccurrenceTypeController::class)
-        ->except(['show'])
-        ->names('occurrence-types');
 
     // Rotas de Ocorrências vinculadas ao Aluno
     Route::get('students/{student}/occurrences/create', [OccurrenceController::class, 'create'])->name('students.occurrences.create');
@@ -136,6 +103,38 @@ Route::middleware('auth')->group(function () {
 
     Route::patch('/books/{book}/toggle-printed', [BookController::class, 'togglePrinted'])
         ->name('books.toggle-printed');
+
+    Route::middleware('can:admin')->group(function () {
+        Route::resource('users', UserController::class);
+
+        // Tela com o formulário de geração e listagem resumida
+        Route::get('/calendario', [CalendarController::class, 'index'])->name('admin.calendar.index');
+
+        // Processamento da geração automática de dias
+        Route::post('/calendario/gerar', [CalendarController::class, 'generate'])->name('admin.calendar.generate');
+
+        // Ação rápida para deletar um dia específico (caso de emenda de feriado)
+        Route::delete('/calendario/dia/{id}', [CalendarController::class, 'destroy'])->name('admin.calendar.day.destroy');
+
+        // Ação para limpar todo o calendário do ano (caso de mudança de ano letivo ou erro na geração)
+        Route::delete('/calendario/limpar-ano', [CalendarController::class, 'clearYear'])->name('admin.calendar.clearYear');
+
+        // Rota customizada para alternar o status (deve vir antes ou junto ao resource)
+        Route::patch('occurrence-types/{occurrence_type}/toggle', [OccurrenceTypeController::class, 'toggleStatus'])
+            ->name('occurrence-types.toggle');
+
+        // Painel de Configuração dos Tipos de Ocorrência (Apenas Gestores)
+        Route::resource('occurrence-types', OccurrenceTypeController::class)
+            ->except(['show'])
+            ->names('occurrence-types');
+
+        // Configurações da Escola
+        Route::get('/settings/school', [SchoolSettingController::class, 'edit'])
+            ->name('settings.school');
+
+        Route::put('/settings/school', [SchoolSettingController::class, 'update'])
+            ->name('settings.school.update');
+    });
 });
 
 
