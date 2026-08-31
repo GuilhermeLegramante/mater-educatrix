@@ -26,11 +26,6 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('Coord@2026'),
             ],
             [
-                'name'     => 'Professor de Música',
-                'email'    => 'musica@escolamatereducatrix.com.br',
-                'password' => Hash::make('Musica@2026'),
-            ],
-            [
                 'name'     => 'Secretaria Escolar',
                 'email'    => 'secretaria@escolamatereducatrix.com.br',
                 'password' => Hash::make('Secre@2026'),
