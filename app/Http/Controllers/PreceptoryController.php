@@ -35,7 +35,7 @@ class PreceptoryController extends Controller
             'bimester'   => $request->bimester,
         ]);
 
-        return back()->with('success', 'Anotação de preceptoria registrada com sucesso!');
+        return back()->with('success', 'Anotação registrada com sucesso!');
     }
 
     public function show(PreceptoryReport $report)
@@ -61,6 +61,6 @@ class PreceptoryController extends Controller
         // 3. Redireciona de volta para o perfil do estudante com mensagem de sucesso
         return redirect()
             ->route('students.show', $studentId)
-            ->with('success', 'Registro de preceptoria removido com sucesso.');
+            ->with('success', 'Registro removido com sucesso.');
     }
 }

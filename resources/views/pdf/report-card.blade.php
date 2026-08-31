@@ -498,7 +498,7 @@
                 @endforeach
             </tbody>
         </table>
-        
+
         <div class="legend-box">
             <strong>Nota informativa sobre o sistema de avaliação:</strong> Conforme estabelecido na Escola Mater
             Educatrix, as notas são atribuídas na forma de conceito (A, B, C, D, E e F). O conceito de corte para
@@ -511,7 +511,7 @@
 
     {{-- SEÇÃO 2: RELATOS DE PRECEPTORIA --}}
     @if ($showPreceptory && $student->preceptoryReports && $student->preceptoryReports->count() > 0)
-        <div class="section-title">Considerações dos Professores / Preceptoria</div>
+        <div class="section-title">Parecer Descritivo</div>
 
         @foreach ($student->preceptoryReports as $relato)
             <div class="preceptory-block">
@@ -574,7 +574,7 @@
             </td>
             <td width="10%"></td>
             <td class="signature-space">
-                <div class="signature-line">Assinatura do Orientador / Preceptor</div>
+                <div class="signature-line">Assinatura do Tutor da Turma</div>
             </td>
         </tr>
     </table>

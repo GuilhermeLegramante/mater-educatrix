@@ -75,10 +75,8 @@
 
                     <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
                         <div>
-                            <span class="block text-xs font-bold text-navy-900">Relatos
-                                de Preceptoria</span>
-                            <span class="text-[10px] text-slate-400">Acompanhamento do tutor e
-                                desenvolvimento pessoal.</span>
+                            <span class="block text-xs font-bold text-navy-900">Parecer Descritivo</span>
+                            <span class="text-[10px] text-slate-400">Acompanhamento dos professores e desenvolvimento pessoal.</span>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="include_preceptory" value="1" class="sr-only peer">

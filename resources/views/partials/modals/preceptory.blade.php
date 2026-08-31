@@ -6,7 +6,7 @@
 
         <div
             class="p-6 bg-navy-900 text-white flex justify-between items-center border-b border-white/[0.05]">
-            <h3 class="font-classic text-xl font-black uppercase tracking-wide text-gold-500">Novo Relato de Preceptoria
+            <h3 class="font-classic text-xl font-black uppercase tracking-wide text-gold-500">Novo Parecer Descritivo</h3>
             </h3>
             <button onclick="closeModal('modal-preceptoria')"
                 class="text-white/50 hover:text-white text-2xl transition-colors font-bold">&times;</button>
@@ -64,7 +64,7 @@
             <div class="pt-2">
                 <button type="submit"
                     class="w-full bg-gold-500 text-navy-900 font-black py-4 rounded-xl uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-gold-500/20">
-                    Gravar Relato
+                    Gravar Parecer
                 </button>
                 <button type="button" onclick="closeModal('modal-preceptoria')"
                     class="w-full mt-3 text-slate-400 text-[10px] font-bold uppercase tracking-widest hover:text-navy-900 transition-colors">

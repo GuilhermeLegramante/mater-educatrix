@@ -3,7 +3,7 @@
 @section('content')
     <div class="max-w-4xl mx-auto space-y-6">
         <header>
-            <h2 class="font-classic text-3xl text-navy-900">Relato de Preceptoria</h2>
+            <h2 class="font-classic text-3xl text-navy-900">Parecer Descritivo</h2>
             <p class="text-slate-500">Aluno: <span class="font-bold text-navy-900">{{ $student->name }}</span></p>
         </header>
 

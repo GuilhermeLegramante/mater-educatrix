@@ -414,7 +414,7 @@
                             <div class="flex justify-between items-center mb-8">
                                 <div>
                                     <h3 class="font-classic text-2xl text-gold-500 uppercase tracking-tight">
-                                        Relatos de Preceptoria
+                                        Parecer Descritivo
                                     </h3>
                                     <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">
                                         {{ $bimester }}º Bimestre
@@ -523,7 +523,7 @@
 
                                 <h4 class="text-lg font-bold text-white mb-2">Confirmar Exclusão</h4>
                                 <p class="text-slate-400 text-xs mb-6">
-                                    Tem certeza que deseja apagar este relato de preceptoria? Esta ação não poderá ser
+                                    Tem certeza que deseja apagar este parecer descritivo? Esta ação não poderá ser
                                     desfeita.
                                 </p>
 

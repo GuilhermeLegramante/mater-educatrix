@@ -69,7 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::get('evaluations/{evaluation}/grades', [GradeController::class, 'create'])->name('grades.create');
         Route::post('evaluations/{evaluation}/grades', [GradeController::class, 'store'])->name('grades.store');
 
-        // Preceptoria
+        // Preceptoria (Parecer Descritivo)
         Route::resource('preceptory', PreceptoryController::class);
     });
 
