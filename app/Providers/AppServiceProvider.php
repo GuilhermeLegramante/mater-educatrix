@@ -19,9 +19,15 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Define que apenas administradores passam na porta 'admin'
+        // Define o Gate 'admin' comparando tanto o Enum quanto o valor em string
         Gate::define('admin', function (User $user) {
-            return $user->role === UserRole::ADMIN;
+            // Se o cast no Model estiver ativo:
+            if ($user->role instanceof UserRole) {
+                return $user->role === UserRole::ADMIN;
+            }
+
+            // Fallback caso venha como string do banco
+            return strtolower((string) $user->role) === 'admin';
         });
 
         // Define acesso para professores ou admins
