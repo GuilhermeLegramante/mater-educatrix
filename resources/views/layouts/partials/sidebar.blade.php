@@ -1,18 +1,18 @@
 <aside
-    class="bg-navy-900 text-white flex-shrink-0 transition-all duration-300 shadow-2xl z-20 relative border-r border-gold-500/20"
+    class="bg-navy-900 text-white flex-shrink-0 transition-all duration-300 shadow-2xl z-20 relative border-r border-gold-500/20 h-screen flex flex-col"
     :class="sidebarOpen ? 'w-72' : 'w-20'">
 
+    {{-- Botão de Toggle da Sidebar --}}
     <button @click="sidebarOpen = !sidebarOpen"
-        class="hidden md:flex absolute -right-3 top-10 bg-gold-500 text-navy-950 rounded-full p-1.5 shadow-lg hover:scale-110 transition border border-navy-900">
+        class="hidden md:flex absolute -right-3 top-10 bg-gold-500 text-navy-950 rounded-full p-1.5 shadow-lg hover:scale-110 transition border border-navy-900 z-30">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"
             :class="{ 'rotate-180': !sidebarOpen }">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7" />
         </svg>
     </button>
 
-
-    <div class="p-6 text-center border-b border-slate-200 overflow-hidden transition-all">
-
+    {{-- CABEÇALHO (Logo Fixa no Topo) --}}
+    <div class="p-6 text-center border-b border-slate-200/10 overflow-hidden transition-all flex-shrink-0">
         <div class="inline-block transition-all duration-300"
             :class="sidebarOpen ? 'mb-3 w-16 h-16' : 'mb-0 w-10 h-10'">
             <img src="{{ asset('img/logo.png') }}" alt="Mater Educatrix"
@@ -23,10 +23,10 @@
             <h1 class="font-classic text-lg text-gold-500 font-bold tracking-widest uppercase">Mater</h1>
             <p class="text-[10px] text-slate-400 uppercase tracking-[0.4em]">Educatrix</p>
         </div>
-
     </div>
 
-    <nav class="mt-4 px-4 space-y-2">
+    {{-- MENU DE NAVEGAÇÃO (Com Scroll Habilitado) --}}
+    <nav class="mt-4 px-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar pb-6">
         <a href="{{ route('dashboard') }}"
             class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/30' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
             <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,8 +68,6 @@
             <span x-show="sidebarOpen" class="ml-3">Turmas</span>
         </a>
 
-
-
         <a href="{{ route('subjects.index') }}"
             class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('subjects.*') ? 'bg-gold-500 text-navy-950 font-bold' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
             <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,7 +101,6 @@
             Biblioteca
         </div>
 
-        {{-- Livros --}}
         <a href="{{ route('books.index') }}"
             class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('books.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
             <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -113,23 +110,19 @@
             <span x-show="sidebarOpen" class="ml-3">Acervo (Livros)</span>
         </a>
 
+        {{-- SEÇÃO: Configurações --}}
         <div class="pt-4 pb-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-3"
             x-show="sidebarOpen">
             Configurações
         </div>
 
         <a href="{{ route('settings.school') }}"
-            class="flex items-center p-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-gold-500 transition-all
-    {{ request()->routeIs('settings.*') ? 'bg-slate-800 text-gold-500' : '' }}">
-
+            class="flex items-center p-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-gold-500 transition-all {{ request()->routeIs('settings.*') ? 'bg-slate-800 text-gold-500' : '' }}">
             <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-
                 <path stroke-width="2"
                     d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-
                 <path stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-
             <span x-show="sidebarOpen" class="ml-3">
                 Ano Letivo & Bimestre
             </span>
@@ -150,15 +143,11 @@
             @csrf
             <button type="submit"
                 class="w-full flex items-center p-3 rounded-xl transition-all text-slate-500 hover:bg-rose-950/30 hover:text-rose-400 group cursor-pointer">
-
-                {{-- Ícone de Sair Dinâmico (muda de cor no hover) --}}
                 <svg class="w-5 h-5 min-w-[20px] transition-colors group-hover:text-rose-400" fill="none"
                     stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                 </svg>
-
-                {{-- Texto Condicional ao Estado da Sidebar --}}
                 <span x-show="sidebarOpen"
                     class="ml-3 text-xs font-bold uppercase tracking-wider transition-opacity duration-200">
                     Sair do Sistema
