@@ -39,11 +39,13 @@ class DatabaseSeeder extends Seeder
         */
         $subjects = [
             ['name' => 'Português'],
+            ['name' => 'Linguagem'],
             ['name' => 'Artes'],
             ['name' => 'Ciências'],
             ['name' => 'Matemática'],
             ['name' => 'Música'],
-            ['name' => 'Religião'],
+            ['name' => 'Flauta'],
+            ['name' => 'Ensino Religioso'],
             ['name' => 'História'],
             ['name' => 'Geografia'],
             ['name' => 'Educação Física'],
@@ -190,46 +192,79 @@ class DatabaseSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | Criar turmas + alunos + avaliações
+        | Criar turmas + alunos + avaliações (Grade Curricular por Ano)
         |--------------------------------------------------------------------------
         */
-        $classroomIndex = 0;
-        foreach ($studentsByClassroom as $classroomName => $students) {
 
+        // 1. Mapeamento das disciplinas permitidas para cada ano escolar
+        $curriculumByYear = [
+            1 => ['Linguagem', 'Matemática', 'Ciências', 'Estudos Sociais', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física'],
+            2 => ['Linguagem', 'Matemática', 'Ciências', 'Estudos Sociais', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física'],
+            3 => ['Linguagem', 'Matemática', 'Ciências', 'Estudos Sociais', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física', 'Inglês'],
+            4 => ['Português', 'Matemática', 'Ciências', 'Estudos Sociais', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física', 'Inglês'],
+            5 => ['Português', 'Matemática', 'Ciências', 'Estudos Sociais', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física', 'Inglês'],
+            6 => ['Português', 'Matemática', 'Ciências', 'História', 'Geografia', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física', 'Inglês', 'Latim'],
+            7 => ['Português', 'Matemática', 'Ciências', 'História', 'Geografia', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física', 'Inglês', 'Latim', 'Flauta'],
+            8 => ['Português', 'Matemática', 'Ciências', 'História', 'Geografia', 'Ensino Religioso', 'Artes', 'Música', 'Ed. Física', 'Inglês', 'Latim', 'Flauta'],
+        ];
+
+        $classroomIndex = 0;
+
+        foreach ($studentsByClassroom as $classroomName => $students) {
+            // Incrementa o índice da turma
+            $classroomIndex++;
+
+            // Extrai o número do ano com base no índice ou no nome da turma (ex: "1º Ano" -> 1)
+            // Se o nome não tiver número, utiliza o $classroomIndex como fallback
+            preg_match('/\d+/', $classroomName, $matches);
+            $yearNumber = isset($matches[0]) ? (int) $matches[0] : $classroomIndex;
+
+            // Obtém as disciplinas permitidas para este ano específico
+            $allowedSubjects = $curriculumByYear[$yearNumber] ?? $curriculumByYear[1];
+
+            // Criar a turma
             $classroom = Classroom::create([
                 'name' => $classroomName,
                 'year' => 2026,
             ]);
 
-            // Cargas horárias na tabela pivô
+            // 2. Montar cargas horárias na tabela pivô apenas para as disciplinas da grade do ano
             $pivotData = [];
-            foreach ($allSubjects as $subject) {
-                if (in_array($subject->name, ['Português', 'Matemática'])) {
-                    $workload = ($classroomIndex < 5) ? 160 : 200;
-                } elseif (in_array($subject->name, ['História', 'Geografia', 'Ciências'])) {
-                    $workload = 80;
-                } else {
-                    $workload = 40;
-                }
 
-                $pivotData[$subject->id] = ['workload' => $workload];
+            foreach ($allSubjects as $subject) {
+                // Verifica se a disciplina pertence à grade curricular deste ano
+                if (in_array($subject->name, $allowedSubjects)) {
+
+                    // Definição das cargas horárias
+                    if (in_array($subject->name, ['Português', 'Linguagem', 'Matemática'])) {
+                        $workload = ($yearNumber <= 5) ? 160 : 200;
+                    } elseif (in_array($subject->name, ['História', 'Geografia', 'Ciências', 'Estudos Sociais'])) {
+                        $workload = 80;
+                    } else {
+                        $workload = 40; // Artes, Música, Ed. Física, Latim, Flauta, etc.
+                    }
+
+                    $pivotData[$subject->id] = ['workload' => $workload];
+                }
             }
 
+            // Associa as disciplinas com as respetivas cargas horárias na tabela pivô
             $classroom->subjects()->attach($pivotData);
 
-            // Criar e matricular os estudantes
+            // 3. Criar e matricular os estudantes
             foreach ($students as $studentData) {
-
                 $student = Student::create([
                     'name'                => $studentData['name'],
                     'registration_number' => 'TEMP-' . uniqid(),
                     'birth_date'          => $studentData['birth_date'],
                 ]);
 
+                // Atualiza a matrícula com o ID gerado para garantir unicidade
                 $student->update([
                     'registration_number' => $student->id,
                 ]);
 
+                // Vincula o aluno à turma
                 $classroom->students()->attach($student->id, [
                     'status' => 'active',
                 ]);
@@ -240,58 +275,58 @@ class DatabaseSeeder extends Seeder
             | Avaliações por disciplina
             |--------------------------------------------------------------------------
             */
-            foreach ($classroom->subjects as $subject) {
+            // foreach ($classroom->subjects as $subject) {
 
-                $evaluations = [
-                    [
-                        'title' => 'Prova Mensal I',
-                        'weight' => 1.0,
-                        'max_score' => 100,
-                        'bimester' => 1,
-                        'applied_at' => now()->subDays(rand(25, 20)),
-                    ],
-                    [
-                        'title' => 'Trabalho Escrito',
-                        'weight' => 0.5,
-                        'max_score' => 100,
-                        'bimester' => 1,
-                        'applied_at' => now()->subDays(rand(15, 10)),
-                    ],
-                    [
-                        'title' => 'Avaliação Oral',
-                        'weight' => 0.7,
-                        'max_score' => 100,
-                        'bimester' => 1,
-                        'applied_at' => now()->subDays(rand(7, 3)),
-                    ],
-                ];
+            //     $evaluations = [
+            //         [
+            //             'title' => 'Prova Mensal I',
+            //             'weight' => 1.0,
+            //             'max_score' => 100,
+            //             'bimester' => 1,
+            //             'applied_at' => now()->subDays(rand(25, 20)),
+            //         ],
+            //         [
+            //             'title' => 'Trabalho Escrito',
+            //             'weight' => 0.5,
+            //             'max_score' => 100,
+            //             'bimester' => 1,
+            //             'applied_at' => now()->subDays(rand(15, 10)),
+            //         ],
+            //         [
+            //             'title' => 'Avaliação Oral',
+            //             'weight' => 0.7,
+            //             'max_score' => 100,
+            //             'bimester' => 1,
+            //             'applied_at' => now()->subDays(rand(7, 3)),
+            //         ],
+            //     ];
 
-                $numberOfEvaluations = rand(2, 3);
+            //     $numberOfEvaluations = rand(2, 3);
 
-                for ($e = 0; $e < $numberOfEvaluations; $e++) {
-                    $evalData = $evaluations[$e];
+            //     for ($e = 0; $e < $numberOfEvaluations; $e++) {
+            //         $evalData = $evaluations[$e];
 
-                    $evaluation = Evaluation::create([
-                        'classroom_id' => $classroom->id,
-                        'subject_id' => $subject->id,
-                        'title' => $evalData['title'],
-                        'weight' => $evalData['weight'],
-                        'max_score' => $evalData['max_score'],
-                        'bimester' => $evalData['bimester'],
-                        'applied_at' => $evalData['applied_at'],
-                    ]);
+            //         $evaluation = Evaluation::create([
+            //             'classroom_id' => $classroom->id,
+            //             'subject_id' => $subject->id,
+            //             'title' => $evalData['title'],
+            //             'weight' => $evalData['weight'],
+            //             'max_score' => $evalData['max_score'],
+            //             'bimester' => $evalData['bimester'],
+            //             'applied_at' => $evalData['applied_at'],
+            //         ]);
 
-                    foreach ($classroom->students as $student) {
-                        Grade::create([
-                            'student_id' => $student->id,
-                            'evaluation_id' => $evaluation->id,
-                            'score' => rand(55, 100),
-                        ]);
-                    }
-                }
-            }
+            //         foreach ($classroom->students as $student) {
+            //             Grade::create([
+            //                 'student_id' => $student->id,
+            //                 'evaluation_id' => $evaluation->id,
+            //                 'score' => rand(55, 100),
+            //             ]);
+            //         }
+            //     }
+            // }
 
-            $classroomIndex++;
+            // $classroomIndex++;
         }
 
         // Chamada dos seeders complementares
