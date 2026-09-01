@@ -221,10 +221,10 @@
 
                 <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
 
-                    {{-- Botão de Eliminar Avaliação --}}
+                    {{-- Formulário de Exclusão da Avaliação --}}
                     @if (!empty($existingRatings))
                         <form method="POST" action="{{ route('descriptive-evaluation.destroy', $student) }}"
-                            onsubmit="return confirm('Tem certeza que deseja apagar os dados desta avaliação?');">
+                            onsubmit="return confirm('Tem certeza de que deseja apagar todas as respostas desta avaliação?');">
                             @csrf
                             @method('DELETE')
 
