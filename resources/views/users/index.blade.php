@@ -62,9 +62,6 @@
                         <option value="teacher"
                             {{ old('role', $user->role->value ?? ($user->role ?? '')) == 'teacher' ? 'selected' : '' }}>
                             Professor</option>
-                        <option value="secretary"
-                            {{ old('role', $user->role->value ?? ($user->role ?? '')) == 'secretary' ? 'selected' : '' }}>
-                            Secretária</option>
                     </select>
                 </div>
 

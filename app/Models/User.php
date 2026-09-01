@@ -72,7 +72,6 @@ class User extends Authenticatable
         return match (strtolower((string)$value)) {
             'admin'     => 'Administrador',
             'teacher'   => 'Professor',
-            'preceptor' => 'Preceptor',
             default     => ucfirst($value ?? 'Acesso Geral'),
         };
     }
