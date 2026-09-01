@@ -31,7 +31,7 @@
             {{-- Seletor de Bimestre Rápido --}}
             <div
                 class="flex items-center gap-3 bg-[#0b1329] p-3 rounded-2xl border border-slate-800 self-start lg:self-auto shadow-inner">
-                <span class="text-[10px] text-slate-400 uppercase font-black tracking-widest pl-2">Mudar Época:</span>
+                <span class="text-[10px] text-slate-400 uppercase font-black tracking-widest pl-2">Período:</span>
                 <form method="GET" action="{{ url()->current() }}" class="inline-block">
                     <select name="bimester" onchange="this.form.submit()"
                         class="bg-transparent text-xs text-amber-400 font-bold border-none outline-none focus:ring-0 cursor-pointer pr-8 py-0">
