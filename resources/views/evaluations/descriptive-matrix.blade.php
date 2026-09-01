@@ -224,7 +224,7 @@
                     {{-- Botão de Eliminar Avaliação --}}
                     @if (!empty($existingRatings))
                         <form method="POST" action="{{ route('descriptive-evaluation.destroy', $student) }}"
-                            onsubmit="return confirm('Tem a certeza que deseja eliminar todas as respostas desta avaliação? Esta ação não pode ser desfeita.');">
+                            onsubmit="return confirm('Tem certeza que deseja apagar os dados desta avaliação?');">
                             @csrf
                             @method('DELETE')
 
@@ -232,7 +232,7 @@
                             <input type="hidden" name="year" value="{{ $year }}">
 
                             <button type="submit"
-                                class="w-full sm:w-auto bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl transition-all text-xs cursor-pointer">
+                                class="bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl text-xs transition-all cursor-pointer">
                                 Eliminar Avaliação
                             </button>
                         </form>
