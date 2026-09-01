@@ -87,7 +87,7 @@
 
         /* Linha Vertical Extensa */
         .loan-column-divider {
-            border-left: 1.5px solid #000;
+            border-left: 1px solid #000;
             height: 12.6cm;
             /* Compensação da linha horizontal e paddings */
         }
