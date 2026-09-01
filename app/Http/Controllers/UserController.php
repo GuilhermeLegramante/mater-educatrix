@@ -95,4 +95,27 @@ class UserController extends Controller
 
         return redirect()->route('users.index')->with('success', 'Usuário atualizado com sucesso!');
     }
+
+    /**
+     * Remove um usuário do banco de dados e limpa seus vínculos.
+     *
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function destroy(User $user)
+    {
+        // 1. Trava de Segurança: Impede que o usuário logado exclua a si mesmo
+        if (auth()->id() === $user->id) {
+            return redirect()->route('users.index')
+                ->with('error', 'Você não pode excluir o seu próprio usuário logado!');
+        }
+
+        // 2. Remove o usuário do banco de dados
+        // Obs: As tabelas pivô (classroom_user e subject_user) serão limpas automaticamente via 'cascade'.
+        $user->delete();
+
+        // 3. Redireciona de volta para a lista com mensagem de sucesso
+        return redirect()->route('users.index')
+            ->with('success', 'Usuário excluído com sucesso!');
+    }
 }
