@@ -44,6 +44,7 @@
 
         /* Cabeçalho com fonte reduzida e linha horizontal inferior */
         .header-table {
+            margin-top: -1%;
             border-bottom: 0.5px solid #000;
             /* Linha horizontal bem fina */
             padding-bottom: 3px;
@@ -116,7 +117,7 @@
             {{-- Lado Direito: Autor e Estante --}}
             <td style="width: 45%;">
                 <div class="field-label">Autor/Ilustr.:</div>
-                <div class="field-value truncate-text" style="font-size: 8.5px;">
+                <div class="field-value truncate-text" style="font-size: 6px;">
                     {{ $book->author }}
                 </div>
                 <div class="field-label truncate-text">
