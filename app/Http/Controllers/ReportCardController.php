@@ -103,6 +103,6 @@ class ReportCardController extends Controller
         ];
 
         $pdf = Pdf::loadView('pdf.report-card', $data)->setPaper('a4', 'portrait');
-        return $pdf->stream("boletim_{$student->registration_number}.pdf");
+        return $pdf->stream("boletim_{$student->name}_{$classroom->name}.pdf");
     }
 }
