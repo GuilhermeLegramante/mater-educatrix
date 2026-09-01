@@ -28,14 +28,14 @@
             box-sizing: border-box;
         }
 
-        /* Estrutura principal */
-        .card-container {
+        /* Tabelas base */
+        .card-table {
             width: 100%;
             border-collapse: collapse;
             table-layout: fixed;
         }
 
-        .card-container td {
+        .card-table td {
             vertical-align: top;
             padding: 1px 4px;
             word-wrap: break-word;
@@ -74,11 +74,11 @@
 
 <body>
 
-    <table class="card-container">
-        {{-- LINHA SUPERIOR: DADOS DO LIVRO --}}
+    {{-- TABELA 1: DADOS DO LIVRO (Larguras independentes: 50% / 50%) --}}
+    <table class="card-table" style="margin-bottom: 4px;">
         <tr>
-            {{-- Lado Esquerdo: Título e Publicação (70% de largura) --}}
-            <td style="width: 70%; padding-bottom: 8px;">
+            {{-- Lado Esquerdo: Título e Publicação --}}
+            <td style="width: 50%;">
                 <div class="field-label">
                     Título: <span class="title-value">{{ $book->title }}</span>
                 </div>
@@ -91,8 +91,8 @@
                 </div>
             </td>
 
-            {{-- Lado Direito: Autor e Estante (30% de largura) --}}
-            <td style="width: 30%; padding-bottom: 8px;">
+            {{-- Lado Direito: Autor e Estante (Ganha 50% da largura da folha) --}}
+            <td style="width: 50%;">
                 <div class="field-label">
                     Autor/Ilustr.:
                 </div>
@@ -104,15 +104,17 @@
                 </div>
             </td>
         </tr>
+    </table>
 
-        {{-- LINHA INFERIOR: ÁREA PAUTADA COM LINHA VERTICAL --}}
+    {{-- TABELA 2: ÁREA DE EMPRÉSTIMO (Larguras independentes: 70% / 30%) --}}
+    <table class="card-table">
         <tr>
-            {{-- Coluna 1: Nome do Aluno (Expandida para 70%) --}}
+            {{-- Coluna 1: Nome do Aluno (70% da largura) --}}
             <td style="width: 70%;">
                 <div class="loan-header">Nome</div>
             </td>
 
-            {{-- Coluna 2: Devolver até (Ajustada para 30%) --}}
+            {{-- Coluna 2: Devolver até (30% da largura com linha vertical longa) --}}
             <td style="width: 30%;" class="loan-column-divider">
                 <div class="loan-header" style="padding-left: 4px;">Devolver até</div>
             </td>
