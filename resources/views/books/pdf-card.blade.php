@@ -44,7 +44,7 @@
 
         /* Cabeçalho com fonte reduzida e linha horizontal inferior */
         .header-table {
-            margin-top: -1%;
+            margin-top: -3%;
             border-bottom: 0.5px solid #000;
             /* Linha horizontal bem fina */
             padding-bottom: 3px;
