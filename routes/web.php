@@ -71,12 +71,20 @@ Route::middleware('auth')->group(function () {
         Route::resource('preceptory', PreceptoryController::class);
     });
 
-    // Pareceres Descritivos (Avaliações até o 4° ano)
-    Route::get('students/{student}/descriptive-evaluation', [DescriptiveEvaluationController::class, 'edit'])->name('descriptive-evaluation.edit');
-    Route::put('students/{student}/descriptive-evaluation', [DescriptiveEvaluationController::class, 'update'])->name('descriptive-evaluation.update');
-    // Rota para excluir os lançamentos do aluno em um determinado ano/bimestre
-    Route::delete('/students/{student}/descriptive-evaluations', [DescriptiveEvaluationController::class, 'destroy'])
-        ->name('descriptive-evaluation.destroy');
+    // Agrupamento de rotas para a Avaliação Descritiva
+    Route::prefix('students/{student}')->group(function () {
+        // Editar / Ver formulário
+        Route::get('/descriptive-evaluation/edit', [DescriptiveEvaluationController::class, 'edit'])
+            ->name('descriptive-evaluation.edit');
+
+        // Salvar / Atualizar respostas
+        Route::put('/descriptive-evaluation', [DescriptiveEvaluationController::class, 'update'])
+            ->name('descriptive-evaluation.update');
+
+        // Excluir respostas do bimestre
+        Route::delete('/descriptive-evaluation', [DescriptiveEvaluationController::class, 'destroy'])
+            ->name('descriptive-evaluation.destroy');
+    });
 
     Route::get('/classrooms/{classroom}/students/{student}/report-card-pdf', [ReportCardController::class, 'generatePDF'])
         ->name('students.report-card.pdf');
