@@ -8,12 +8,12 @@
         /* Configuração de página 10x15cm */
         @page {
             margin: 0;
-            size: 10cm 15cm;
+            size: 9cm 15cm;
         }
 
         html,
         body {
-            width: 10cm;
+            width: 9cm;
             height: 15cm;
             margin: 0;
             padding: 0;
@@ -52,14 +52,14 @@
 
         /* Tipografia Reduzida do Cabeçalho */
         .field-label {
-            font-size: 8px;
+            font-size: 6px;
             /* Fonte reduzida para rótulos */
             font-weight: normal;
             line-height: 1.05;
         }
 
         .field-value {
-            font-size: 8.5px;
+            font-size: 6px;
             /* Fonte reduzida para valores */
             font-weight: bold;
         }
@@ -80,7 +80,7 @@
 
         /* Área de Empréstimo */
         .loan-header {
-            font-size: 8px;
+            font-size: 6px;
             font-weight: normal;
             padding-top: 1px;
         }
