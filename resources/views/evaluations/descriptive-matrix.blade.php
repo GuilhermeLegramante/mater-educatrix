@@ -208,6 +208,7 @@
 
             {{-- BOTÕES DE AÇÃO NA BASE DA PÁGINA --}}
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
+
                 {{-- Link de Voltar --}}
                 <a href="{{ route('students.show', [$student, 'bimester' => $bimester]) }}"
                     class="px-6 py-3.5 rounded-xl border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all text-xs uppercase tracking-widest font-black inline-flex items-center gap-2">
@@ -218,11 +219,31 @@
                     Voltar ao Perfil
                 </a>
 
-                {{-- Botão Principal de Submissão --}}
-                <button type="submit"
-                    class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 text-xs active:scale-[0.98] cursor-pointer">
-                    Salvar Avaliação Descritiva
-                </button>
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+
+                    {{-- Botão de Eliminar Avaliação --}}
+                    @if (!empty($existingRatings))
+                        <form method="POST" action="{{ route('descriptive-evaluation.destroy', $student) }}"
+                            onsubmit="return confirm('Tem a certeza que deseja eliminar todas as respostas desta avaliação? Esta ação não pode ser desfeita.');">
+                            @csrf
+                            @method('DELETE')
+
+                            <input type="hidden" name="bimester" value="{{ $bimester }}">
+                            <input type="hidden" name="year" value="{{ $year }}">
+
+                            <button type="submit"
+                                class="w-full sm:w-auto bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl transition-all text-xs cursor-pointer">
+                                Eliminar Avaliação
+                            </button>
+                        </form>
+                    @endif
+
+                    {{-- Botão Principal de Submissão --}}
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 text-xs active:scale-[0.98] cursor-pointer">
+                        Salvar Avaliação Descritiva
+                    </button>
+                </div>
             </div>
 
         </form>

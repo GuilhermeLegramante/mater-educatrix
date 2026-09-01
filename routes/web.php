@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
     // Pareceres Descritivos (Avaliações até o 4° ano)
     Route::get('students/{student}/descriptive-evaluation', [DescriptiveEvaluationController::class, 'edit'])->name('descriptive-evaluation.edit');
     Route::put('students/{student}/descriptive-evaluation', [DescriptiveEvaluationController::class, 'update'])->name('descriptive-evaluation.update');
+    Route::delete('/students/{student}/descriptive-evaluations', [DescriptiveEvaluationController::class, 'destroy'])
+        ->name('descriptive-evaluation.destroy');
 
     Route::get('/classrooms/{classroom}/students/{student}/report-card-pdf', [ReportCardController::class, 'generatePDF'])
         ->name('students.report-card.pdf');

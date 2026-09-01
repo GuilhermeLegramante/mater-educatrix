@@ -114,4 +114,39 @@ class DescriptiveEvaluationController extends Controller
                 ->withErrors(['error' => 'Ocorreu um erro ao salvar as respostas: ' . $e->getMessage()]);
         }
     }
+
+    /**
+     * Remove todos os lançamentos da avaliação descritiva do aluno no bimestre e ano selecionados.
+     */
+    public function destroy(Request $request, Student $student)
+    {
+        // 1. Validação dos parâmetros recebidos
+        $validated = $request->validate([
+            'bimester' => 'required|integer|between:1,4',
+            'year'     => 'required|integer',
+        ]);
+
+        $bimester = $validated['bimester'];
+        $year = $validated['year'];
+
+        try {
+            // 2. Apaga todos os registos do aluno para aquele bimestre e ano
+            DescriptiveRating::where('student_id', $student->id)
+                ->where('bimester', $bimester)
+                ->where('year', $year)
+                ->delete();
+
+            return redirect()
+                ->route('students.show', [$student, 'bimester' => $bimester])
+                ->with('success', 'Avaliação descritiva eliminada com sucesso!');
+        } catch (\Exception $e) {
+            if (config('app.debug')) {
+                dd($e->getMessage(), $e->getTraceAsString());
+            }
+
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Ocorreu um erro ao eliminar a avaliação: ' . $e->getMessage()]);
+        }
+    }
 }
