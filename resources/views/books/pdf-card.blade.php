@@ -5,9 +5,10 @@
     <meta charset="UTF-8">
     <title>Ficha do Livro - {{ $book->title }}</title>
     <style>
-        /* Configuração para impressão em folha 10x15cm */
+        /* Configuração de página para 10x15cm sem margens externas */
         @page {
             margin: 0px;
+            size: 10cm 15cm;
         }
 
         html,
@@ -21,33 +22,25 @@
         }
 
         body {
-            padding: 4px 6px;
-            /* Margem interna reduzida para perfeito ajuste */
+            padding: 6px 8px;
             box-sizing: border-box;
         }
 
-        /* Estrutura principal da ficha */
-        .card-table {
+        /* Estrutura principal com ocupação de altura total */
+        .card-container {
             width: 100%;
+            height: 98%;
             border-collapse: collapse;
             table-layout: fixed;
-            page-break-inside: avoid !important;
-            page-break-after: avoid !important;
         }
 
-        .card-table td {
+        .card-container td {
             vertical-align: top;
             padding: 1px 4px;
             word-wrap: break-word;
         }
 
-        /* Linha divisória horizontal entre o cabeçalho e o corpo da ficha */
-        .header-divider {
-            border-bottom: 2px solid #000;
-            padding-bottom: 3px !important;
-        }
-
-        /* Formatação de Fontes Compactas */
+        /* Formatação de Tipografia */
         .field-label {
             font-size: 9.5px;
             font-weight: normal;
@@ -64,14 +57,13 @@
             text-decoration: underline;
         }
 
-        /* Seção de Empréstimo */
         .loan-header {
             font-size: 9.5px;
             font-weight: normal;
             padding-top: 2px;
         }
 
-        /* Coluna 'Devolver até' com linha vertical divisor de coluna */
+        /* Linha Vertical Extensa para a Coluna 'Devolver até' */
         .border-left-divider {
             border-left: 1.5px solid #000;
         }
@@ -80,11 +72,11 @@
 
 <body>
 
-    <table class="card-table">
-        {{-- LINHA SUPERIOR: CABEÇALHO DO LIVRO --}}
-        <tr>
+    <table class="card-container">
+        {{-- LINHA SUPERIOR: DADOS DO LIVRO (Sem borda horizontal inferior) --}}
+        <tr style="height: 45px;">
             {{-- Lado Esquerdo: Título e Publicação --}}
-            <td style="width: 55%;" class="header-divider">
+            <td style="width: 58%;">
                 <div class="field-label">
                     Título: <span class="title-value">{{ $book->title }}</span>
                 </div>
@@ -97,8 +89,8 @@
                 </div>
             </td>
 
-            {{-- Lado Direito: Autor e Estante/Tipo --}}
-            <td style="width: 45%;" class="header-divider">
+            {{-- Lado Direito: Autor e Estante --}}
+            <td style="width: 42%;">
                 <div class="field-label">
                     Autor/Ilustr.:
                 </div>
@@ -111,16 +103,16 @@
             </td>
         </tr>
 
-        {{-- LINHA INFERIOR: TABELA DE EMPRÉSTIMO (2 COLUNAS) --}}
+        {{-- LINHA INFERIOR: CABEÇALHOS E LINHA VERTICAL ATÉ O FINAL --}}
         <tr>
             {{-- Coluna 1: Nome do Aluno --}}
-            <td style="width: 72%;">
+            <td style="width: 58%; height: 100%;">
                 <div class="loan-header">Nome</div>
             </td>
 
-            {{-- Coluna 2: Devolver até (com borda vertical à esquerda) --}}
-            <td style="width: 28%;" class="border-left-divider">
-                <div class="loan-header">Devolver até</div>
+            {{-- Coluna 2: Devolver até (Com linha vertical contínua até o rodapé) --}}
+            <td style="width: 42%; height: 100%;" class="border-left-divider">
+                <div class="loan-header" style="padding-left: 4px;">Devolver até</div>
             </td>
         </tr>
     </table>
