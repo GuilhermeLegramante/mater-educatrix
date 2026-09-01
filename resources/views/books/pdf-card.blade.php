@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Ficha do Livro - {{ $book->title }}</title>
     <style>
-        /* Configuração estrita de página 10x15cm sem margens externas */
+        /* Configuração estrita de página 10x15cm */
         @page {
             margin: 0;
             size: 10cm 15cm;
@@ -21,7 +21,6 @@
             font-family: 'Times New Roman', Times, serif;
             color: #000;
             overflow: hidden;
-            /* Evita a criação de páginas extras por transbordamento */
         }
 
         body {
@@ -29,11 +28,9 @@
             box-sizing: border-box;
         }
 
-        /* Estrutura principal com altura delimitada */
+        /* Estrutura principal */
         .card-container {
             width: 100%;
-            height: 14.2cm;
-            /* Define a altura máxima para caber perfeitamente na página */
             border-collapse: collapse;
             table-layout: fixed;
         }
@@ -44,7 +41,7 @@
             word-wrap: break-word;
         }
 
-        /* Tipografia compacta */
+        /* Tipografia */
         .field-label {
             font-size: 9.5px;
             font-weight: normal;
@@ -67,9 +64,11 @@
             padding-top: 2px;
         }
 
-        /* Linha Vertical Extensa sem estourar a página */
-        .border-left-divider {
+        /* Estilo da célula que força a linha vertical até o final */
+        .loan-column-divider {
             border-left: 1.5px solid #000;
+            height: 13.2cm;
+            /* Define a altura fixa da borda vertical */
         }
     </style>
 </head>
@@ -77,10 +76,10 @@
 <body>
 
     <table class="card-container">
-        {{-- LINHA SUPERIOR: CABEÇALHO DO LIVRO --}}
-        <tr style="height: 1.2cm;">
+        {{-- LINHA SUPERIOR: DADOS DO LIVRO --}}
+        <tr>
             {{-- Lado Esquerdo: Título e Publicação --}}
-            <td style="width: 58%;">
+            <td style="width: 58%; padding-bottom: 8px;">
                 <div class="field-label">
                     Título: <span class="title-value">{{ $book->title }}</span>
                 </div>
@@ -94,7 +93,7 @@
             </td>
 
             {{-- Lado Direito: Autor e Estante --}}
-            <td style="width: 42%;">
+            <td style="width: 42%; padding-bottom: 8px;">
                 <div class="field-label">
                     Autor/Ilustr.:
                 </div>
@@ -114,8 +113,8 @@
                 <div class="loan-header">Nome</div>
             </td>
 
-            {{-- Coluna 2: Devolver até (Com a linha vertical estendida) --}}
-            <td style="width: 42%;" class="border-left-divider">
+            {{-- Coluna 2: Devolver até (A borda vertical se estende por 13.2cm) --}}
+            <td style="width: 42%;" class="loan-column-divider">
                 <div class="loan-header" style="padding-left: 4px;">Devolver até</div>
             </td>
         </tr>
