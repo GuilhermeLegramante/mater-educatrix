@@ -26,66 +26,91 @@ class Book extends Model
 
     /**
      * Scope para busca avançada no acervo.
+     *
+     * A busca ignora:
+     * - Maiúsculas/minúsculas
+     * - Acentos
+     * - Hífens
+     * - Espaços
+     * - Pontuação
      */
     public function scopeFilter($query, array $filters)
     {
         $query->when($filters['search'] ?? null, function ($q, $search) {
 
-            // Normaliza o texto pesquisado
+            // Normaliza o termo pesquisado
             $search = mb_strtolower(trim($search), 'UTF-8');
 
             // Remove acentos
             $search = iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $search);
 
-            // Todos os tipos de hífen viram espaço
-            $search = str_replace(['-', '–', '—'], ' ', $search);
+            // Remove tudo que não for letra ou número
+            $search = preg_replace('/[^a-z0-9]/', '', $search);
 
-            // Remove caracteres especiais
-            $search = preg_replace('/[^a-z0-9\s]/', ' ', $search);
+            // Só executa a busca se ainda houver conteúdo
+            if (empty($search)) {
+                return;
+            }
 
-            // Remove espaços duplicados
-            $search = preg_replace('/\s+/', ' ', trim($search));
+            $q->where(function ($sub) use ($search) {
 
-            // Divide a pesquisa em palavras
-            $terms = explode(' ', $search);
-
-            $q->where(function ($sub) use ($terms) {
-
-                foreach ($terms as $term) {
-
-                    if (empty($term)) {
-                        continue;
-                    }
+                foreach (
+                    [
+                        'title',
+                        'author',
+                        'isbn',
+                        'publisher',
+                        'type',
+                        'discipline',
+                    ] as $field
+                ) {
 
                     /*
-                 * Cada palavra pesquisada precisa aparecer em pelo menos
-                 * um dos campos.
+                 * Normaliza o campo do banco:
+                 *
+                 * LOWER()          -> minúsculas
+                 * REPLACE()        -> remove espaços
+                 * REPLACE()        -> remove hífens
+                 * REPLACE()        -> remove pontuação
+                 *
+                 * A collation utf8mb4_general_ci faz a comparação
+                 * ignorando diferenças de maiúsculas/minúsculas
+                 * e acentuação.
                  */
-                    $sub->where(function ($wordQuery) use ($term) {
+                    $normalizedField = "
+                    LOWER(
+                        REPLACE(
+                            REPLACE(
+                                REPLACE(
+                                    REPLACE(
+                                        REPLACE(
+                                            REPLACE(
+                                                REPLACE(
+                                                    REPLACE(
+                                                        {$field},
+                                                        ' ', ''
+                                                    ),
+                                                    '-', ''
+                                                ),
+                                                '–', ''
+                                            ),
+                                            '—', ''
+                                        ),
+                                        '.', ''
+                                    ),
+                                    ',', ''
+                                ),
+                                ':', ''
+                            ),
+                            ';', ''
+                        )
+                    )
+                ";
 
-                        $like = "%{$term}%";
-
-                        foreach (
-                            [
-                                'title',
-                                'author',
-                                'isbn',
-                                'publisher',
-                                'type',
-                                'discipline',
-                            ] as $field
-                        ) {
-
-                            $wordQuery->orWhereRaw(
-                                "REPLACE(
-                                LOWER({$field}),
-                                '-',
-                                ' '
-                            ) COLLATE utf8mb4_general_ci LIKE ?",
-                                [$like]
-                            );
-                        }
-                    });
+                    $sub->orWhereRaw(
+                        "{$normalizedField} COLLATE utf8mb4_general_ci LIKE ?",
+                        ["%{$search}%"]
+                    );
                 }
             });
         });
