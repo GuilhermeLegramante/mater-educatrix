@@ -18,7 +18,7 @@ class Classroom extends Model
     public function subjects()
     {
         return $this->belongsToMany(Subject::class, 'classroom_subject')
-            ->withPivot(['workload', 'user_id']) // Permite acessar $subject->pivot->workload
+            ->withPivot('workload') // Permite acessar $subject->pivot->workload
             ->withTimestamps();
     }
 
