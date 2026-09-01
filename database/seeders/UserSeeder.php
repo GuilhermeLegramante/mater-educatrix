@@ -308,7 +308,7 @@ class UserSeeder extends Seeder
                 foreach ($teacherIds as $teacherId) {
                     // Exemplo para tabela pivot de atrelamento:
                     $classroom->subjects()->updateExistingPivot($subject->id, [
-                        'teacher_id' => $teacherId,
+                        'user_id' => $teacherId,
                     ]);
                 }
             }
