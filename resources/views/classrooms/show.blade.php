@@ -43,19 +43,35 @@
                         </div>
                     </div>
 
-                    <table class="w-full text-left">
+                    <table class="w-full text-left border-collapse">
                         <thead class="bg-slate-50 text-slate-400 text-[10px] uppercase font-black">
                             <tr>
-                                <th class="px-8 py-4">Aluno</th>
+                                <th class="px-4 py-4 w-10 text-center"></th> {{-- Coluna para o botão de expansão --}}
+                                <th class="px-6 py-4">Aluno</th>
                                 <th class="px-8 py-4 text-center">Status</th>
                                 <th class="px-8 py-4 text-right">Ações</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-50">
                             @foreach ($classroom->students as $student)
+                                {{-- LINHA PRINCIPAL DO ALUNO --}}
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
-                                    <!-- Coluna: Nome e Matrícula do Aluno -->
-                                    <td class="px-8 py-4">
+                                    <!-- Botão de Expansão (Seta) -->
+                                    <td class="px-4 py-4 text-center">
+                                        <button type="button" onclick="toggleStudentGrades({{ $student->id }})"
+                                            class="p-1.5 rounded-lg text-slate-400 hover:text-navy-900 hover:bg-slate-100 transition-all focus:outline-none"
+                                            title="Ver conceitos por disciplina">
+                                            <svg id="icon-student-{{ $student->id }}"
+                                                class="w-4 h-4 transform transition-transform duration-200" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 9l-7 7-7-7" />
+                                            </svg>
+                                        </button>
+                                    </td>
+
+                                    <!-- Coluna: Nome e Matrícula -->
+                                    <td class="px-6 py-4">
                                         <span class="font-bold text-navy-900 group-hover:text-gold-500 transition-colors">
                                             {{ $student->name }}
                                         </span>
@@ -72,10 +88,9 @@
                                         </span>
                                     </td>
 
-                                    <!-- Coluna: Ações (Botões Lado a Lado) -->
+                                    <!-- Coluna: Ações -->
                                     <td class="px-8 py-4 text-right whitespace-nowrap">
                                         <div class="flex items-center justify-end gap-2">
-                                            <!-- Botão 1: Detalhes -->
                                             <a href="{{ route('students.show', $student) }}"
                                                 class="inline-flex items-center gap-1.5 px-3 py-2 bg-slate-50 text-navy-900 hover:bg-gold-50 rounded-xl transition-all border border-slate-200 font-bold text-[10px] uppercase tracking-widest group-hover:border-gold-300">
                                                 Detalhes
@@ -86,7 +101,6 @@
                                                 </svg>
                                             </a>
 
-                                            <!-- Botão 2: Desmatricular -->
                                             <button type="button"
                                                 onclick="confirmUnenroll('{{ route('classrooms.unenroll', [$classroom, $student]) }}', '{{ $student->name }}')"
                                                 class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest"
@@ -100,9 +114,102 @@
                                         </div>
                                     </td>
                                 </tr>
+
+                                {{-- LINHA EXPANSÍVEL: RESUMO DE CONCEITOS DO ALUNO --}}
+                                <tr id="grades-row-{{ $student->id }}"
+                                    class="hidden bg-slate-50/80 border-b border-slate-200/60">
+                                    <td colspan="4" class="px-6 py-4">
+                                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+                                            <div class="flex justify-between items-center pb-2 border-b border-slate-100">
+                                                <h4
+                                                    class="text-xs font-bold uppercase tracking-wider text-navy-900 flex items-center gap-2">
+                                                    <svg class="w-4 h-4 text-gold-500" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                                    </svg>
+                                                    Resumo de Conceitos • {{ $settings?->active_bimester ?? 1 }}º Bimestre
+                                                </h4>
+                                            </div>
+
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                {{-- DENTRO DO LOOP DE DISCIPLINAS NO BLOCO EXPANSÍVEL --}}
+                                                @forelse ($classroom->subjects as $subject)
+                                                    @php
+                                                        // 1. Conceito prévio/calculado pelas avaliações do aluno no bimestre selecionado
+                                                        $automaticConcept = $student->getConcept(
+                                                            $classroom->id,
+                                                            $subject->id,
+                                                            $selectedBimester,
+                                                        );
+
+                                                        // 2. Resultado gravado/ajustado pelo professor no BimesterResult
+                                                        $bimesterResult = $student->bimesterResults
+                                                            ->where('classroom_id', $classroom->id)
+                                                            ->where('subject_id', $subject->id)
+                                                            ->where('bimester', $selectedBimester)
+                                                            ->first();
+
+                                                        $finalConcept = $bimesterResult?->concept ?? $automaticConcept;
+
+                                                        // 3. Identifica se o professor alterou o conceito manualmente
+                                                        $isOverridden =
+                                                            $bimesterResult &&
+                                                            $bimesterResult->concept &&
+                                                            $bimesterResult->concept !== $automaticConcept;
+                                                    @endphp
+
+                                                    <div
+                                                        class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
+                                                        <span class="text-xs font-bold text-navy-900 uppercase">
+                                                            {{ $subject->name }}
+                                                        </span>
+
+                                                        <div class="flex items-center gap-3">
+                                                            {{-- Conceito Prévio --}}
+                                                            <div class="text-right">
+                                                                <span
+                                                                    class="block text-[9px] text-slate-400 font-black uppercase">Prévio</span>
+                                                                <span class="text-xs font-mono font-bold text-slate-500">
+                                                                    {{ $automaticConcept }}
+                                                                </span>
+                                                            </div>
+
+                                                            <div class="text-slate-300">→</div>
+
+                                                            {{-- Conceito Final --}}
+                                                            <div class="text-right">
+                                                                <span
+                                                                    class="block text-[9px] text-slate-400 font-black uppercase">Final</span>
+                                                                <span class="text-xs font-mono font-bold text-navy-900">
+                                                                    {{ $finalConcept }}
+                                                                </span>
+                                                            </div>
+
+                                                            {{-- Tag de Alteração Manual --}}
+                                                            @if ($isOverridden)
+                                                                <span
+                                                                    class="ml-1 px-2 py-0.5 rounded-md text-[8px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-200"
+                                                                    title="Conceito ajustado pelo professor">
+                                                                    Alterado
+                                                                </span>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @empty
+                                                    <p class="text-xs text-slate-400 italic col-span-2 py-2">Nenhuma
+                                                        disciplina cadastrada para esta turma.</p>
+                                                @endforelse
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
                             @endforeach
                         </tbody>
                     </table>
+
+
                 </div>
             </div>
 
@@ -134,11 +241,13 @@
                                     </span>
                                 </li>
                             @empty
-                                <li class="text-xs text-slate-400 italic py-2">Nenhuma disciplina na grade desta turma.</li>
+                                <li class="text-xs text-slate-400 italic py-2">Nenhuma disciplina na grade desta turma.
+                                </li>
                             @endforelse
                         </ul>
                     </div>
-                    <div class="absolute -right-4 -bottom-4 opacity-5 text-8xl font-classic pointer-events-none">MATER</div>
+                    <div class="absolute -right-4 -bottom-4 opacity-5 text-8xl font-classic pointer-events-none">MATER
+                    </div>
                 </div>
             </div>
         </div>
@@ -206,3 +315,16 @@
         </div>
     </div>
 @endsection
+
+{{-- JS para Expandir/Recolher --}}
+<script>
+    function toggleStudentGrades(studentId) {
+        const row = document.getElementById(`grades-row-${studentId}`);
+        const icon = document.getElementById(`icon-student-${studentId}`);
+
+        if (row) {
+            row.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+    }
+</script>

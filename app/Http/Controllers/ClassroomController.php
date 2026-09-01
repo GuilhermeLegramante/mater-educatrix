@@ -47,34 +47,38 @@ class ClassroomController extends Controller
     }
 
     /**
-     * Exibe os detalhes de uma turma específica
+     * Exibe os detalhes de uma turma específica com o resumo de conceitos e filtros
      */
     public function show(Request $request, $id)
     {
-        // 1. Busca a turma com os alunos e as disciplinas já vinculadas a ela
-        $classroom = Classroom::with(['students', 'subjects'])->findOrFail($id);
-
-        // 2. BUSCA TODAS AS DISCIPLINAS (Isso corrige o erro da variável indefinida!)
-        $allSubjects = Subject::orderBy('name')->get();
-
-        // 3. Busca as configurações para saber o bimestre ativo (ajuste conforme seu projeto)
+        // 1. Busca as configurações globais para identificar o bimestre ativo
         $settings = SchoolSetting::first();
 
-        // 4. Captura o bimestre selecionado no filtro (padrão é o ativo ou 1)
-        $selectedBimester = $request->get('bimester', $settings?->active_bimester ?? 1);
+        // 2. Captura o bimestre selecionado no filtro da URL (padrão é o ativo ou 1)
+        $selectedBimester = (int) $request->get('bimester', $settings?->active_bimester ?? 1);
 
-        $classrooms = Classroom::with(['students', 'subjects'])->get(); // Para o modal de matrícula, se necessário
+        // 3. Busca a turma carregando os alunos com seus resultados e notas (Eager Loading)
+        $classroom = Classroom::with([
+            'subjects',
+            'students.bimesterResults',
+            'students.grades.evaluation'
+        ])->findOrFail($id);
 
-        $students = Student::orderBy('name')->get(); // Para o modal de matrícula
+        // 4. Busca todas as disciplinas ordenadas para o modal de grade curricular
+        $allSubjects = Subject::orderBy('name')->get();
 
-        // 5. Retorna a view passando TODAS as variáveis necessárias pelo compact
+        // 5. Dados de apoio para os modais de matrícula e transferência
+        $classrooms = Classroom::orderBy('name')->get();
+        $students   = Student::orderBy('name')->get();
+
+        // 6. Retorna a view com todas as variáveis necessárias
         return view('classrooms.show', compact(
             'classroom',
-            'allSubjects', // <-- ENVIANDO PARA A VIEW AQUI
+            'allSubjects',
             'settings',
             'selectedBimester',
-            'classrooms', // Para o modal de matrícula
-            'students'    // Para o modal de matrícula
+            'classrooms',
+            'students'
         ));
     }
 
