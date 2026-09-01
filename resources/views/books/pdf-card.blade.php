@@ -53,14 +53,14 @@
 
         /* Tipografia Reduzida do Cabeçalho */
         .field-label {
-            font-size: 6px;
+            font-size: 7px;
             /* Fonte reduzida para rótulos */
             font-weight: normal;
             line-height: 1.05;
         }
 
         .field-value {
-            font-size: 6px;
+            font-size: 7px;
             /* Fonte reduzida para valores */
             font-weight: bold;
         }
@@ -81,7 +81,7 @@
 
         /* Área de Empréstimo */
         .loan-header {
-            font-size: 6px;
+            font-size: 7px;
             font-weight: normal;
             padding-top: 1px;
         }
@@ -117,7 +117,7 @@
             {{-- Lado Direito: Autor e Estante --}}
             <td style="width: 45%;">
                 <div class="field-label">Autor/Ilustr.:</div>
-                <div class="field-value truncate-text" style="font-size: 6px;">
+                <div class="field-value truncate-text" style="font-size: 7px;">
                     {{ $book->author }}
                 </div>
                 <div class="field-label truncate-text">
