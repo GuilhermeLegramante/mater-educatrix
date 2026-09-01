@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\SchoolDay;
@@ -13,13 +14,25 @@ use Carbon\Carbon;
 class AttendanceController extends Controller
 {
     /**
-     * Tela Inicial do Diário: Seleção de Turmas e Disciplinas
+     * Tela Inicial do Diário: Seleção de Turmas e Disciplinas filtradas por perfil.
      */
     public function dashboard()
     {
-        // Carrega as turmas e também as disciplinas (subjects)
-        $classrooms = Classroom::orderBy('name')->get();
-        $subjects = Subject::orderBy('name')->get();
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // Verifica se o usuário logado possui a função de professor
+        $isTeacher = ($user->role === UserRole::TEACHER || $user->role === 'teacher');
+
+        if ($isTeacher) {
+            // Traz apenas as turmas e disciplinas vinculadas ao professor, ordenadas por nome
+            $classrooms = $user->classrooms()->orderBy('name')->get();
+            $subjects   = $user->subjects()->orderBy('name')->get();
+        } else {
+            // Traz todas as turmas e disciplinas cadastradas para o perfil administrador
+            $classrooms = Classroom::orderBy('name')->get();
+            $subjects   = Subject::orderBy('name')->get();
+        }
 
         return view('attendance.dashboard', compact('classrooms', 'subjects'));
     }

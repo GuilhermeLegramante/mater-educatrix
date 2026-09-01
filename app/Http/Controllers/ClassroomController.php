@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\Classroom;
 use App\Models\SchoolSetting;
 use App\Models\Subject;
@@ -11,14 +12,35 @@ use Illuminate\Http\Request;
 class ClassroomController extends Controller
 {
     /**
-     * Lista todas as turmas (Onde o professor começa)
+     * Lista as turmas e disciplinas de acordo com as permissões do usuário logado.
      */
     public function index()
     {
-        $classrooms = Classroom::withCount('students')->get();
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
 
-        $allSubjects = Subject::all();
+        // Checa se o perfil atual é de professor
+        $isTeacher = ($user->role === UserRole::TEACHER || $user->role === 'teacher');
 
+        // 1. Filtragem de Turmas
+        if ($isTeacher) {
+            // Traz apenas as turmas vinculadas ao professor
+            $classrooms = $user->classrooms()->withCount('students')->get();
+        } else {
+            // Traz todas as turmas para admin ou acessos gerais
+            $classrooms = Classroom::withCount('students')->get();
+        }
+
+        // 2. Filtragem de Disciplinas do Usuário
+        if ($isTeacher) {
+            // Traz apenas as disciplinas vinculadas a este professor na tabela pivô
+            $allSubjects = $user->subjects()->get();
+        } else {
+            // Traz todas as disciplinas cadastradas no sistema
+            $allSubjects = Subject::all();
+        }
+
+        // 3. Configurações Globais
         $settings = SchoolSetting::first();
 
         return view('classrooms.index', compact('classrooms', 'allSubjects', 'settings'));
