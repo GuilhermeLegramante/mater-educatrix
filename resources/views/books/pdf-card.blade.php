@@ -5,20 +5,23 @@
     <meta charset="UTF-8">
     <title>Ficha do Livro - {{ $book->title }}</title>
     <style>
-        /* Configuração de página para 10x15cm sem margens externas */
+        /* Configuração estrita de página 10x15cm sem margens externas */
         @page {
-            margin: 0px;
+            margin: 0;
             size: 10cm 15cm;
         }
 
         html,
         body {
-            height: 100%;
+            width: 10cm;
+            height: 15cm;
             margin: 0;
             padding: 0;
             background-color: #fff;
             font-family: 'Times New Roman', Times, serif;
             color: #000;
+            overflow: hidden;
+            /* Evita a criação de páginas extras por transbordamento */
         }
 
         body {
@@ -26,10 +29,11 @@
             box-sizing: border-box;
         }
 
-        /* Estrutura principal com ocupação de altura total */
+        /* Estrutura principal com altura delimitada */
         .card-container {
             width: 100%;
-            height: 98%;
+            height: 14.2cm;
+            /* Define a altura máxima para caber perfeitamente na página */
             border-collapse: collapse;
             table-layout: fixed;
         }
@@ -40,7 +44,7 @@
             word-wrap: break-word;
         }
 
-        /* Formatação de Tipografia */
+        /* Tipografia compacta */
         .field-label {
             font-size: 9.5px;
             font-weight: normal;
@@ -63,7 +67,7 @@
             padding-top: 2px;
         }
 
-        /* Linha Vertical Extensa para a Coluna 'Devolver até' */
+        /* Linha Vertical Extensa sem estourar a página */
         .border-left-divider {
             border-left: 1.5px solid #000;
         }
@@ -73,8 +77,8 @@
 <body>
 
     <table class="card-container">
-        {{-- LINHA SUPERIOR: DADOS DO LIVRO (Sem borda horizontal inferior) --}}
-        <tr style="height: 45px;">
+        {{-- LINHA SUPERIOR: CABEÇALHO DO LIVRO --}}
+        <tr style="height: 1.2cm;">
             {{-- Lado Esquerdo: Título e Publicação --}}
             <td style="width: 58%;">
                 <div class="field-label">
@@ -103,15 +107,15 @@
             </td>
         </tr>
 
-        {{-- LINHA INFERIOR: CABEÇALHOS E LINHA VERTICAL ATÉ O FINAL --}}
+        {{-- LINHA INFERIOR: ÁREA PAUTADA COM LINHA VERTICAL --}}
         <tr>
             {{-- Coluna 1: Nome do Aluno --}}
-            <td style="width: 58%; height: 100%;">
+            <td style="width: 58%;">
                 <div class="loan-header">Nome</div>
             </td>
 
-            {{-- Coluna 2: Devolver até (Com linha vertical contínua até o rodapé) --}}
-            <td style="width: 42%; height: 100%;" class="border-left-divider">
+            {{-- Coluna 2: Devolver até (Com a linha vertical estendida) --}}
+            <td style="width: 42%;" class="border-left-divider">
                 <div class="loan-header" style="padding-left: 4px;">Devolver até</div>
             </td>
         </tr>
