@@ -64,11 +64,10 @@
             padding-top: 2px;
         }
 
-        /* Estilo da célula que força a linha vertical até o final */
+        /* Estilo da célula com a linha vertical estendida */
         .loan-column-divider {
             border-left: 1.5px solid #000;
             height: 13.2cm;
-            /* Define a altura fixa da borda vertical */
         }
     </style>
 </head>
@@ -78,8 +77,8 @@
     <table class="card-container">
         {{-- LINHA SUPERIOR: DADOS DO LIVRO --}}
         <tr>
-            {{-- Lado Esquerdo: Título e Publicação --}}
-            <td style="width: 58%; padding-bottom: 8px;">
+            {{-- Lado Esquerdo: Título e Publicação (70% de largura) --}}
+            <td style="width: 70%; padding-bottom: 8px;">
                 <div class="field-label">
                     Título: <span class="title-value">{{ $book->title }}</span>
                 </div>
@@ -92,8 +91,8 @@
                 </div>
             </td>
 
-            {{-- Lado Direito: Autor e Estante --}}
-            <td style="width: 42%; padding-bottom: 8px;">
+            {{-- Lado Direito: Autor e Estante (30% de largura) --}}
+            <td style="width: 30%; padding-bottom: 8px;">
                 <div class="field-label">
                     Autor/Ilustr.:
                 </div>
@@ -108,13 +107,13 @@
 
         {{-- LINHA INFERIOR: ÁREA PAUTADA COM LINHA VERTICAL --}}
         <tr>
-            {{-- Coluna 1: Nome do Aluno --}}
-            <td style="width: 58%;">
+            {{-- Coluna 1: Nome do Aluno (Expandida para 70%) --}}
+            <td style="width: 70%;">
                 <div class="loan-header">Nome</div>
             </td>
 
-            {{-- Coluna 2: Devolver até (A borda vertical se estende por 13.2cm) --}}
-            <td style="width: 42%;" class="loan-column-divider">
+            {{-- Coluna 2: Devolver até (Ajustada para 30%) --}}
+            <td style="width: 30%;" class="loan-column-divider">
                 <div class="loan-header" style="padding-left: 4px;">Devolver até</div>
             </td>
         </tr>
