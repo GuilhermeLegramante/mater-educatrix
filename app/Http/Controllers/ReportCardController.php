@@ -58,7 +58,7 @@ class ReportCardController extends Controller
         $descriptiveData = null;
         if ($request->has('include_descriptive_evaluation')) {
             // Busca perguntas ativas agrupadas por disciplina
-            $questions = DescriptiveQuestion::where('is_active', true)->get();
+            $questions = DescriptiveQuestion::get();
 
             // Busca as respostas gravadas para este aluno no ano da turma
             $evaluations = DescriptiveRating::where('student_id', $student->id)
