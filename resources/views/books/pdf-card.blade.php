@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Ficha do Livro - {{ $book->title }}</title>
     <style>
-        /* Configuração estrita para folha 10x15cm */
+        /* Configuração de página 10x15cm */
         @page {
             margin: 0;
             size: 10cm 15cm;
@@ -24,7 +24,8 @@
         }
 
         body {
-            padding: 5px 8px;
+            /* Adicionado padding-top para afastar o texto do topo do papel impresso */
+            padding: 4mm 6px 0px 6px;
             box-sizing: border-box;
         }
 
@@ -37,19 +38,19 @@
 
         .card-table td {
             vertical-align: top;
-            padding: 0px 4px;
+            padding: 0px 3px;
             word-wrap: break-word;
         }
 
-        /* Tipografia Compacta do Cabeçalho */
+        /* Tipografia do Cabeçalho */
         .field-label {
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: normal;
             line-height: 1.1;
         }
 
         .field-value {
-            font-size: 9.5px;
+            font-size: 9px;
             font-weight: bold;
         }
 
@@ -58,7 +59,7 @@
             text-decoration: underline;
         }
 
-        /* Classe para impedir quebra de linha e truncar textos longos de autor */
+        /* Truncar textos muito longos em 1 linha */
         .truncate-text {
             white-space: nowrap;
             overflow: hidden;
@@ -69,26 +70,27 @@
 
         /* Área de Empréstimo */
         .loan-header {
-            font-size: 9px;
+            font-size: 8.5px;
             font-weight: normal;
-            padding-top: 2px;
+            padding-top: 1px;
         }
 
-        /* Linha Vertical que vai até o final da página */
+        /* Linha Vertical Extensa */
         .loan-column-divider {
             border-left: 1.5px solid #000;
-            height: 13.3cm;
+            /* Recuo na altura para compensar o padding do topo */
+            height: 12.8cm;
         }
     </style>
 </head>
 
 <body>
 
-    {{-- TABELA 1: CABEÇALHO DO LIVRO (Limitado a 3 linhas de altura) --}}
+    {{-- TABELA 1: CABEÇALHO DO LIVRO --}}
     <table class="card-table" style="margin-bottom: 2px;">
-        <tr style="height: 1.1cm;">
-            {{-- Lado Esquerdo: Título e Publicação (52% da largura) --}}
-            <td style="width: 52%;">
+        <tr>
+            {{-- Lado Esquerdo: Título e Publicação (55% da largura) --}}
+            <td style="width: 55%;">
                 <div class="field-label truncate-text">
                     Título: <span class="title-value">{{ $book->title }}</span>
                 </div>
@@ -101,11 +103,10 @@
                 </div>
             </td>
 
-            {{-- Lado Direito: Autor e Estante (48% da largura) --}}
-            <td style="width: 48%;">
+            {{-- Lado Direito: Autor e Estante (45% da largura) --}}
+            <td style="width: 45%;">
                 <div class="field-label">Autor/Ilustr.:</div>
-                {{-- O nome do autor é limitado a 1 linha única; se for longo, exibe '...' no final --}}
-                <div class="field-value truncate-text" style="font-size: 9.5px;">
+                <div class="field-value truncate-text" style="font-size: 9px;">
                     {{ $book->author }}
                 </div>
                 <div class="field-label truncate-text">
@@ -118,12 +119,12 @@
     {{-- TABELA 2: ÁREA PAUTADA COM LINHA VERTICAL --}}
     <table class="card-table">
         <tr>
-            {{-- Coluna Nome (70% de largura) --}}
+            {{-- Coluna Nome --}}
             <td style="width: 70%;">
                 <div class="loan-header">Nome</div>
             </td>
 
-            {{-- Coluna Devolver até (30% de largura com borda estendida) --}}
+            {{-- Coluna Devolver até --}}
             <td style="width: 30%;" class="loan-column-divider">
                 <div class="loan-header" style="padding-left: 4px;">Devolver até</div>
             </td>
