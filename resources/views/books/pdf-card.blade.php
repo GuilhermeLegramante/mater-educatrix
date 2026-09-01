@@ -24,8 +24,8 @@
         }
 
         body {
-            /* Adicionado padding-top para afastar o texto do topo do papel impresso */
-            padding: 4mm 6px 0px 6px;
+            /* Margem superior para posicionar o texto no topo da ficha */
+            padding: 3.5mm 6px 0px 6px;
             box-sizing: border-box;
         }
 
@@ -42,15 +42,25 @@
             word-wrap: break-word;
         }
 
-        /* Tipografia do Cabeçalho */
+        /* Cabeçalho com fonte reduzida e linha horizontal inferior */
+        .header-table {
+            border-bottom: 0.5px solid #000;
+            /* Linha horizontal bem fina */
+            padding-bottom: 3px;
+            margin-bottom: 2px;
+        }
+
+        /* Tipografia Reduzida do Cabeçalho */
         .field-label {
-            font-size: 8.5px;
+            font-size: 8px;
+            /* Fonte reduzida para rótulos */
             font-weight: normal;
-            line-height: 1.1;
+            line-height: 1.05;
         }
 
         .field-value {
-            font-size: 9px;
+            font-size: 8.5px;
+            /* Fonte reduzida para valores */
             font-weight: bold;
         }
 
@@ -59,7 +69,7 @@
             text-decoration: underline;
         }
 
-        /* Truncar textos muito longos em 1 linha */
+        /* Truncar textos longos em 1 linha */
         .truncate-text {
             white-space: nowrap;
             overflow: hidden;
@@ -70,7 +80,7 @@
 
         /* Área de Empréstimo */
         .loan-header {
-            font-size: 8.5px;
+            font-size: 8px;
             font-weight: normal;
             padding-top: 1px;
         }
@@ -78,18 +88,18 @@
         /* Linha Vertical Extensa */
         .loan-column-divider {
             border-left: 1.5px solid #000;
-            /* Recuo na altura para compensar o padding do topo */
-            height: 12.8cm;
+            height: 12.6cm;
+            /* Compensação da linha horizontal e paddings */
         }
     </style>
 </head>
 
 <body>
 
-    {{-- TABELA 1: CABEÇALHO DO LIVRO --}}
-    <table class="card-table" style="margin-bottom: 2px;">
+    {{-- TABELA 1: CABEÇALHO DO LIVRO (Fonte menor + Linha horizontal abaixo) --}}
+    <table class="card-table header-table">
         <tr>
-            {{-- Lado Esquerdo: Título e Publicação (55% da largura) --}}
+            {{-- Lado Esquerdo: Título e Publicação --}}
             <td style="width: 55%;">
                 <div class="field-label truncate-text">
                     Título: <span class="title-value">{{ $book->title }}</span>
@@ -103,10 +113,10 @@
                 </div>
             </td>
 
-            {{-- Lado Direito: Autor e Estante (45% da largura) --}}
+            {{-- Lado Direito: Autor e Estante --}}
             <td style="width: 45%;">
                 <div class="field-label">Autor/Ilustr.:</div>
-                <div class="field-value truncate-text" style="font-size: 9px;">
+                <div class="field-value truncate-text" style="font-size: 8.5px;">
                     {{ $book->author }}
                 </div>
                 <div class="field-label truncate-text">
