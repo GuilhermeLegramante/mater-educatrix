@@ -68,6 +68,36 @@
                     </select>
                 </div>
 
+                {{-- Seleção Múltipla de Turmas --}}
+                <div class="md:col-span-2 bg-white/5 border border-white/10 p-4 rounded-xl">
+                    <label class="block text-xs uppercase font-bold text-gold-500 mb-2">Vincular Turmas</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                        @foreach ($classrooms as $classroom)
+                            <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer">
+                                <input type="checkbox" name="classrooms[]" value="{{ $classroom->id }}"
+                                    {{ isset($user) && $user->classrooms->contains($classroom->id) ? 'checked' : '' }}
+                                    class="rounded bg-white/10 border-white/20 text-gold-500 focus:ring-0">
+                                <span>{{ $classroom->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                {{-- Seleção Múltipla de Disciplinas --}}
+                <div class="md:col-span-2 bg-white/5 border border-white/10 p-4 rounded-xl">
+                    <label class="block text-xs uppercase font-bold text-gold-500 mb-2">Vincular Disciplinas</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                        @foreach ($subjects as $subject)
+                            <label class="flex items-center space-x-2 text-xs text-slate-300 cursor-pointer">
+                                <input type="checkbox" name="subjects[]" value="{{ $subject->id }}"
+                                    {{ isset($user) && $user->subjects->contains($subject->id) ? 'checked' : '' }}
+                                    class="rounded bg-white/10 border-white/20 text-gold-500 focus:ring-0">
+                                <span>{{ $subject->name }}</span>
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
                 {{-- Campo: Senha com Botão de Visualização --}}
                 <div x-data="{ showPassword: false }">
                     <label class="block text-xs uppercase font-bold text-gold-500 mb-1">
