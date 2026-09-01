@@ -585,41 +585,55 @@
 
             @foreach ($descriptiveData['questions'] as $subjectId => $questions)
                 @php
+                    // 1. Filtra na coleção apenas as perguntas que possuem ao menos 1 resposta registrada
+                    $answeredQuestions = $questions->filter(function ($q) use ($descriptiveData) {
+                        for ($b = 1; $b <= 4; $b++) {
+                            $key = $q->id . '_' . $b;
+                            if (!empty($descriptiveData['evaluations'][$key]->rating)) {
+                                return true; // Pergunta respondida em pelo menos um bimestre
+                            }
+                        }
+                        return false; // Pergunta sem nenhuma resposta
+                    });
+
                     $subjectName = $subjects->find($subjectId)?->name ?? 'Desenvolvimento Pessoal & Conduta';
                 @endphp
 
-                <h4
-                    style="font-size: 11px; background-color: #f1f5f9; padding: 6px; margin-top: 15px; text-transform: uppercase;">
-                    {{ $subjectName }}
-                </h4>
+                {{-- 2. Exibe o bloco da disciplina apenas se houver perguntas respondidas nela --}}
+                @if ($answeredQuestions->isNotEmpty())
+                    <h4
+                        style="font-size: 11px; background-color: #f1f5f9; padding: 6px; margin-top: 15px; text-transform: uppercase;">
+                        {{ $subjectName }}
+                    </h4>
 
-                <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 10px;">
-                    <thead>
-                        <tr style="background-color: #0f1a34; color: #ffffff;">
-                            <th style="padding: 5px; text-align: left; width: 50%;">Pergunta / Critério</th>
-                            <th style="padding: 5px; text-align: center; width: 12.5%;">1º Bim</th>
-                            <th style="padding: 5px; text-align: center; width: 12.5%;">2º Bim</th>
-                            <th style="padding: 5px; text-align: center; width: 12.5%;">3º Bim</th>
-                            <th style="padding: 5px; text-align: center; width: 12.5%;">4º Bim</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($questions as $q)
-                            <tr style="border-bottom: 1px solid #e2e8f0;">
-                                <td style="padding: 5px; text-align: left;">{{ $q->question_text }}</td>
-                                @for ($b = 1; $b <= 4; $b++)
-                                    @php
-                                        $key = $q->id . '_' . $b;
-                                        $rating = $descriptiveData['evaluations'][$key]->rating ?? null;
-                                    @endphp
-                                    <td style="padding: 5px; text-align: center; font-weight: bold;">
-                                        {{ $rating ? $labels[$rating] ?? $rating : '-' }}
-                                    </td>
-                                @endfor
+                    <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 10px;">
+                        <thead>
+                            <tr style="background-color: #0f1a34; color: #ffffff;">
+                                <th style="padding: 5px; text-align: left; width: 50%;">Pergunta / Critério</th>
+                                <th style="padding: 5px; text-align: center; width: 12.5%;">1º Bim</th>
+                                <th style="padding: 5px; text-align: center; width: 12.5%;">2º Bim</th>
+                                <th style="padding: 5px; text-align: center; width: 12.5%;">3º Bim</th>
+                                <th style="padding: 5px; text-align: center; width: 12.5%;">4º Bim</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($answeredQuestions as $q)
+                                <tr style="border-bottom: 1px solid #e2e8f0;">
+                                    <td style="padding: 5px; text-align: left;">{{ $q->question_text }}</td>
+                                    @for ($b = 1; $b <= 4; $b++)
+                                        @php
+                                            $key = $q->id . '_' . $b;
+                                            $rating = $descriptiveData['evaluations'][$key]->rating ?? null;
+                                        @endphp
+                                        <td style="padding: 5px; text-align: center; font-weight: bold;">
+                                            {{ $rating ? $labels[$rating] ?? $rating : '-' }}
+                                        </td>
+                                    @endfor
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @endif
             @endforeach
         </div>
     @endif
