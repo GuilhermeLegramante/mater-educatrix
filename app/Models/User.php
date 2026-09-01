@@ -56,4 +56,24 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Subject::class);
     }
+
+    /**
+     * Retorna o rótulo da função do usuário em português.
+     */
+    public function getRoleLabelAttribute(): string
+    {
+        // Se a role for um Enum que já possui o método label()
+        if (is_object($this->role) && method_exists($this->role, 'label')) {
+            return $this->role->label();
+        }
+
+        $value = is_object($this->role) && isset($this->role->value) ? $this->role->value : $this->role;
+
+        return match (strtolower((string)$value)) {
+            'admin'     => 'Administrador',
+            'teacher'   => 'Professor',
+            'preceptor' => 'Preceptor',
+            default     => ucfirst($value ?? 'Acesso Geral'),
+        };
+    }
 }

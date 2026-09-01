@@ -62,9 +62,9 @@
                         <option value="teacher"
                             {{ old('role', $user->role->value ?? ($user->role ?? '')) == 'teacher' ? 'selected' : '' }}>
                             Professor</option>
-                        <option value="preceptor"
-                            {{ old('role', $user->role->value ?? ($user->role ?? '')) == 'preceptor' ? 'selected' : '' }}>
-                            Preceptor</option>
+                        <option value="secretary"
+                            {{ old('role', $user->role->value ?? ($user->role ?? '')) == 'secretary' ? 'selected' : '' }}>
+                            Secretária</option>
                     </select>
                 </div>
 
@@ -190,7 +190,7 @@
                             <td class="px-8 py-5 text-slate-500 text-sm font-medium">
                                 <span
                                     class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-navy-900">
-                                    {{ is_object($user->role) && method_exists($user->role, 'label') ? $user->role->label() : $user->role ?? 'Acesso Geral' }}
+                                    {{ $user->role_label }}
                                 </span>
                             </td>
                             <td class="px-8 py-5 flex justify-end gap-1.5">
