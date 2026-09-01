@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Classroom;
 use App\Models\DescriptiveQuestion;
+use App\Models\DescriptiveRating;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -60,7 +61,7 @@ class ReportCardController extends Controller
             $questions = DescriptiveQuestion::where('is_active', true)->get();
 
             // Busca as respostas gravadas para este aluno no ano da turma
-            $evaluations = DescriptiveEvaluationController::where('student_id', $student->id)
+            $evaluations = DescriptiveRating::where('student_id', $student->id)
                 ->where('year', $classroom->year)
                 ->get()
                 ->keyBy(function ($item) {
