@@ -18,6 +18,22 @@ class UserController extends Controller
         return view('users.index', compact('users', 'classrooms', 'subjects'));
     }
 
+    /**
+     * Prepara a tela/formulário para edição de um usuário existente.
+     */
+    public function edit(User $user)
+    {
+        $users = User::with(['classrooms', 'subjects'])->get();
+        $classrooms = Classroom::all();
+        $subjects = Subject::all();
+
+        // Carrega os relacionamentos do usuário selecionado
+        $user->load(['classrooms', 'subjects']);
+
+        // Retorna a view index passando o usuário a ser editado
+        return view('users.index', compact('users', 'classrooms', 'subjects', 'user'));
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
