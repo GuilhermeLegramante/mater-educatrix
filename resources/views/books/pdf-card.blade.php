@@ -8,13 +8,13 @@
         /* Configuração de página 10x15cm */
         @page {
             margin: 0;
-            size: 7cm 13cm;
+            size: 7cm 14cm;
         }
 
         html,
         body {
             width: 7cm;
-            height: 13cm;
+            height: 14cm;
             margin: 0;
             padding: 0;
             background-color: #fff;
