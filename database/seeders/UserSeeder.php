@@ -84,9 +84,9 @@ class UserSeeder extends Seeder
                 'role'     => 'teacher',
             ],
             [
-                'name'     => 'Silviane',
-                'email'    => 'silviane@escolamatereducatrix.com.br',
-                'password' => Hash::make('Silviane@2026'),
+                'name'     => 'Silvianne',
+                'email'    => 'silvianne@escolamatereducatrix.com.br',
+                'password' => Hash::make('Silvianne@2026'),
                 'role'     => 'teacher',
             ],
             [

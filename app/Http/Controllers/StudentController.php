@@ -8,10 +8,31 @@ use Illuminate\Http\Request;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::orderBy('name')->get();
-        return view('students.index', compact('students'));
+        $query = Student::query();
+
+        // Filtro por texto (Nome ou Matrícula)
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('registration_number', 'like', "%{$search}%");
+            });
+        }
+
+        // Filtro por Turma
+        if ($request->filled('classroom_id')) {
+            $query->whereHas('classrooms', function ($q) use ($request) {
+                $q->where('classrooms.id', $request->classroom_id);
+            });
+        }
+
+        // Paginação com 10 alunos por página mantendo os parâmetros na URL
+        $students = $query->orderBy('name')->paginate(10);
+        $classrooms = Classroom::orderBy('name')->get();
+
+        return view('students.index', compact('students', 'classrooms'));
     }
 
     public function store(Request $request)
