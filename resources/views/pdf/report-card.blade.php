@@ -567,6 +567,63 @@
         </table>
     @endif
 
+    {{-- BLOCO: AVALIAÇÃO DESCRITIVA / MATRIZ --}}
+    @if ($showDescriptiveEvaluation && isset($descriptiveData))
+        <div style="page-break-before: always; margin-top: 20px;">
+            <h3
+                style="text-align: center; font-size: 14px; text-transform: uppercase; color: #0f1a34; border-bottom: 2px solid #d97706; padding-bottom: 5px;">
+                Matriz de Avaliação Descritiva
+            </h3>
+
+            @php
+                $labels = [
+                    'optimal' => 'Muito Bem / Sim',
+                    'partial' => 'Em Parte / Às Vezes',
+                    'critical' => 'Não / Raramente',
+                ];
+            @endphp
+
+            @foreach ($descriptiveData['questions'] as $subjectId => $questions)
+                @php
+                    $subjectName = $subjects->find($subjectId)?->name ?? 'Desenvolvimento Pessoal & Conduta';
+                @endphp
+
+                <h4
+                    style="font-size: 11px; background-color: #f1f5f9; padding: 6px; margin-top: 15px; text-transform: uppercase;">
+                    {{ $subjectName }}
+                </h4>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 9px; margin-bottom: 10px;">
+                    <thead>
+                        <tr style="background-color: #0f1a34; color: #ffffff;">
+                            <th style="padding: 5px; text-align: left; width: 50%;">Pergunta / Critério</th>
+                            <th style="padding: 5px; text-align: center; width: 12.5%;">1º Bim</th>
+                            <th style="padding: 5px; text-align: center; width: 12.5%;">2º Bim</th>
+                            <th style="padding: 5px; text-align: center; width: 12.5%;">3º Bim</th>
+                            <th style="padding: 5px; text-align: center; width: 12.5%;">4º Bim</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($questions as $q)
+                            <tr style="border-bottom: 1px solid #e2e8f0;">
+                                <td style="padding: 5px; text-align: left;">{{ $q->question_text }}</td>
+                                @for ($b = 1; $b <= 4; $b++)
+                                    @php
+                                        $key = $q->id . '_' . $b;
+                                        $rating = $descriptiveData['evaluations'][$key]->rating ?? null;
+                                    @endphp
+                                    <td style="padding: 5px; text-align: center; font-weight: bold;">
+                                        {{ $rating ? $labels[$rating] ?? $rating : '-' }}
+                                    </td>
+                                @endfor
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endforeach
+        </div>
+    @endif
+
     <table class="footer-signatures">
         <tr>
             <td class="signature-space">

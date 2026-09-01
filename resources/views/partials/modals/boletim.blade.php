@@ -76,10 +76,27 @@
                     <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
                         <div>
                             <span class="block text-xs font-bold text-navy-900">Parecer Descritivo</span>
-                            <span class="text-[10px] text-slate-400">Acompanhamento dos professores e desenvolvimento pessoal.</span>
+                            <span class="text-[10px] text-slate-400">Acompanhamento dos professores e desenvolvimento
+                                pessoal.</span>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" name="include_preceptory" value="1" class="sr-only peer">
+                            <div
+                                class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-500">
+                            </div>
+                        </label>
+                    </div>
+
+                    {{-- OPÇÃO: AVALIAÇÃO DESCRITIVA (MATRIZ) --}}
+                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+                        <div>
+                            <span class="block text-xs font-bold text-navy-900">Avaliação Descritiva (Matriz)</span>
+                            <span class="text-[10px] text-slate-400">Exibir o questionário com as respostas e pareceres
+                                bimestrais.</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" name="include_descriptive_evaluation" value="1"
+                                class="sr-only peer">
                             <div
                                 class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-gold-500">
                             </div>
