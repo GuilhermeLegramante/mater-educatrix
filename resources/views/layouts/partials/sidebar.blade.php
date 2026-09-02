@@ -111,8 +111,9 @@
                 Gestão Administrativa
             </div>
 
+            <!-- Ano Letivo & Bimestre -->
             <a href="{{ route('settings.school') }}"
-                class="flex items-center p-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-gold-500 transition-all {{ request()->routeIs('settings.*') ? 'bg-slate-800 text-gold-500' : '' }}">
+                class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('settings.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
                 <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-width="2"
                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -123,28 +124,17 @@
                 </span>
             </a>
 
-            <!-- Link para Listagem de Ocorrências na Sidebar -->
+            <!-- Link para Listagem de Ocorrências (Padronizado) -->
             <a href="{{ route('occurrences.index') }}"
-                class="flex items-center gap-3 px-4 py-3 rounded-xl font-semibold text-sm transition duration-150 
-          {{ request()->routeIs('occurrences.*')
-              ? 'bg-navy-900 text-gold-500 shadow-sm'
-              : 'text-slate-600 hover:bg-slate-100 hover:text-navy-900' }}">
-
-                <!-- Ícone SVG de Alerta / Prancheta -->
-                <svg class="w-5 h-5 transition duration-150 {{ request()->routeIs('occurrences.*') ? 'text-gold-500' : 'text-slate-400' }}"
-                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('occurrences.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
+                <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-
-                <span>Ocorrências</span>
-
-                <!-- Contador Opcional / Badge (Caso queira sinalizar novidades) -->
-                @if (request()->routeIs('occurrences.*'))
-                    <span class="ml-auto w-2 h-2 rounded-full bg-gold-500"></span>
-                @endif
+                <span x-show="sidebarOpen" class="ml-3">Ocorrências</span>
             </a>
 
+            <!-- Tipos de Ocorrência -->
             <a href="{{ route('occurrence-types.index') }}"
                 class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('occurrence-types.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
                 <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,6 +144,7 @@
                 <span x-show="sidebarOpen" class="ml-3">Tipos de Ocorrência</span>
             </a>
 
+            <!-- Usuários -->
             <a href="{{ route('users.index') }}"
                 class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('users.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
                 <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,6 +154,7 @@
                 <span x-show="sidebarOpen" class="ml-3">Usuários</span>
             </a>
 
+            <!-- Gerar Calendário -->
             <a href="{{ route('admin.calendar.index') }}"
                 class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('admin.calendar.*') ? 'bg-gold-500 text-navy-950 font-bold' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
                 <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
