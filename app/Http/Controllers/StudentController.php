@@ -15,17 +15,17 @@ class StudentController extends Controller
         $user = auth()->user();
         $query = Student::query();
 
-        // 1. Verifica se o usuário logado é Admin usando o método nativo do Model User
+        // 1. Aplica restrição de turmas apenas para usuários que NÃO são administradores
         if (!$user->isAdmin()) {
-            // Obtém a lista de IDs das turmas associadas ao professor/usuário
+            // IDs das turmas vinculadas ao professor logado
             $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
 
-            // Aplica o filtro restritivo: traz apenas alunos das turmas do professor
+            // Restringe a busca para trazer apenas alunos dessas turmas
             $query->whereHas('classrooms', function (Builder $q) use ($teacherClassroomIds) {
                 $q->whereIn('classrooms.id', $teacherClassroomIds);
             });
 
-            // Carregamento do Select: Apenas as turmas lecionadas por ele
+            // Carrega apenas as turmas do professor para o select da view
             $classrooms = Classroom::whereIn('id', $teacherClassroomIds)
                 ->orderBy('name')
                 ->get();
@@ -39,14 +39,14 @@ class StudentController extends Controller
             $rawSearch = trim($request->search);
             $stopWords = ['de', 'da', 'do', 'dos', 'das', 'e'];
 
-            // Quebra o texto e remove as preposições/conectivas
+            // Converte em minúsculas e remove preposições
             $words = explode(' ', mb_strtolower($rawSearch));
             $keywords = array_filter($words, function ($word) use ($stopWords) {
                 return !empty($word) && !in_array($word, $stopWords);
             });
 
             $query->where(function (Builder $mainQuery) use ($keywords, $rawSearch) {
-                // Busca por Nome (exige a presença de todas as palavras-chave)
+                // Busca por Nome
                 $mainQuery->where(function (Builder $nameQuery) use ($keywords, $rawSearch) {
                     if (!empty($keywords)) {
                         foreach ($keywords as $word) {
@@ -56,14 +56,13 @@ class StudentController extends Controller
                         $nameQuery->where('name', 'like', "%{$rawSearch}%");
                     }
                 })
-                    // Busca alternativa por Matrícula
+                    // Busca por Matrícula
                     ->orWhere('registration_number', 'like', "%{$rawSearch}%");
             });
         }
 
         // 3. Filtro por Turma específica selecionada no formulário
         if ($request->filled('classroom_id')) {
-            // Valida se o usuário é Admin ou se a turma requisitada pertence a ele
             if ($user->isAdmin() || (isset($teacherClassroomIds) && in_array($request->classroom_id, $teacherClassroomIds))) {
                 $query->whereHas('classrooms', function (Builder $q) use ($request) {
                     $q->where('classrooms.id', $request->classroom_id);
@@ -71,7 +70,7 @@ class StudentController extends Controller
             }
         }
 
-        // 4. Paginação com 10 registros mantendo a ordenação por nome
+        // 4. Paginação dos resultados mantendo a ordenação
         $students = $query->orderBy('name')->paginate(10);
 
         return view('students.index', compact('students', 'classrooms'));
