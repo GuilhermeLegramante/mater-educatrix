@@ -10,11 +10,12 @@
                 <span class="text-gold-600 font-bold tracking-widest text-xs uppercase">Curriculum</span>
                 <h1 class="font-classic text-4xl text-navy-900 transition-colors">Listagem de Alunos</h1>
             </div>
-
-            <button onclick="document.getElementById('form-aluno').classList.toggle('hidden')"
-                class="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-navy-900/20">
-                + Adicionar Aluno
-            </button>
+            @can('admin')
+                <button onclick="document.getElementById('form-aluno').classList.toggle('hidden')"
+                    class="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-navy-900/20">
+                    + Adicionar Aluno
+                </button>
+            @endcan
         </div>
 
         @php
