@@ -81,7 +81,7 @@
 
                                 <!-- Botão Fixado na Extrema Direita (right-3) -->
                                 <button type="button" @click="showPassword = !showPassword" tabindex="-1"
-                                    class="absolute pt-1 right-3 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800/60 focus:outline-none transition-all duration-200"
+                                    class="absolute pt-2 right-3 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800/60 focus:outline-none transition-all duration-200"
                                     title="Alternar visibilidade da senha">
 
                                     <!-- Ícone Olho Fechado (Senha Oculta) -->
