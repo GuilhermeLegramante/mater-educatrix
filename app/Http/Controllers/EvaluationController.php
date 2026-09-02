@@ -11,8 +11,23 @@ class EvaluationController extends Controller
 {
     public function index()
     {
-        // Busca as avaliações com as relações para mostrar na tabela
-        $evaluations = Evaluation::with(['subject', 'classroom'])->latest()->paginate(10);
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // Inicia a consulta com os relacionamentos pré-carregados
+        $query = Evaluation::with(['subject', 'classroom']);
+
+        // Se o usuário NÃO for administrador, filtra pelas suas turmas
+        if (!$user->isAdmin()) {
+            // Obtém os IDs das turmas associadas ao professor logado
+            $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
+
+            // Filtra as avaliações que pertencem às turmas do professor
+            $query->whereIn('classroom_id', $teacherClassroomIds);
+        }
+
+        // Ordena pelas mais recentes e aplica a paginação com 10 itens por página
+        $evaluations = $query->latest()->paginate(10);
 
         return view('evaluations.index', compact('evaluations'));
     }
