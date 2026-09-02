@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\OccurrenceType;
+use App\Models\SchoolSetting;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
 
