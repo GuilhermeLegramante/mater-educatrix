@@ -71,17 +71,17 @@
                                 @endif
                             </div>
 
-                            {{-- Campo de Senha com Botão Embutido Corrigido --}}
-                            <div x-data="{ showPassword: false }" class="relative flex items-center w-full">
+                            {{-- Campo de Senha com Botão Alinhado à Extrema Direita --}}
+                            <div x-data="{ showPassword: false }" class="relative w-full">
 
                                 <!-- Input de Senha -->
                                 <input id="password" :type="showPassword ? 'text' : 'password'" name="password" required
                                     placeholder="••••••••"
                                     class="w-full h-12 pl-4 pr-12 rounded-xl bg-slate-950 border border-slate-800 text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all duration-200">
 
-                                <!-- Botão de Alternar Visibilidade (Posicionado à Direita) -->
+                                <!-- Botão Fixado na Extrema Direita (right-3) -->
                                 <button type="button" @click="showPassword = !showPassword" tabindex="-1"
-                                    class="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 flex items-center justify-center rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800/60 focus:outline-none transition-all duration-200"
+                                    class="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-1.5 rounded-lg text-slate-500 hover:text-slate-200 hover:bg-slate-800/60 focus:outline-none transition-all duration-200"
                                     title="Alternar visibilidade da senha">
 
                                     <!-- Ícone Olho Fechado (Senha Oculta) -->
@@ -91,7 +91,7 @@
                                             d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
                                     </svg>
 
-                                    <!-- Ícone Olho Aberto (Senha Visível) - SVG Corrigido -->
+                                    <!-- Ícone Olho Aberto (Senha Visível) -->
                                     <svg x-show="showPassword" class="w-5 h-5" fill="none" stroke="currentColor"
                                         stroke-width="1.75" viewBox="0 0 24 24" x-cloak>
                                         <path stroke-linecap="round" stroke-linejoin="round"
