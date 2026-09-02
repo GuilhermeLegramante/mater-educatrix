@@ -101,6 +101,8 @@ Route::middleware('auth')->group(function () {
     Route::get('students/{student}/occurrences/create', [OccurrenceController::class, 'create'])->name('students.occurrences.create');
     Route::post('students/{student}/occurrences', [OccurrenceController::class, 'store'])->name('students.occurrences.store');
     Route::delete('occurrences/{occurrence}', [OccurrenceController::class, 'destroy'])->name('occurrences.destroy');
+    Route::get('/occurrences', [OccurrenceController::class, 'index'])->name('occurrences.index');
+
 
     // Rotas de Livros vinculados ao Acervo
     Route::resource('books', BookController::class);

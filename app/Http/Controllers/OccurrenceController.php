@@ -11,6 +11,20 @@ use Illuminate\Http\Request;
 class OccurrenceController extends Controller
 {
     /**
+     * Exibe a listagem completa de ocorrências registradas no sistema.
+     */
+    public function index(Request $request)
+    {
+        // Busca as ocorrências trazendo os dados do aluno junto (eager loading)
+        // Ordena das mais recentes para as mais antigas e pagina de 15 em 15
+        $occurrences = Occurrence::with('student')
+            ->latest()
+            ->paginate(15);
+
+        return view('occurrences.index', compact('occurrences'));
+    }
+
+    /**
      * Exibe o formulário ou abre dados para o modal de cadastro
      */
     public function create(Student $student)
