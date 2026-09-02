@@ -101,7 +101,7 @@
                     </div>
                 </div>
 
-                <!-- Card 2: Últimas Ocorrências Registradas -->
+                <!-- Card: Últimas Ocorrências Registradas com Link para o Aluno -->
                 <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-200">
                     <div class="flex justify-between items-center mb-4 border-b border-slate-100 pb-3">
                         <h3 class="font-bold text-navy-900">Últimas Ocorrências Registradas</h3>
@@ -111,17 +111,44 @@
                     <div class="space-y-3">
                         @forelse ($recentOccurrences as $occurrence)
                             <div
-                                class="p-3 bg-slate-50 rounded-xl flex justify-between items-center border border-slate-100">
+                                class="p-3 bg-slate-50 rounded-xl flex justify-between items-center border border-slate-100 hover:bg-slate-100/80 transition duration-150">
                                 <div>
-                                    <p class="font-bold text-xs text-slate-800">{{ $occurrence->student->name ?? 'Aluno' }}
-                                    </p>
+                                    <!-- Nome do Aluno transformado em Link -->
+                                    @if ($occurrence->student)
+                                        <a href="{{ route('students.show', $occurrence->student->id) }}"
+                                            class="font-bold text-xs text-navy-900 hover:text-gold-600 hover:underline transition duration-150 flex items-center gap-1">
+                                            {{ $occurrence->student->name }}
+                                            <span class="text-[10px] opacity-60">↗</span>
+                                        </a>
+                                    @else
+                                        <p class="font-bold text-xs text-slate-800">Aluno não encontrado</p>
+                                    @endif
+
                                     <p class="text-[10px] text-slate-500 mt-0.5">
                                         {{ Str::limit($occurrence->description ?? ($occurrence->title ?? 'Sem descrição'), 45) }}
                                     </p>
                                 </div>
-                                <span class="text-[10px] font-mono text-slate-400 font-bold">
-                                    {{ $occurrence->created_at ? $occurrence->created_at->format('d/m') : '-' }}
-                                </span>
+
+                                <div class="flex items-center gap-3">
+                                    <span class="text-[10px] font-mono text-slate-400 font-bold">
+                                        {{ $occurrence->created_at ? $occurrence->created_at->format('d/m') : '-' }}
+                                    </span>
+
+                                    <!-- Botão de Atalho Direto -->
+                                    @if ($occurrence->student)
+                                        <a href="{{ route('students.show', $occurrence->student->id) }}"
+                                            title="Ver perfil de {{ $occurrence->student->name }}"
+                                            class="p-1.5 bg-white border border-slate-200 rounded-lg text-slate-500 hover:text-navy-900 hover:border-navy-900 transition duration-150">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                            </svg>
+                                        </a>
+                                    @endif
+                                </div>
                             </div>
                         @empty
                             <p class="text-xs text-slate-400 italic text-center py-4">Nenhuma ocorrência registrada
