@@ -29,20 +29,8 @@ Route::get('/manifest.json', function () {
     ]);
 });
 
-Route::get('/', function () {
-    if (auth()->user()->can('admin')) {
-        return redirect()->route('dashboard');
-    } else {
-        return redirect()->route('students.index');
-    }
-})->middleware(['auth'])->name('dashboard');
-
 Route::get('/dashboard', function () {
-    if (auth()->user()->can('admin')) {
-        return redirect()->route('dashboard');
-    } else {
-        return redirect()->route('students.index');
-    }
+    return view('dashboard');
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
