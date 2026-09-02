@@ -283,10 +283,6 @@
             {{-- VISÃO DO PROFESSOR / USUÁRIO COMUM: Painel de Boas-Vindas --}}
             {{-- ----------------------------------------------------------------- --}}
         @else
-            {{-- ----------------------------------------------------------------- --}}
-            {{-- VISÃO DO PROFESSOR / USUÁRIO COMUM: Painel de Boas-Vindas --}}
-            {{-- ----------------------------------------------------------------- --}}
-        @else
             <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-slate-200 text-center space-y-8">
 
                 <!-- Cabeçalho de Boas-Vindas -->
