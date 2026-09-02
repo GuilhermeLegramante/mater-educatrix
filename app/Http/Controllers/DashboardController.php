@@ -39,7 +39,7 @@ class DashboardController extends Controller
                 ->take(5)
                 ->get();
 
-            return view('index', compact(
+            return view('dashboard.index', compact(
                 'totalStudents',
                 'averageScore',
                 'globalConcept',
@@ -50,7 +50,7 @@ class DashboardController extends Controller
         }
 
         // Caso não seja Admin (Professor/Comum)
-        return view('index');
+        return view('dashboard.index');
     }
 
     /**
