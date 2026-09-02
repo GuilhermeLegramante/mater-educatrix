@@ -27,15 +27,18 @@
 
     {{-- MENU DE NAVEGAÇÃO (Com Scroll Habilitado) --}}
     <nav class="mt-4 px-4 space-y-2 flex-1 overflow-y-auto custom-scrollbar pb-6">
-        <a href="{{ route('dashboard') }}"
-            class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/30' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
-            <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-            </svg>
-            <span x-show="sidebarOpen" class="ml-3">Dashboard</span>
-        </a>
+        @can('admin')
+            <a href="{{ route('dashboard') }}"
+                class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('dashboard') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/30' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
+                <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="2"
+                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+                <span x-show="sidebarOpen" class="ml-3">Dashboard</span>
+            </a>
+        @endcan
 
+        {{-- SEÇÃO: Gestão Acadêmica --}}
         <div class="pt-4 pb-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 px-3"
             x-show="sidebarOpen">
             Gestão Acadêmica
@@ -78,7 +81,7 @@
                 <span x-show="sidebarOpen" class="ml-3">Disciplinas</span>
             </a>
         @endcan
-        
+
         <a href="{{ route('evaluations.index') }}"
             class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('evaluations.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
             <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
