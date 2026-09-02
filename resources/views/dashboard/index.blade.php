@@ -283,36 +283,67 @@
             {{-- VISÃO DO PROFESSOR / USUÁRIO COMUM: Painel de Boas-Vindas --}}
             {{-- ----------------------------------------------------------------- --}}
         @else
-            <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-slate-200 text-center space-y-6">
-                <div
-                    class="w-20 h-20 bg-gold-500/10 text-gold-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner">
-                    👋
-                </div>
+            {{-- ----------------------------------------------------------------- --}}
+            {{-- VISÃO DO PROFESSOR / USUÁRIO COMUM: Painel de Boas-Vindas --}}
+            {{-- ----------------------------------------------------------------- --}}
+        @else
+            <div class="bg-white rounded-2xl p-8 sm:p-12 shadow-sm border border-slate-200 text-center space-y-8">
 
-                <div class="space-y-2 max-w-xl mx-auto">
+                <!-- Cabeçalho de Boas-Vindas -->
+                <div class="space-y-3">
+                    <div
+                        class="w-20 h-20 bg-gold-500/10 text-gold-600 rounded-full flex items-center justify-center mx-auto text-4xl shadow-inner">
+                        👋
+                    </div>
                     <h1 class="font-classic text-3xl sm:text-4xl text-navy-900 font-bold tracking-wide">
                         Bem-vindo(a), {{ auth()->user()->name }}!
                     </h1>
-                    <p class="text-slate-500 text-sm sm:text-base">
-                        Utilize o menu de navegação para acessar suas turmas, alunos e gerenciar suas avaliações.
+                    <p class="text-slate-500 text-sm sm:text-base max-w-xl mx-auto">
+                        Selecione um dos módulos abaixo para gerenciar suas atividades acadêmicas e diárias.
                     </p>
                 </div>
 
-                <!-- Atalhos Úteis do Professor -->
-                <div class="pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg mx-auto">
-                    <a href="{{ route('students.index') }}"
-                        class="flex items-center justify-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white transition duration-200 group text-slate-700 font-bold text-sm">
-                        <span class="text-xl">👨‍🎓</span>
-                        <span>Meus Alunos</span>
+                <!-- Atalhos Rápido do Professor (Grid de Módulos) -->
+                <div
+                    class="pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+
+                    <!-- 1. Diário de Classe -->
+                    <a href="{{ route('attendance.index') }}"
+                        class="flex flex-col items-center justify-center p-6 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white hover:border-navy-900 transition duration-200 group shadow-sm">
+                        <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">📖</span>
+                        <span class="font-bold text-sm tracking-wide">Diário de Classe</span>
+                        <span class="text-[11px] text-slate-400 group-hover:text-slate-300 mt-1">Frequência e
+                            Conteúdos</span>
                     </a>
 
-                    <a href="{{ route('evaluations.index') }}"
-                        class="flex items-center justify-center gap-3 p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white transition duration-200 group text-slate-700 font-bold text-sm">
-                        <span class="text-xl">📝</span>
-                        <span>Minhas Avaliações</span>
+                    <!-- 2. Turmas -->
+                    <a href="{{ route('classrooms.index') }}"
+                        class="flex flex-col items-center justify-center p-6 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white hover:border-navy-900 transition duration-200 group shadow-sm">
+                        <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">🏫</span>
+                        <span class="font-bold text-sm tracking-wide">Minhas Turmas</span>
+                        <span class="text-[11px] text-slate-400 group-hover:text-slate-300 mt-1">Alunos e Aulas</span>
                     </a>
+
+                    <!-- 3. Avaliações -->
+                    <a href="{{ route('evaluations.index') }}"
+                        class="flex flex-col items-center justify-center p-6 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white hover:border-navy-900 transition duration-200 group shadow-sm">
+                        <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">📝</span>
+                        <span class="font-bold text-sm tracking-wide">Avaliações</span>
+                        <span class="text-[11px] text-slate-400 group-hover:text-slate-300 mt-1">Provas e Notas</span>
+                    </a>
+
+                    <!-- 4. Biblioteca -->
+                    <a href="{{ route('books.index') }}"
+                        class="flex flex-col items-center justify-center p-6 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white hover:border-navy-900 transition duration-200 group shadow-sm">
+                        <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">📚</span>
+                        <span class="font-bold text-sm tracking-wide">Biblioteca</span>
+                        <span class="text-[11px] text-slate-400 group-hover:text-slate-300 mt-1">Acervo e Materiais</span>
+                    </a>
+
                 </div>
             </div>
+
+        @endif
         @endif
 
     </div>
