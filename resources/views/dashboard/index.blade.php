@@ -329,12 +329,12 @@
                     </a>
 
                     <!-- 4. Biblioteca -->
-                    <a href="{{ route('books.index') }}"
+                    {{-- <a href="{{ route('books.index') }}"
                         class="flex flex-col items-center justify-center p-6 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-navy-900 hover:text-white hover:border-navy-900 transition duration-200 group shadow-sm">
                         <span class="text-3xl mb-2 group-hover:scale-110 transition-transform">📚</span>
                         <span class="font-bold text-sm tracking-wide">Biblioteca</span>
                         <span class="text-[11px] text-slate-400 group-hover:text-slate-300 mt-1">Acervo e Materiais</span>
-                    </a>
+                    </a> --}}
 
                 </div>
             </div>
