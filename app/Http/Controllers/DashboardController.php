@@ -6,6 +6,7 @@ use App\Models\Grade;
 use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\Evaluation;
+use App\Models\Occurrence;
 use Illuminate\Http\Request;
 use Illuminate\Support;
 
@@ -13,62 +14,55 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        // 1. KPIs Básicos e Avançados (Dados reais + Simulações estratégicas para MVP)
-        $totalStudents = Student::count() ?: 124;
-        $totalClassrooms = Classroom::count() ?: 6;
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
 
-        // Média Global Convertida em Conceito Clássico
-        $averageScore = Grade::avg('score') ?? 78.5;
-        $globalConcept = $this->determineConcept($averageScore);
+        if ($user->isAdmin()) {
+            // 1. Totalizadores Globais
+            $totalStudents = Student::count();
+            $averageScore = Grade::avg('score') ?? 0;
+            $globalConcept = $this->calculateConcept($averageScore);
 
-        // 2. Últimos lançamentos reais para a tabela
-        $recentGrades = Grade::with(['student', 'evaluation.subject'])
-            ->latest()
-            ->take(6)
-            ->get();
+            // 2. Registros Recentes (Global)
+            $recentGrades = Grade::with(['student', 'evaluation.subject'])
+                ->latest()
+                ->take(5)
+                ->get();
 
-        // 3. MÓDULO MVP: Insights para Gestão (Dados Simulados Estruturados)
+            $recentEvaluations = Evaluation::with(['classroom', 'subject'])
+                ->latest()
+                ->take(5)
+                ->get();
 
-        // Distribuição de Conceitos (Gráfico de Pizza/Donut)
-        $conceptDistribution = [
-            'A (Excelente)' => 35,
-            'B (Bom)'       => 45,
-            'C (Suficiente)' => 14,
-            'D (Em Foco)'   => 6
-        ];
+            $recentOccurrences = Occurrence::with('student')
+                ->latest()
+                ->take(5)
+                ->get();
 
-        // Desempenho por Fase do Trivium (Gráfico de Barras)
-        $triviumPerformance = [
-            'Gramática' => ['score' => 84, 'color' => 'bg-navy-900'],
-            'Lógica'    => ['score' => 76, 'color' => 'bg-gold-500'],
-            'Retórica'  => ['score' => 89, 'color' => 'bg-slate-700'],
-        ];
+            return view('index', compact(
+                'totalStudents',
+                'averageScore',
+                'globalConcept',
+                'recentGrades',
+                'recentEvaluations',
+                'recentOccurrences'
+            ));
+        }
 
-        // Índice de Desenvolvimento de Virtudes (Phronesis)
-        $virtuesDevelopment = [
-            ['name' => 'Prudência', 'status' => 'Avançado', 'trend' => 'up', 'percentage' => 88],
-            ['name' => 'Justiça', 'status' => 'Proficiente', 'trend' => 'up', 'percentage' => 75],
-            ['name' => 'Fortaleza', 'status' => 'Avançado', 'trend' => 'stable', 'percentage' => 82],
-            ['name' => 'Temperança', 'status' => 'Em Desenvolvimento', 'trend' => 'up', 'percentage' => 61],
-        ];
-
-        return view('dashboard.index', compact(
-            'totalStudents',
-            'totalClassrooms',
-            'globalConcept',
-            'averageScore',
-            'recentGrades',
-            'conceptDistribution',
-            'triviumPerformance',
-            'virtuesDevelopment'
-        ));
+        // Caso não seja Admin (Professor/Comum)
+        return view('index');
     }
 
-    private function determineConcept($score)
+    /**
+     * Auxiliar para converter média numérica em Conceito (A, B, C, D)
+     */
+    private function calculateConcept(float $score): string
     {
-        if ($score >= 90) return 'A';
-        if ($score >= 80) return 'B';
-        if ($score >= 70) return 'C';
-        return 'D';
+        return match (true) {
+            $score >= 90 => 'A',
+            $score >= 75 => 'B',
+            $score >= 60 => 'C',
+            default      => 'D',
+        };
     }
 }
