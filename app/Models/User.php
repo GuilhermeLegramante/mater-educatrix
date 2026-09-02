@@ -35,10 +35,25 @@ class User extends Authenticatable
         ];
     }
 
-    // Método auxiliar para facilitar checagens rápidas
+    /**
+     * Verifica se o usuário possui papel de administrador.
+     *
+     * @return bool
+     */
     public function isAdmin(): bool
     {
-        return $this->role === UserRole::ADMIN;
+        // 1. Caso o $this->role já seja a instância do Enum
+        if ($this->role === \App\Enums\UserRole::ADMIN) {
+            return true;
+        }
+
+        // 2. Caso o $this->role venha como string do banco/sessão (ex: "admin")
+        if (is_string($this->role)) {
+            return strtolower($this->role) === 'admin';
+        }
+
+        // 3. Caso o Enum tenha propriedade ->value
+        return isset($this->role->value) && $this->role->value === 'admin';
     }
 
     /**
