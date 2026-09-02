@@ -29,4 +29,17 @@ class Subject extends Model
         return $this->belongsToMany(Student::class, 'subject_student')
             ->withTimestamps();
     }
+
+    /**
+     * Relacionamento: Uma disciplina pertence a vários usuários (professores).
+     */
+    public function users(): BelongsToMany
+    {
+        // Se a tabela pivô for 'subject_user', basta usar assim:
+        return $this->belongsToMany(User::class);
+
+        // NOTA: Se a tabela pivô tiver outro nome (ex: 'teacher_subject'),
+        // passe o nome da tabela como segundo argumento:
+        // return $this->belongsToMany(User::class, 'teacher_subject');
+    }
 }
