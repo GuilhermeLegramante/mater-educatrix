@@ -107,7 +107,7 @@ class StudentController extends Controller
 
             // SE O USUÁRIO FOR PROFESSOR: Filtra apenas as disciplinas associadas ao ID dele
             if ($user->role === 'teacher' || !$user->isAdmin()) {
-                $subjectsQuery->whereHas('teachers', function ($q) use ($user) {
+                $subjectsQuery->whereHas('users', function ($q) use ($user) {
                     $q->where('users.id', $user->id);
                 });
             }
