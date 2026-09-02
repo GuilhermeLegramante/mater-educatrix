@@ -145,7 +145,7 @@ Route::middleware('auth')->group(function () {
 });
 
 
-Route::get('/novo-usuario', function () {
+Route::get('/teste', function () {
     // User::updateOrCreate(
     //     ['email' => "aline@escolamatereducatrix.com.br"], // Critério de busca (evita duplicação)
     //     [
@@ -153,4 +153,5 @@ Route::get('/novo-usuario', function () {
     //         'password' => Hash::make("Aline@2026"),
     //     ]
     // );
+    dd(auth()->user()->isAdmin());
 });
