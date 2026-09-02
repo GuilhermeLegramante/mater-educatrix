@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\Classroom;
+use App\Models\OccurrenceType;
 use Illuminate\Http\Request;
 use Illuminate\Database\Eloquent\Builder;
+
 class StudentController extends Controller
 {
     public function index(Request $request)
@@ -75,16 +77,17 @@ class StudentController extends Controller
 
     public function show(Request $request, Student $student)
     {
+        $user = auth()->user();
+
+        // 1. Busca a turma ativa do aluno
         $activeClassroom = $student->classrooms()
             ->wherePivot('status', 'active')
             ->latest('year')
             ->first();
 
-        // Configuração do sistema
-        $settings = \App\Models\SchoolSetting::first();
+        // 2. Configurações do sistema para definir o bimestre
+        $settings = SchoolSetting::first();
 
-        // Usa o bimestre selecionado na URL
-        // ou o bimestre atual configurado no sistema
         $bimester = $request->get(
             'bimester',
             $settings?->active_bimester ?? 1
@@ -92,20 +95,32 @@ class StudentController extends Controller
 
         $subjectId = $request->get('subject');
 
+        // Inicialização das coleções para a view
+        $subjects = collect();
+
         if ($activeClassroom) {
 
+            // 3. Busca das Disciplinas para o Modal/Filtro
+            // Carrega as disciplinas vinculadas à turma ativa do aluno
+            $subjectsQuery = $activeClassroom->subjects();
+
+            // SE O USUÁRIO FOR PROFESSOR: Filtra apenas as disciplinas associadas ao ID dele
+            if ($user->hasRole('teacher') || !$user->isAdmin()) {
+                $subjectsQuery->whereHas('teachers', function ($q) use ($user) {
+                    $q->where('users.id', $user->id);
+                });
+            }
+
+            $subjects = $subjectsQuery->get();
+
+            // 4. Eager Loading e Busca de Notas/Conceitos
             $student->load([
                 'grades.evaluation.subject',
                 'preceptoryReports.subject',
             ]);
 
             $gradesQuery = $student->grades()
-                ->whereHas('evaluation', function ($q) use (
-                    $activeClassroom,
-                    $bimester,
-                    $subjectId
-                ) {
-
+                ->whereHas('evaluation', function ($q) use ($activeClassroom, $bimester, $subjectId) {
                     $q->where('classroom_id', $activeClassroom->id)
                         ->where('bimester', $bimester);
 
@@ -118,6 +133,7 @@ class StudentController extends Controller
                 ->with('evaluation.subject')
                 ->get();
 
+            // 5. Relatórios de Preceptoria
             $reports = $student->preceptoryReports()
                 ->when($subjectId, function ($q) use ($subjectId) {
                     $q->where('subject_id', $subjectId);
@@ -127,12 +143,11 @@ class StudentController extends Controller
                 ->latest()
                 ->get();
         } else {
-
             $grades = collect();
             $reports = collect();
         }
 
-        $occurrenceTypes = \App\Models\OccurrenceType::all();
+        $occurrenceTypes = OccurrenceType::all();
 
         return view('students.show', compact(
             'student',
@@ -141,7 +156,8 @@ class StudentController extends Controller
             'reports',
             'bimester',
             'subjectId',
-            'occurrenceTypes'
+            'occurrenceTypes',
+            'subjects' // Disciplinas liberadas passadas para a modal
         ));
     }
 
