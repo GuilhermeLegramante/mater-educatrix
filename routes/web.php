@@ -153,5 +153,5 @@ Route::get('/teste', function () {
     //         'password' => Hash::make("Aline@2026"),
     //     ]
     // );
-    dd(auth()->user()->isAdmin());
+    dd(auth()->user()->role);
 });
