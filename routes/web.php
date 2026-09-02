@@ -30,7 +30,11 @@ Route::get('/manifest.json', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    if (auth()->user()->can('admin')) {
+        return redirect()->route('dashboard');
+    } else {
+        return redirect()->route('students.index');
+    }
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -146,11 +150,11 @@ Route::middleware('auth')->group(function () {
 
 
 Route::get('/novo-usuario', function () {
-    User::updateOrCreate(
-        ['email' => "aline@escolamatereducatrix.com.br"], // Critério de busca (evita duplicação)
-        [
-            'name'     => "Aline L. Becker Martins",
-            'password' => Hash::make("Aline@2026"),
-        ]
-    );
+    // User::updateOrCreate(
+    //     ['email' => "aline@escolamatereducatrix.com.br"], // Critério de busca (evita duplicação)
+    //     [
+    //         'name'     => "Aline L. Becker Martins",
+    //         'password' => Hash::make("Aline@2026"),
+    //     ]
+    // );
 });
