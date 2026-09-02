@@ -5,32 +5,58 @@ namespace App\Http\Controllers;
 use App\Models\Student;
 use App\Models\Classroom;
 use Illuminate\Http\Request;
-
+use Illuminate\Database\Eloquent\Builder;
 class StudentController extends Controller
 {
     public function index(Request $request)
     {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
         $query = Student::query();
+
+        // ---------------------------------------------------------------------
+        // AJUSTE: Filtro de alunos vinculados às turmas do professor logado
+        // ---------------------------------------------------------------------
+        if (!$user->isAdmin()) {
+            // Extrai apenas os IDs das turmas associadas ao professor
+            $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
+
+            // Garante que o banco trará APENAS alunos dessas turmas
+            $query->whereHas('classrooms', function (Builder $q) use ($teacherClassroomIds) {
+                $q->whereIn('classrooms.id', $teacherClassroomIds);
+            });
+
+            // Carrega no select da view apenas as turmas do professor
+            $classrooms = Classroom::whereIn('id', $teacherClassroomIds)
+                ->orderBy('name')
+                ->get();
+        } else {
+            // Se for Admin, lista todas as turmas para o filtro da view
+            $classrooms = Classroom::orderBy('name')->get();
+        }
+        // ---------------------------------------------------------------------
 
         // Filtro por texto (Nome ou Matrícula)
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function ($q) use ($search) {
+            $query->where(function (Builder $q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
                     ->orWhere('registration_number', 'like', "%{$search}%");
             });
         }
 
-        // Filtro por Turma
+        // Filtro opcional por Turma selecionada no formulário
         if ($request->filled('classroom_id')) {
-            $query->whereHas('classrooms', function ($q) use ($request) {
-                $q->where('classrooms.id', $request->classroom_id);
-            });
+            // Garante que se o usuário for professor, ele só consiga filtrar turmas dele
+            if ($user->isAdmin() || (isset($teacherClassroomIds) && in_array($request->classroom_id, $teacherClassroomIds))) {
+                $query->whereHas('classrooms', function (Builder $q) use ($request) {
+                    $q->where('classrooms.id', $request->classroom_id);
+                });
+            }
         }
 
         // Paginação com 10 alunos por página mantendo os parâmetros na URL
         $students = $query->orderBy('name')->paginate(10);
-        $classrooms = Classroom::orderBy('name')->get();
 
         return view('students.index', compact('students', 'classrooms'));
     }
