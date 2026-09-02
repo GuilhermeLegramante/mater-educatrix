@@ -340,7 +340,6 @@
             </div>
 
         @endif
-        @endif
 
     </div>
 @endsection
