@@ -42,15 +42,26 @@ class EvaluationController extends Controller
 
     public function create(Request $request)
     {
-        // Buscamos a turma caso venha um ID via URL (ex: de dentro da página da turma)
-        // Caso contrário, deixamos nulo para o professor escolher no select
-        $classroom = null;
-        if ($request->has('classroom_id')) {
-            $classroom = Classroom::find($request->classroom_id);
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // 1. Filtragem de Turmas e Disciplinas com base no perfil do usuário
+        if (!$user->isAdmin()) {
+            // Professor: Carrega apenas suas turmas e disciplinas vinculadas
+            $classrooms = $user->classrooms()->orderBy('name')->get();
+            $subjects = $user->subjects()->orderBy('name')->get();
+        } else {
+            // Administrador: Carrega todas as turmas e disciplinas cadastradas
+            $classrooms = Classroom::orderBy('name')->get();
+            $subjects = Subject::orderBy('name')->get();
         }
 
-        $classrooms = Classroom::all();
-        $subjects = Subject::all();
+        // 2. Busca a turma caso venha um ID na URL (ex: acessado a partir da página da turma)
+        $classroom = null;
+        if ($request->filled('classroom_id')) {
+            // Garante que a turma solicitada esteja entre as turmas permitidas para o usuário
+            $classroom = $classrooms->firstWhere('id', $request->classroom_id);
+        }
 
         return view('evaluations.create', compact('classroom', 'classrooms', 'subjects'));
     }
