@@ -11,7 +11,7 @@ class BookController extends Controller
 {
     public function index(Request $request)
     {
-        $filters = $request->only(['search', 'type', 'discipline']);
+        $filters = $request->only(['search', 'type', 'discipline', 'is_printed']);
 
         $books = Book::filter($filters)
             ->orderBy('title')

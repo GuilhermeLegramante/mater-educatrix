@@ -124,5 +124,10 @@ class Book extends Model
         $query->when($filters['discipline'] ?? null, function ($q, $discipline) {
             $q->where('discipline', $discipline);
         });
+
+        // Filtro por ficha impressa
+        $query->when(isset($filters['is_printed']) && $filters['is_printed'] !== '', function ($q) use ($filters) {
+            $q->where('is_printed', filter_var($filters['is_printed'], FILTER_VALIDATE_BOOLEAN));
+        });
     }
 }

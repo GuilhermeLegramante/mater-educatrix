@@ -24,11 +24,12 @@
 
             {{-- BARRA DE FILTROS E PESQUISA --}}
             <form method="GET" action="{{ route('books.index') }}"
-                class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4">
+                class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-5 gap-4">
+
                 <div class="md:col-span-2">
-                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Buscar por Título, Autor,
-                        Editora
-                        ou ISBN</label>
+                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">
+                        Buscar por Título, Autor, Editora ou ISBN
+                    </label>
                     <input type="text" name="search" value="{{ request('search') }}"
                         placeholder="Ex: Tom Sawyer, Olavo Bilac..."
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-navy-900 outline-none focus:border-gold-500">
@@ -41,7 +42,8 @@
                         <option value="">Todos os Tipos</option>
                         @foreach ($types as $t)
                             <option value="{{ $t }}" {{ request('type') == $t ? 'selected' : '' }}>
-                                {{ $t }}</option>
+                                {{ $t }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -53,8 +55,22 @@
                         <option value="">Todas as Disciplinas</option>
                         @foreach ($disciplines as $d)
                             <option value="{{ $d }}" {{ request('discipline') == $d ? 'selected' : '' }}>
-                                {{ $d }}</option>
+                                {{ $d }}
+                            </option>
                         @endforeach
+                    </select>
+                </div>
+
+                {{-- NOVO FILTRO: FICHA IMPRESSA --}}
+                <div>
+                    <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Ficha Impressa</label>
+                    <select name="is_printed" onchange="this.form.submit()"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
+                        <option value="">Todas</option>
+                        <option value="true" {{ request('is_printed') === 'true' ? 'selected' : '' }}>Sim (Impressas)
+                        </option>
+                        <option value="false" {{ request('is_printed') === 'false' ? 'selected' : '' }}>Não (Pendentes)
+                        </option>
                     </select>
                 </div>
             </form>
@@ -84,13 +100,15 @@
                                             @method('PATCH')
 
                                             @if ($book->is_printed)
-                                                <button type="submit" title="Clique para marcar como NÃO impressa a Ficha Catalográfica"
+                                                <button type="submit"
+                                                    title="Clique para marcar como NÃO impressa a Ficha Catalográfica"
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold hover:bg-emerald-200 transition-all cursor-pointer">
                                                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                                                     Sim
                                                 </button>
                                             @else
-                                                <button type="submit" title="Clique para marcar como impressa a Ficha Catalográfica"
+                                                <button type="submit"
+                                                    title="Clique para marcar como impressa a Ficha Catalográfica"
                                                     class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold hover:bg-amber-200 transition-all cursor-pointer">
                                                     <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                                                     Não
