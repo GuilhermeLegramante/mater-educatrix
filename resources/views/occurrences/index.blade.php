@@ -160,7 +160,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if ($occurrence->type)
                                         <span
-                                            class="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-[10px] font-black uppercase tracking-wider">
+                                            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-{{ $occurrence->type->color }}-50 {{ $occurrence->type->color }}-950/40 text-{{ $occurrence->type->color }}-600 {{ $occurrence->type->color }}-400 border border-{{ $occurrence->type->color }}-200 {{ $occurrence->type->color }}-800/60">
                                             {{ $occurrence->type->name }}
                                         </span>
                                     @else
