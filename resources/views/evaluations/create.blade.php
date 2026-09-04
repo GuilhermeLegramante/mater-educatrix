@@ -8,8 +8,7 @@
             <span class="text-gold-600">Nova Atividade</span>
         </nav>
 
-        <div
-            class="bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
+        <div class="bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden">
             <div class="bg-navy-900 p-8 text-white relative overflow-hidden">
                 <div class="relative z-10">
                     <h2 class="font-classic text-3xl">Nova Avaliação</h2>
@@ -22,14 +21,12 @@
                 </div>
             </div>
 
-            <form action="{{ route('evaluations.store') }}" method="POST"
-                class="p-10 space-y-8 text-slate-700"> @csrf
+            <form action="{{ route('evaluations.store') }}" method="POST" class="p-10 space-y-8 text-slate-700"> @csrf
 
                 {{-- Se não houver uma turma pré-selecionada, mostra o Select --}}
                 @if (!$classroom)
                     <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Turma
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Turma
                             / Ano
                             Letivo</label>
                         <select name="classroom_id" required
@@ -62,8 +59,7 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Título
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Título
                             da
                             Avaliação</label>
                         <input type="text" name="title" value="{{ old('title') }}" required
@@ -74,27 +70,35 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Bimestre</label>
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Bimestre</label>
                         <select name="bimester" required
                             class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900 text-center">
-                            <option value="1">1º Bimestre</option>
-                            <option value="2">2º Bimestre</option>
-                            <option value="3">3º Bimestre</option>
-                            <option value="4">4º Bimestre</option>
+
+                            @php
+                                // Define o bimestre selecionado: dá prioridade ao valor vindo da requisição/old,
+                                // depois à variável $selectedBimester, ou pega o ativo da model SchoolSetting (com fallback para 1)
+                                $currentBimester = old(
+                                    'bimester',
+                                    $selectedBimester ?? ($settings?->active_bimester ?? 1),
+                                );
+                            @endphp
+
+                            @foreach (range(1, 4) as $bimester)
+                                <option value="{{ $bimester }}" @selected($currentBimester == $bimester)>
+                                    {{ $bimester }}º Bimestre
+                                </option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Peso</label>
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Peso</label>
                         <input type="number" name="weight" step="0.1" value="{{ old('weight', '1.0') }}"
                             class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900 text-center">
                     </div>
 
                     <div class="space-y-2">
-                        <label
-                            class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Pontuação
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Pontuação
                             Máxima
                             (Score)</label>
                         <input type="number" name="max_score" value="{{ old('max_score', '100') }}" required
@@ -112,8 +116,7 @@
                                 d="M13 7l5 5m0 0l-5 5m5-5H6" />
                         </svg>
                     </button>
-                    <p
-                        class="text-center text-slate-400 text-[9px] mt-4 uppercase font-bold tracking-tight">
+                    <p class="text-center text-slate-400 text-[9px] mt-4 uppercase font-bold tracking-tight">
                         Ao confirmar, você será redirecionado para a planilha de scores dos alunos.
                     </p>
                 </div>
