@@ -90,6 +90,31 @@ class EvaluationController extends Controller
     }
 
     /**
+     * Exibe o formulário de edição de uma avaliação existente.
+     */
+    public function edit(Evaluation $evaluation)
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // Garante que o professor não edite uma avaliação de turma à qual não tem acesso
+        if (!$user->isAdmin()) {
+            $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
+            if (!in_array($evaluation->classroom_id, $teacherClassroomIds)) {
+                abort(403, 'Acesso não autorizado para editar esta avaliação.');
+            }
+
+            $classrooms = $user->classrooms()->orderBy('name')->get();
+            $subjects = $user->subjects()->orderBy('name')->get();
+        } else {
+            $classrooms = Classroom::orderBy('name')->get();
+            $subjects = Subject::orderBy('name')->get();
+        }
+
+        return view('evaluations.edit', compact('evaluation', 'classrooms', 'subjects'));
+    }
+
+    /**
      * Atualiza os dados da avaliação no banco de dados.
      */
     public function update(Request $request, Evaluation $evaluation)
