@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Evaluation;
 use App\Models\Classroom;
+use App\Models\SchoolSetting;
 use App\Models\Subject;
 use Illuminate\Http\Request;
 
@@ -17,8 +18,7 @@ class EvaluationController extends Controller
         // 1. Inicia a consulta com relacionamentos pré-carregados
         $query = Evaluation::with(['subject', 'classroom']);
 
-        // 2. Trava de Segurança por Perfil e Vínculo de Disciplina:
-        // Se não for admin, filtra estritamente por turmas E disciplinas do professor
+        // 2. Trava de Segurança por Perfil (Admin vs Professor)
         if (!$user->isAdmin()) {
             $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
             $teacherSubjectIds   = $user->subjects()->pluck('subjects.id')->toArray();
@@ -27,34 +27,52 @@ class EvaluationController extends Controller
                 ->whereIn('subject_id', $teacherSubjectIds);
         }
 
-        // 3. Captura dos Filtros da URL (Busca, Disciplina, Bimestre)
-        $filters = $request->only(['search', 'subject_id', 'bimester']);
+        // 3. Captura dos Filtros da URL (incluindo classroom_id)
+        $filters = $request->only(['search', 'subject_id', 'classroom_id', 'bimester']);
 
-        // Filtro por palavra-chave no título
         if (!empty($filters['search'])) {
             $query->where('title', 'LIKE', '%' . $filters['search'] . '%');
         }
 
-        // Filtro por disciplina selecionada no formulário
         if (!empty($filters['subject_id'])) {
             $query->where('subject_id', $filters['subject_id']);
         }
 
-        // Filtro por bimestre
+        // Filtro por Turma
+        if (!empty($filters['classroom_id'])) {
+            $query->where('classroom_id', $filters['classroom_id']);
+        }
+
         if (!empty($filters['bimester'])) {
             $query->where('bimester', $filters['bimester']);
         }
 
-        // 4. Obtém apenas as disciplinas vinculadas ao usuário para o <select> do filtro
+        // 4. Carrega listas para os selects do filtro (respeitando permissões)
         $subjects = $user->isAdmin()
             ? Subject::orderBy('name')->get()
             : $user->subjects()->orderBy('name')->get();
 
-        // 5. Aplica a paginação mantendo a query string dos filtros
+        $classrooms = $user->isAdmin()
+            ? Classroom::orderBy('name')->get()
+            : $user->classrooms()->orderBy('name')->get();
+
+        // 5. Cálculo dos Insights (Métricas da tela)
+        $activeBimester = SchoolSetting::first()?->active_bimester ?? 1;
+
+        // Clona a consulta base com as permissões aplicadas para calcular os totais
+        $baseQuery = clone $query;
+        $insights = [
+            'total_evaluations' => (clone $baseQuery)->count(),
+            'current_bimester'  => (clone $baseQuery)->where('bimester', $activeBimester)->count(),
+            'avg_score'          => round((clone $baseQuery)->avg('max_score') ?? 0, 1),
+        ];
+
+        // 6. Paginação dos resultados
         $evaluations = $query->latest()->paginate(10)->withQueryString();
 
-        return view('evaluations.index', compact('evaluations', 'subjects', 'filters'));
+        return view('evaluations.index', compact('evaluations', 'subjects', 'classrooms', 'filters', 'insights', 'activeBimester'));
     }
+
     public function show(Evaluation $evaluation)
     {
         // Carrega as relações para exibir na tela de detalhes

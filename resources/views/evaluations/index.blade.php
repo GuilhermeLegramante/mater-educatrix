@@ -17,7 +17,9 @@
     @endif
 
     <div class="max-w-6xl mx-auto animate-fade-in" x-data="{ deleteOpen: false, deleteUrl: '' }">
-        <div class="flex justify-between items-end mb-8 border-b border-slate-200 pb-6">
+
+        <!-- CABEÇALHO -->
+        <div class="flex justify-between items-end mb-6 border-b border-slate-200 pb-6">
             <div>
                 <h1 class="font-classic text-4xl text-navy-900 transition-colors">Gestão de Avaliações</h1>
                 <p class="text-slate-500">Visualize e gerencie as atividades acadêmicas aplicadas.</p>
@@ -31,15 +33,66 @@
             </a>
         </div>
 
+        <!-- CARDS DE INSIGHTS -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total de Avaliações</p>
+                    <h3 class="text-2xl font-black text-navy-900 mt-1">{{ $insights['total_evaluations'] }}</h3>
+                </div>
+                <div
+                    class="w-12 h-12 bg-navy-900/5 text-navy-900 rounded-2xl flex items-center justify-center font-black text-lg">
+                    📝
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Avaliações no
+                        {{ $activeBimester }}º Bimestre</p>
+                    <h3 class="text-2xl font-black text-gold-600 mt-1">{{ $insights['current_bimester'] }}</h3>
+                </div>
+                <div
+                    class="w-12 h-12 bg-gold-500/10 text-gold-600 rounded-2xl flex items-center justify-center font-black text-lg">
+                    📅
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl border border-slate-100 shadow-sm flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Média de Max Score</p>
+                    <h3 class="text-2xl font-black text-navy-900 mt-1">{{ $insights['avg_score'] }} pts</h3>
+                </div>
+                <div
+                    class="w-12 h-12 bg-slate-100 text-slate-600 rounded-2xl flex items-center justify-center font-black text-lg">
+                    🎯
+                </div>
+            </div>
+        </div>
+
         {{-- BARRA DE FILTROS --}}
         <form method="GET" action="{{ route('evaluations.index') }}"
-            class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
 
             {{-- Busca por Texto --}}
             <div>
                 <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Buscar por Título</label>
                 <input type="text" name="search" value="{{ request('search') }}" placeholder="Ex: Prova Mensal..."
                     class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
+            </div>
+
+            {{-- Filtro por Turma --}}
+            <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Turma</label>
+                <select name="classroom_id" onchange="this.form.submit()"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
+                    <option value="">Todas as Turmas</option>
+                    @foreach ($classrooms as $c)
+                        <option value="{{ $c->id }}" {{ request('classroom_id') == $c->id ? 'selected' : '' }}>
+                            {{ $c->name }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             {{-- Filtro por Disciplina --}}
@@ -75,7 +128,7 @@
                     class="w-full bg-navy-900 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-wider hover:bg-gold-600 hover:text-navy-950 transition-all">
                     Filtrar
                 </button>
-                @if (request()->hasAny(['search', 'subject_id', 'bimester']))
+                @if (request()->hasAny(['search', 'subject_id', 'classroom_id', 'bimester']))
                     <a href="{{ route('evaluations.index') }}"
                         class="px-4 py-2.5 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors"
                         title="Limpar Filtros">
