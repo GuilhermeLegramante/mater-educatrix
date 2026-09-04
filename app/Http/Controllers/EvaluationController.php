@@ -14,39 +14,40 @@ class EvaluationController extends Controller
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        // 1. Inicia a consulta pré-carregando os relacionamentos
+        // 1. Inicia a consulta base trazendo os relacionamentos
         $query = Evaluation::with(['subject', 'classroom']);
 
-        // 2. Filtro de Segurança: Se não for admin, limita às turmas do professor
+        // 2. Trava de Segurança por Perfil:
+        // Se o usuário NÃO for administrador, restringe a busca estritamente às suas turmas
         if (!$user->isAdmin()) {
             $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
             $query->whereIn('classroom_id', $teacherClassroomIds);
         }
 
-        // 3. Captura dos Filtros da URL
+        // 3. Captura dos Filtros Opcionais vindos da View
         $filters = $request->only(['search', 'subject_id', 'bimester']);
 
-        // Filtro por Texto (Título da Avaliação)
+        // Filtro por nome/título
         if (!empty($filters['search'])) {
             $query->where('title', 'LIKE', '%' . $filters['search'] . '%');
         }
 
-        // Filtro por Disciplina
+        // Filtro por disciplina
         if (!empty($filters['subject_id'])) {
             $query->where('subject_id', $filters['subject_id']);
         }
 
-        // Filtro por Bimestre
+        // Filtro por bimestre
         if (!empty($filters['bimester'])) {
             $query->where('bimester', $filters['bimester']);
         }
 
-        // 4. Carrega as disciplinas disponíveis para preencher o <select> do filtro
+        // 4. Carrega apenas as disciplinas permitidas para alimentar o select do filtro
         $subjects = $user->isAdmin()
             ? Subject::orderBy('name')->get()
             : $user->subjects()->orderBy('name')->get();
 
-        // 5. Executa a paginação mantendo os parâmetros da URL
+        // 5. Paginação mantendo os parâmetros de filtro na URL
         $evaluations = $query->latest()->paginate(10)->withQueryString();
 
         return view('evaluations.index', compact('evaluations', 'subjects', 'filters'));
