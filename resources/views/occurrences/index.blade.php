@@ -159,8 +159,10 @@
                                 <!-- Tipo de Ocorrência -->
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if ($occurrence->type)
+                                        {{-- BADGE DE VISUALIZAÇÃO DA OCORRÊNCIA COM COR HEXADECIMAL --}}
                                         <span
-                                            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-{{ $occurrence->type->color }}-50 {{ $occurrence->type->color }}-950/40 text-{{ $occurrence->type->color }}-600 {{ $occurrence->type->color }}-400 border border-{{ $occurrence->type->color }}-200 {{ $occurrence->type->color }}-800/60">
+                                            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm border border-black/10"
+                                            style="background-color: {{ $occurrence->type->color ?? '#3b82f6' }};">
                                             {{ $occurrence->type->name }}
                                         </span>
                                     @else
