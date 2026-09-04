@@ -14,25 +14,28 @@ class EvaluationController extends Controller
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        // 1. Inicia a consulta base trazendo os relacionamentos
+        // 1. Inicia a consulta com relacionamentos pré-carregados
         $query = Evaluation::with(['subject', 'classroom']);
 
-        // 2. Trava de Segurança por Perfil:
-        // Se o usuário NÃO for administrador, restringe a busca estritamente às suas turmas
+        // 2. Trava de Segurança por Perfil e Vínculo de Disciplina:
+        // Se não for admin, filtra estritamente por turmas E disciplinas do professor
         if (!$user->isAdmin()) {
             $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
-            $query->whereIn('classroom_id', $teacherClassroomIds);
+            $teacherSubjectIds   = $user->subjects()->pluck('subjects.id')->toArray();
+
+            $query->whereIn('classroom_id', $teacherClassroomIds)
+                ->whereIn('subject_id', $teacherSubjectIds);
         }
 
-        // 3. Captura dos Filtros Opcionais vindos da View
+        // 3. Captura dos Filtros da URL (Busca, Disciplina, Bimestre)
         $filters = $request->only(['search', 'subject_id', 'bimester']);
 
-        // Filtro por nome/título
+        // Filtro por palavra-chave no título
         if (!empty($filters['search'])) {
             $query->where('title', 'LIKE', '%' . $filters['search'] . '%');
         }
 
-        // Filtro por disciplina
+        // Filtro por disciplina selecionada no formulário
         if (!empty($filters['subject_id'])) {
             $query->where('subject_id', $filters['subject_id']);
         }
@@ -42,17 +45,16 @@ class EvaluationController extends Controller
             $query->where('bimester', $filters['bimester']);
         }
 
-        // 4. Carrega apenas as disciplinas permitidas para alimentar o select do filtro
+        // 4. Obtém apenas as disciplinas vinculadas ao usuário para o <select> do filtro
         $subjects = $user->isAdmin()
             ? Subject::orderBy('name')->get()
             : $user->subjects()->orderBy('name')->get();
 
-        // 5. Paginação mantendo os parâmetros de filtro na URL
+        // 5. Aplica a paginação mantendo a query string dos filtros
         $evaluations = $query->latest()->paginate(10)->withQueryString();
 
         return view('evaluations.index', compact('evaluations', 'subjects', 'filters'));
     }
-
     public function show(Evaluation $evaluation)
     {
         // Carrega as relações para exibir na tela de detalhes
