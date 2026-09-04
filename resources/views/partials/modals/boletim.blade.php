@@ -106,7 +106,7 @@
 
                 {{-- Ações do Rodapé do Modal --}}
                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
-                    <button type="button" @click="openExportModal = false"
+                    <button type="button" onclick="closeModal('modal-boletim')"
                         class="px-5 py-2.5 text-xs font-bold uppercase tracking-widest text-slate-500 hover:bg-slate-100 rounded-xl transition-colors">
                         Cancelar
                     </button>
