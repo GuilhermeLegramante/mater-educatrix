@@ -91,6 +91,7 @@
                 <thead>
                     <tr class="text-[10px] uppercase font-black text-slate-400 bg-slate-50/50 border-b border-slate-100">
                         <th class="px-6 py-4">Avaliação</th>
+                        <th class="px-6 py-4 hidden md:table-cell">Turma</th>
                         <th class="px-6 py-4 hidden md:table-cell">Disciplina</th>
                         <th class="px-6 py-4 text-center">Bimestre</th>
                         <th class="px-6 py-4 text-center">Scores</th>
@@ -101,26 +102,45 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($evaluations as $evaluation)
                         <tr class="hover:bg-slate-50/50 transition-colors">
+                            <!-- Nome da Avaliação -->
                             <td class="px-6 py-4">
                                 <div class="font-bold text-navy-900">{{ $evaluation->title }}</div>
-                                <div class="text-[10px] text-slate-400 md:hidden">{{ $evaluation->subject->name }}</div>
+                                <div class="text-[10px] text-slate-400 md:hidden">
+                                    {{ $evaluation->classroom->name ?? 'Sem Turma' }} • {{ $evaluation->subject->name }}
+                                </div>
                             </td>
+
+                            <!-- Turma -->
+                            <td class="px-6 py-4 hidden md:table-cell">
+                                <span
+                                    class="inline-block px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 font-bold text-xs">
+                                    🏫 {{ $evaluation->classroom->name ?? 'N/A' }}
+                                </span>
+                            </td>
+
+                            <!-- Disciplina -->
                             <td class="px-6 py-4 hidden md:table-cell">
                                 <span class="text-xs font-semibold text-slate-600 uppercase tracking-tight">
                                     {{ $evaluation->subject->name }}
                                 </span>
                             </td>
+
+                            <!-- Bimestre -->
                             <td class="px-6 py-4 text-center">
                                 <span class="text-xs font-bold text-slate-500">
                                     {{ $evaluation->bimester }}º Bim.
                                 </span>
                             </td>
+
+                            <!-- Score Máximo -->
                             <td class="px-6 py-4 text-center">
                                 <span
                                     class="inline-block px-2 py-1 rounded-lg bg-slate-100 text-navy-900 font-mono font-bold text-xs">
                                     {{ $evaluation->max_score }}
                                 </span>
                             </td>
+
+                            <!-- Ações -->
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end items-center gap-2">
                                     <a href="{{ route('evaluations.show', $evaluation->id) }}"
@@ -162,7 +182,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-12 text-slate-400 text-sm font-semibold">
+                            <td colspan="6" class="text-center py-12 text-slate-400 text-sm font-semibold">
                                 Nenhuma avaliação encontrada com os filtros selecionados.
                             </td>
                         </tr>
