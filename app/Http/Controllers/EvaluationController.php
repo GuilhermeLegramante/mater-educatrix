@@ -9,27 +9,47 @@ use Illuminate\Http\Request;
 
 class EvaluationController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = auth()->user();
 
-        // Inicia a consulta com os relacionamentos pré-carregados
+        // 1. Inicia a consulta pré-carregando os relacionamentos
         $query = Evaluation::with(['subject', 'classroom']);
 
-        // Se o usuário NÃO for administrador, filtra pelas suas turmas
+        // 2. Filtro de Segurança: Se não for admin, limita às turmas do professor
         if (!$user->isAdmin()) {
-            // Obtém os IDs das turmas associadas ao professor logado
             $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
-
-            // Filtra as avaliações que pertencem às turmas do professor
             $query->whereIn('classroom_id', $teacherClassroomIds);
         }
 
-        // Ordena pelas mais recentes e aplica a paginação com 10 itens por página
-        $evaluations = $query->latest()->paginate(10);
+        // 3. Captura dos Filtros da URL
+        $filters = $request->only(['search', 'subject_id', 'bimester']);
 
-        return view('evaluations.index', compact('evaluations'));
+        // Filtro por Texto (Título da Avaliação)
+        if (!empty($filters['search'])) {
+            $query->where('title', 'LIKE', '%' . $filters['search'] . '%');
+        }
+
+        // Filtro por Disciplina
+        if (!empty($filters['subject_id'])) {
+            $query->where('subject_id', $filters['subject_id']);
+        }
+
+        // Filtro por Bimestre
+        if (!empty($filters['bimester'])) {
+            $query->where('bimester', $filters['bimester']);
+        }
+
+        // 4. Carrega as disciplinas disponíveis para preencher o <select> do filtro
+        $subjects = $user->isAdmin()
+            ? Subject::orderBy('name')->get()
+            : $user->subjects()->orderBy('name')->get();
+
+        // 5. Executa a paginação mantendo os parâmetros da URL
+        $evaluations = $query->latest()->paginate(10)->withQueryString();
+
+        return view('evaluations.index', compact('evaluations', 'subjects', 'filters'));
     }
 
     public function show(Evaluation $evaluation)

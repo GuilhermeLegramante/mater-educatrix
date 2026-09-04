@@ -16,35 +16,90 @@
         </div>
     @endif
 
-    {{-- Encapsulando o estado do modal no contêiner com Alpine.js --}}
     <div class="max-w-6xl mx-auto animate-fade-in" x-data="{ deleteOpen: false, deleteUrl: '' }">
-        <div class="text-slate-600 text-sm overflow-x-auto custom-dark-datatable">
-            <div class="flex justify-between items-end mb-10 border-b border-slate-200 pb-6">
-                <div>
-                    <h1 class="font-classic text-4xl text-navy-900 transition-colors">Gestão de Avaliações</h1>
-                    <p class="text-slate-500">Visualize e gerencie as atividades acadêmicas aplicadas.</p>
-                </div>
-                <a href="{{ route('evaluations.create') }}"
-                    class="bg-gold-500 text-navy-950 px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-lg shadow-gold-500/20 flex items-center justify-center">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-width="3" d="M12 4v16m8-8H4" />
-                    </svg>
-                    Nova Avaliação
-                </a>
+        <div class="flex justify-between items-end mb-8 border-b border-slate-200 pb-6">
+            <div>
+                <h1 class="font-classic text-4xl text-navy-900 transition-colors">Gestão de Avaliações</h1>
+                <p class="text-slate-500">Visualize e gerencie as atividades acadêmicas aplicadas.</p>
+            </div>
+            <a href="{{ route('evaluations.create') }}"
+                class="bg-gold-500 text-navy-950 px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-lg shadow-gold-500/20 flex items-center justify-center">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-width="3" d="M12 4v16m8-8H4" />
+                </svg>
+                Nova Avaliação
+            </a>
+        </div>
+
+        {{-- BARRA DE FILTROS --}}
+        <form method="GET" action="{{ route('evaluations.index') }}"
+            class="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+
+            {{-- Busca por Texto --}}
+            <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Buscar por Título</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Ex: Prova Mensal..."
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
             </div>
 
-            <table id="evaluations-table" class="w-full text-left border-collapse">
+            {{-- Filtro por Disciplina --}}
+            <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Disciplina</label>
+                <select name="subject_id" onchange="this.form.submit()"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
+                    <option value="">Todas as Disciplinas</option>
+                    @foreach ($subjects as $s)
+                        <option value="{{ $s->id }}" {{ request('subject_id') == $s->id ? 'selected' : '' }}>
+                            {{ $s->name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            {{-- Filtro por Bimestre --}}
+            <div>
+                <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Bimestre</label>
+                <select name="bimester" onchange="this.form.submit()"
+                    class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
+                    <option value="">Todos os Bimestres</option>
+                    <option value="1" {{ request('bimester') == '1' ? 'selected' : '' }}>1º Bimestre</option>
+                    <option value="2" {{ request('bimester') == '2' ? 'selected' : '' }}>2º Bimestre</option>
+                    <option value="3" {{ request('bimester') == '3' ? 'selected' : '' }}>3º Bimestre</option>
+                    <option value="4" {{ request('bimester') == '4' ? 'selected' : '' }}>4º Bimestre</option>
+                </select>
+            </div>
+
+            {{-- Botão de Limpar Filtros --}}
+            <div class="flex items-end gap-2">
+                <button type="submit"
+                    class="w-full bg-navy-900 text-white font-black py-2.5 rounded-xl text-xs uppercase tracking-wider hover:bg-gold-600 hover:text-navy-950 transition-all">
+                    Filtrar
+                </button>
+                @if (request()->hasAny(['search', 'subject_id', 'bimester']))
+                    <a href="{{ route('evaluations.index') }}"
+                        class="px-4 py-2.5 bg-slate-100 text-slate-500 rounded-xl text-xs font-bold hover:bg-slate-200 transition-colors"
+                        title="Limpar Filtros">
+                        ✕
+                    </a>
+                @endif
+            </div>
+        </form>
+
+        {{-- TABELA DE AVALIAÇÕES --}}
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden mb-6">
+            <table class="w-full text-left border-collapse">
                 <thead>
                     <tr class="text-[10px] uppercase font-black text-slate-400 bg-slate-50/50 border-b border-slate-100">
                         <th class="px-6 py-4">Avaliação</th>
                         <th class="px-6 py-4 hidden md:table-cell">Disciplina</th>
+                        <th class="px-6 py-4 text-center">Bimestre</th>
                         <th class="px-6 py-4 text-center">Scores</th>
                         <th class="px-6 py-4 text-right">Ações</th>
                     </tr>
                 </thead>
 
                 <tbody class="divide-y divide-slate-100">
-                    @foreach ($evaluations as $evaluation)
+                    @forelse ($evaluations as $evaluation)
                         <tr class="hover:bg-slate-50/50 transition-colors">
                             <td class="px-6 py-4">
                                 <div class="font-bold text-navy-900">{{ $evaluation->title }}</div>
@@ -56,6 +111,11 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center">
+                                <span class="text-xs font-bold text-slate-500">
+                                    {{ $evaluation->bimester }}º Bim.
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
                                 <span
                                     class="inline-block px-2 py-1 rounded-lg bg-slate-100 text-navy-900 font-mono font-bold text-xs">
                                     {{ $evaluation->max_score }}
@@ -63,7 +123,6 @@
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex justify-end items-center gap-2">
-                                    {{-- Ver Detalhes --}}
                                     <a href="{{ route('evaluations.show', $evaluation->id) }}"
                                         class="p-2 text-slate-400 hover:text-navy-900 transition-colors"
                                         title="Ver Detalhes">
@@ -75,7 +134,6 @@
                                         </svg>
                                     </a>
 
-                                    {{-- Editar Cadastro --}}
                                     <a href="{{ route('evaluations.edit', $evaluation->id) }}"
                                         class="p-2 text-slate-400 hover:text-gold-600 transition-colors"
                                         title="Editar Avaliação">
@@ -85,13 +143,11 @@
                                         </svg>
                                     </a>
 
-                                    {{-- Lançar Notas --}}
                                     <a href="{{ route('grades.create', ['classroom' => $evaluation->classroom_id, 'evaluation' => $evaluation->id]) }}"
                                         class="bg-navy-900 text-white px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-tighter hover:scale-105 transition-transform shadow-md">
                                         Notas
                                     </a>
 
-                                    {{-- Botão Excluir (Abre o Modal Customizado) --}}
                                     <button type="button"
                                         @click="deleteUrl = '{{ route('evaluations.destroy', $evaluation->id) }}'; deleteOpen = true"
                                         class="p-2 text-slate-400 hover:text-rose-600 transition-colors"
@@ -104,12 +160,23 @@
                                 </div>
                             </td>
                         </tr>
-                    @endforeach
+                    @empty
+                        <tr>
+                            <td colspan="5" class="text-center py-12 text-slate-400 text-sm font-semibold">
+                                Nenhuma avaliação encontrada com os filtros selecionados.
+                            </td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
 
-        {{-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO --}}
+        {{-- PAGINAÇÃO DO LARAVEL --}}
+        <div class="mt-6">
+            {{ $evaluations->links() }}
+        </div>
+
+        {{-- MODAL DE CONFIRMAÇÃO DE EXCLUSÃO --}}
         <div x-show="deleteOpen" x-cloak
             class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-navy-950/70 backdrop-blur-sm"
             x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0"
@@ -117,13 +184,7 @@
             x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
 
             <div @click.away="deleteOpen = false"
-                class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center relative overflow-hidden"
-                x-transition:enter="transition ease-out duration-200 transform"
-                x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100"
-                x-transition:leave="transition ease-in duration-150 transform"
-                x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95">
-
-                {{-- Ícone de Alerta --}}
+                class="bg-white rounded-3xl max-w-md w-full p-8 shadow-2xl border border-slate-100 text-center relative overflow-hidden">
                 <div class="w-16 h-16 bg-rose-50 rounded-2xl flex items-center justify-center mx-auto mb-6 text-rose-600">
                     <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -156,20 +217,3 @@
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#evaluations-table').DataTable({
-                responsive: true,
-                pageLength: 10,
-                ordering: true,
-                searching: true,
-                lengthChange: true,
-                language: {
-                    url: 'https://cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json'
-                }
-            });
-        });
-    </script>
-@endpush
