@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\OccurrenceType;
 use App\Http\Requests\StoreOccurrenceTypeRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class OccurrenceTypeController extends Controller
 {
@@ -21,12 +23,23 @@ class OccurrenceTypeController extends Controller
             ->with('success', 'Tipo de ocorrência cadastrado com sucesso!');
     }
 
-    public function update(StoreOccurrenceTypeRequest $request, OccurrenceType $occurrenceType)
+    public function update(Request $request, OccurrenceType $occurrenceType)
     {
-        $occurrenceType->update($request->validated());
+        // Validação correta garantindo que a regra UNIQUE ignore apenas o ID atual
+        $validated = $request->validate([
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('occurrence_types', 'name')->ignore($occurrenceType->id),
+            ],
+            'color' => ['required', 'string', 'max:7'],
+        ]);
 
-        return redirect()->route('occurrence-types.index')
-            ->with('success', 'Tipo de ocorrência atualizado com sucesso!');
+        // Atualização dos dados no banco
+        $occurrenceType->update($validated);
+
+        return redirect()->back()->with('success', 'Tipo de ocorrência atualizado com sucesso!');
     }
 
     public function toggleStatus(OccurrenceType $occurrenceType)
