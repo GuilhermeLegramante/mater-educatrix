@@ -51,7 +51,7 @@ class EvaluationController extends Controller
             : $user->subjects()->orderBy('name')->get();
 
         // 5. Aplica a paginação mantendo a query string dos filtros
-        $evaluations = $query->latest()->paginate(10)->withQueryString();
+        $evaluations = $query->latest()->paginate(5)->withQueryString();
 
         return view('evaluations.index', compact('evaluations', 'subjects', 'filters'));
     }
