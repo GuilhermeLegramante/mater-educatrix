@@ -46,7 +46,7 @@ class ClassroomController extends Controller
         return view('classrooms.index', compact('classrooms', 'allSubjects', 'settings'));
     }
 
-    /**
+   /**
      * Exibe os detalhes de uma turma específica com o resumo de conceitos e filtros
      */
     public function show(Request $request, $id)
@@ -57,11 +57,14 @@ class ClassroomController extends Controller
         // 2. Captura o bimestre selecionado no filtro da URL (padrão é o ativo ou 1)
         $selectedBimester = (int) $request->get('bimester', $settings?->active_bimester ?? 1);
 
-        // 3. Busca a turma carregando os alunos com seus resultados e notas (Eager Loading)
+        // 3. Busca a turma trazendo os alunos ordenados por nome com seus resultados e notas
         $classroom = Classroom::with([
             'subjects',
-            'students.bimesterResults',
-            'students.grades.evaluation'
+            'students' => function ($query) {
+                // Ordena os alunos alfabeticamente por nome
+                $query->orderBy('name')
+                      ->with(['bimesterResults', 'grades.evaluation']);
+            }
         ])->findOrFail($id);
 
         // 4. Busca todas as disciplinas ordenadas para o modal de grade curricular
