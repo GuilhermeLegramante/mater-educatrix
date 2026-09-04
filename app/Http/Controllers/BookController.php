@@ -104,14 +104,23 @@ class BookController extends Controller
     }
 
     /**
-     * Alterna manualmente o status de impressão da ficha do livro.
+     * Alterna o status de impressão da ficha do livro (Suporta requisições síncronas e assíncronas).
      */
-    public function togglePrinted(Book $book)
+    public function togglePrinted(Request $request, Book $book)
     {
         // Inverte o valor booleano atual
         $book->update([
             'is_printed' => !$book->is_printed,
         ]);
+
+        // Se a requisição for assíncrona (AJAX / Fetch), retorna um JSON
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success'    => true,
+                'is_printed' => (bool) $book->is_printed,
+                'message'    => 'Status de impressão atualizado com sucesso!'
+            ]);
+        }
 
         return redirect()->back()->with('success', 'Status de impressão atualizado com sucesso!');
     }

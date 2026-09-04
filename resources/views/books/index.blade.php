@@ -93,28 +93,50 @@
                         <tbody class="divide-y divide-slate-50">
                             @forelse($books as $book)
                                 <tr class="hover:bg-slate-50/50 transition-colors group">
-                                    {{-- COLUNA DE STATUS DE IMPRESSÃO --}}
-                                    <td class="px-6 py-4 whitespace-nowrap text-center">
-                                        <form action="{{ route('books.toggle-printed', $book) }}" method="POST">
-                                            @csrf
-                                            @method('PATCH')
+                                    {{-- COLUNA DE STATUS DE IMPRESSÃO (ASSÍNCRONA COM ALPINE.JS) --}}
+                                    <td class="px-6 py-4 whitespace-nowrap text-center" x-data="{
+                                        isPrinted: {{ $book->is_printed ? 'true' : 'false' }},
+                                        loading: false,
+                                        async toggle() {
+                                            if (this.loading) return;
+                                            this.loading = true;
+                                    
+                                            try {
+                                                const response = await fetch('{{ route('books.toggle-printed', $book) }}', {
+                                                    method: 'PATCH',
+                                                    headers: {
+                                                        'Content-Type': 'application/json',
+                                                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                        'Accept': 'application/json'
+                                                    }
+                                                });
+                                    
+                                                const data = await response.json();
+                                    
+                                                if (response.ok && data.success) {
+                                                    this.isPrinted = data.is_printed;
+                                                } else {
+                                                    alert('Não foi possível alterar o status de impressão.');
+                                                }
+                                            } catch (error) {
+                                                console.error('Erro na requisição:', error);
+                                                alert('Ocorreu um erro de rede ao tentar alterar o status.');
+                                            } finally {
+                                                this.loading = false;
+                                            }
+                                        }
+                                    }">
+                                        <button type="button" @click="toggle()" :disabled="loading"
+                                            :title="isPrinted ? 'Clique para marcar como NÃO impressa' :
+                                                'Clique para marcar como impressa'"
+                                            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                                            :class="isPrinted ? 'bg-emerald-100 text-emerald-800 hover:bg-emerald-200' :
+                                                'bg-amber-100 text-amber-800 hover:bg-amber-200'">
 
-                                            @if ($book->is_printed)
-                                                <button type="submit"
-                                                    title="Clique para marcar como NÃO impressa a Ficha Catalográfica"
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-full text-xs font-bold hover:bg-emerald-200 transition-all cursor-pointer">
-                                                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                                                    Sim
-                                                </button>
-                                            @else
-                                                <button type="submit"
-                                                    title="Clique para marcar como impressa a Ficha Catalográfica"
-                                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold hover:bg-amber-200 transition-all cursor-pointer">
-                                                    <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                                                    Não
-                                                </button>
-                                            @endif
-                                        </form>
+                                            <span class="w-2 h-2 rounded-full"
+                                                :class="isPrinted ? 'bg-emerald-500' : 'bg-amber-500'"></span>
+                                            <span x-text="loading ? '...' : (isPrinted ? 'Sim' : 'Não')"></span>
+                                        </button>
                                     </td>
 
                                     <td class="px-8 py-4 text-right whitespace-nowrap">
