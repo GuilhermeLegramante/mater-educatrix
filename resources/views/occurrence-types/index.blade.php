@@ -5,7 +5,8 @@
         openCreateModal: false,
         openEditModal: false,
         openDeleteModal: false,
-        editData: { id: null, name: '', color: 'emerald', actionUrl: '' },
+        createColor: '#3b82f6',
+        editData: { id: null, name: '', color: '#3b82f6', actionUrl: '' },
         deleteData: { name: '', actionUrl: '' },
         openEdit(type, actionUrl) {
             this.editData = { ...type, actionUrl: actionUrl };
@@ -67,7 +68,8 @@
 
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
                                     <span
-                                        class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-{{ $type->color }}-50 text-{{ $type->color }}-600 border border-{{ $type->color }}-200">
+                                        class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm"
+                                        style="background-color: {{ str_starts_with($type->color, '#') ? $type->color : '#3b82f6' }}">
                                         {{ $type->name }}
                                     </span>
                                 </td>
@@ -162,7 +164,7 @@
                             <p class="text-xs text-slate-400 mt-0.5">Defina uma nova categoria de registro para os alunos.
                             </p>
                         </div>
-                        <button @click="openCreateModal = false"
+                        <button type="button" @click="openCreateModal = false"
                             class="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -181,39 +183,28 @@
                                 class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-transparent text-sm text-navy-900 focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
                         </div>
 
-                        {{-- SELETOR DE COR PERSONALIZADA (COLOR PICKER) --}}
-                        <div x-data="{ selectedColor: '{{ old('color', $type->color ?? '#3b82f6') }}' }">
-                            <label class="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-2">
-                                Cor Identificadora (Badge)
-                            </label>
-
+                        {{-- SELETOR DE COR PERSONALIZADA (CRIAR) --}}
+                        <div>
+                            <label class="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-2">Cor
+                                Identificadora (Badge)</label>
                             <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl">
-                                {{-- Input nativo do seletor de cores --}}
                                 <div
                                     class="relative w-10 h-10 rounded-xl overflow-hidden border border-slate-200 shrink-0 cursor-pointer shadow-sm">
-                                    <input type="color" name="color" x-model="selectedColor"
+                                    <input type="color" name="color" x-model="createColor"
                                         class="absolute -top-2 -left-2 w-14 h-14 cursor-pointer border-0 p-0 bg-transparent">
                                 </div>
-
-                                {{-- Input de texto para código Hexadecimal --}}
                                 <div class="relative w-full">
-                                    <input type="text" x-model="selectedColor" placeholder="#000000" maxlength="7"
+                                    <input type="text" x-model="createColor" placeholder="#000000" maxlength="7"
                                         class="w-full px-3 py-2 text-xs font-mono font-bold text-navy-900 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 uppercase transition-all">
                                 </div>
-
-                                {{-- Badge de Pré-visualização --}}
                                 <div class="shrink-0">
                                     <span
                                         class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm transition-all"
-                                        :style="`background-color: ${selectedColor}`">
+                                        :style="`background-color: ${createColor}`">
                                         Preview
                                     </span>
                                 </div>
                             </div>
-
-                            <p class="text-[10px] text-slate-400 mt-1.5">
-                                Clique no quadrado colorido para abrir o seletor ou digite o código Hexadecimal.
-                            </p>
                         </div>
 
                         <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
@@ -247,7 +238,7 @@
                                 Categoria</h3>
                             <p class="text-xs text-slate-400 mt-0.5">Altere os dados da categoria de ocorrência.</p>
                         </div>
-                        <button @click="openEditModal = false"
+                        <button type="button" @click="openEditModal = false"
                             class="text-slate-400 hover:text-slate-600 transition-colors cursor-pointer">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -267,18 +258,27 @@
                                 class="w-full px-4 py-3 rounded-xl border border-slate-200 bg-transparent text-sm text-navy-900 focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
                         </div>
 
+                        {{-- SELETOR DE COR PERSONALIZADA (EDITAR) --}}
                         <div>
                             <label class="block text-[10px] uppercase font-black tracking-widest text-slate-400 mb-2">Cor
                                 Identificadora (Badge)</label>
-                            <div class="grid grid-cols-6 gap-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl">
-                                @foreach (['emerald' => 'bg-emerald-500', 'amber' => 'bg-amber-500', 'orange' => 'bg-orange-500', 'rose' => 'bg-rose-500', 'violet' => 'bg-violet-500', 'slate' => 'bg-slate-500'] as $key => $colorClass)
-                                    <label
-                                        class="relative flex items-center justify-center cursor-pointer p-0.5 rounded-full border-2 border-transparent has-[:checked]:border-navy-900 transition-all">
-                                        <input type="radio" name="color" value="{{ $key }}"
-                                            x-model="editData.color" class="sr-only">
-                                        <span class="w-6 h-6 rounded-full {{ $colorClass }} shadow-sm block"></span>
-                                    </label>
-                                @endforeach
+                            <div class="flex items-center gap-3 p-3 bg-slate-50 border border-slate-100 rounded-2xl">
+                                <div
+                                    class="relative w-10 h-10 rounded-xl overflow-hidden border border-slate-200 shrink-0 cursor-pointer shadow-sm">
+                                    <input type="color" name="color" x-model="editData.color"
+                                        class="absolute -top-2 -left-2 w-14 h-14 cursor-pointer border-0 p-0 bg-transparent">
+                                </div>
+                                <div class="relative w-full">
+                                    <input type="text" x-model="editData.color" placeholder="#000000" maxlength="7"
+                                        class="w-full px-3 py-2 text-xs font-mono font-bold text-navy-900 bg-white border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 uppercase transition-all">
+                                </div>
+                                <div class="shrink-0">
+                                    <span
+                                        class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm transition-all"
+                                        :style="`background-color: ${editData.color}`">
+                                        Preview
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
