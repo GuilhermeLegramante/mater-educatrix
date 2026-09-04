@@ -75,12 +75,15 @@
                             class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900 text-center">
 
                             @php
+                                $settings = \App\Models\SchoolSetting::first();
+
                                 // Define o bimestre selecionado: dá prioridade ao valor vindo da requisição/old,
                                 // depois à variável $selectedBimester, ou pega o ativo da model SchoolSetting (com fallback para 1)
                                 $currentBimester = old(
                                     'bimester',
                                     $selectedBimester ?? ($settings?->active_bimester ?? 1),
                                 );
+
                             @endphp
 
                             @foreach (range(1, 4) as $bimester)
