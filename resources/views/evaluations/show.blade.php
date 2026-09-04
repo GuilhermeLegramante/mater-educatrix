@@ -17,6 +17,13 @@
             </div>
 
             <div class="flex gap-3">
+                {{-- Botão para Editar Dados da Avaliação --}}
+                <a href="{{ route('evaluations.edit', $evaluation->id) }}"
+                    class="bg-slate-100 text-navy-900 px-5 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:bg-slate-200 transition-all flex items-center">
+                    Editar Cadastro
+                </a>
+
+                {{-- Botão para Editar Scores dos Alunos --}}
                 <a href="{{ route('grades.create', [$evaluation->classroom_id, $evaluation->id]) }}"
                     class="bg-gold-500 text-navy-950 px-6 py-3 rounded-xl font-black uppercase text-xs tracking-widest hover:scale-105 transition-transform shadow-lg shadow-gold-500/20 flex items-center">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -50,8 +57,7 @@
             </div>
         </div>
 
-        <div
-            class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-6 border-b border-slate-100 bg-slate-50/50">
                 <h3 class="font-classic text-lg text-navy-900">Resultados Consolidados</h3>
             </div>
@@ -102,8 +108,7 @@
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     <div class="flex items-center justify-center gap-3">
-                                        <div
-                                            class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
+                                        <div class="w-24 bg-slate-100 h-2 rounded-full overflow-hidden shadow-inner">
                                             <div class="h-full transition-all duration-1000 {{ $percentage >= 60 ? 'bg-emerald-500' : 'bg-gold-500' }}"
                                                 style="width: {{ $percentage }}%"></div>
                                         </div>

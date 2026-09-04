@@ -88,4 +88,61 @@ class EvaluationController extends Controller
             'evaluation' => $evaluation->id
         ])->with('success', 'Avaliação criada com sucesso! Agora, lance os scores dos alunos.');
     }
+
+    /**
+     * Atualiza os dados da avaliação no banco de dados.
+     */
+    public function update(Request $request, Evaluation $evaluation)
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // Validação de acesso
+        if (!$user->isAdmin()) {
+            $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
+            if (!in_array($evaluation->classroom_id, $teacherClassroomIds)) {
+                abort(403, 'Acesso não autorizado para atualizar esta avaliação.');
+            }
+        }
+
+        // Validação dos dados informados
+        $validated = $request->validate([
+            'classroom_id' => 'required|exists:classrooms,id',
+            'subject_id'   => 'required|exists:subjects,id',
+            'title'        => 'required|string|max:255',
+            'bimester'     => 'required|integer|between:1,4',
+            'max_score'    => 'required|integer|min:1',
+            'weight'       => 'required|numeric|min:0',
+        ]);
+
+        // Atualização do registro
+        $evaluation->update($validated);
+
+        return redirect()->route('evaluations.index')
+            ->with('success', 'Avaliação atualizada com sucesso!');
+    }
+
+    /**
+     * Remove a avaliação (e suas notas associadas se não houver CASCADE na migration).
+     */
+    public function destroy(Evaluation $evaluation)
+    {
+        /** @var \App\Models\User $user */
+        $user = auth()->user();
+
+        // Validação de acesso
+        if (!$user->isAdmin()) {
+            $teacherClassroomIds = $user->classrooms()->pluck('classrooms.id')->toArray();
+            if (!in_array($evaluation->classroom_id, $teacherClassroomIds)) {
+                abort(403, 'Acesso não autorizado para excluir esta avaliação.');
+            }
+        }
+
+        // Deleta as notas vinculadas antes de excluir a avaliação (garantia de integridade)
+        $evaluation->grades()->delete();
+        $evaluation->delete();
+
+        return redirect()->route('evaluations.index')
+            ->with('success', 'Avaliação excluída com sucesso!');
+    }
 }
