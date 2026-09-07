@@ -54,7 +54,7 @@
             class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
             @csrf
             <table class="w-full text-left">
-                {{-- TRECHO ATUALIZADO DO CABEÇALHO DA TABELA --}}
+                {{-- 1. CABEÇALHO DA TABELA ATUALIZADO --}}
                 <thead class="bg-slate-50 border-b border-slate-100">
                     <tr>
                         <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400">
@@ -63,36 +63,42 @@
                         <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 text-center">
                             Pontos Obtidos (Máx: {{ $evaluation->max_score }})
                         </th>
-                        <th class="px-4 py-4 text-[10px] font-black uppercase text-slate-400 text-center w-24">
+                        <th class="px-4 py-4 text-[10px] font-black uppercase text-slate-400 text-center w-36">
                             Adaptação
                         </th>
                     </tr>
                 </thead>
+
+                {{-- 2. CORPO DA TABELA ATUALIZADO --}}
                 <tbody class="divide-y divide-slate-100">
                     @foreach ($students as $student)
                         <tr class="hover:bg-slate-50/50 transition-colors">
+                            {{-- Coluna 1: Nome do Aluno --}}
                             <td class="px-6 py-4 font-semibold text-navy-900">
                                 {{ $student->name }}
                             </td>
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-2">
-                                    <input type="number" id="score_input_{{ $student->id }}"
-                                        name="scores[{{ $student->id }}]"
-                                        value="{{ $evaluation->grades->where('student_id', $student->id)->first()?->score ?? '' }}"
-                                        step="0.1" max="{{ $evaluation->max_score }}" required
-                                        class="w-full bg-slate-50 border-slate-200 rounded-lg focus:ring-gold-500 focus:border-gold-500 font-bold text-center py-2 text-sm">
 
-                                    {{-- BOTÃO PARA ABRIR O MODAL DA PROVA ADAPTADA --}}
-                                    <button type="button"
-                                        @click="openAdaptedModal({{ $student->id }}, '{{ addslashes($student->name) }}')"
-                                        title="Calcular Prova Adaptada"
-                                        class="p-2 bg-slate-100 hover:bg-gold-500 text-slate-600 hover:text-navy-950 rounded-lg transition-colors cursor-pointer shrink-0">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                                        </svg>
-                                    </button>
-                                </div>
+                            {{-- Coluna 2: Input da Nota --}}
+                            <td class="px-6 py-4">
+                                <input type="number" id="score_input_{{ $student->id }}"
+                                    name="scores[{{ $student->id }}]"
+                                    value="{{ $evaluation->grades->where('student_id', $student->id)->first()?->score ?? '' }}"
+                                    step="0.1" max="{{ $evaluation->max_score }}" required
+                                    class="w-full bg-slate-50 border-slate-200 rounded-lg focus:ring-gold-500 focus:border-gold-500 font-bold text-center py-2 text-sm">
+                            </td>
+
+                            {{-- Coluna 3: Botão Prova Adaptada COM TEXTO --}}
+                            <td class="px-4 py-4 text-center">
+                                <button type="button"
+                                    @click="openAdaptedModal({{ $student->id }}, '{{ addslashes($student->name) }}')"
+                                    title="Calcular Prova Adaptada"
+                                    class="px-3 py-2 bg-slate-100 hover:bg-gold-500 text-slate-600 hover:text-navy-950 rounded-lg transition-colors cursor-pointer inline-flex items-center justify-center gap-1.5 text-[10px] font-bold uppercase tracking-wider">
+                                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                    <span>Calcular</span>
+                                </button>
                             </td>
                         </tr>
                     @endforeach
