@@ -36,7 +36,7 @@ class GradeController extends Controller
     public function create(Classroom $classroom, Evaluation $evaluation)
     {
         // Carrega os alunos da turma para listar no formulário de notas
-        $students = $classroom->students;
+        $students = $classroom->students->sortBy('name');
 
         return view('grades.create', compact('classroom', 'evaluation', 'students'));
     }
@@ -48,7 +48,7 @@ class GradeController extends Controller
             $query->where('evaluation_id', $evaluationId);
         }])->findOrFail($evaluationId);
 
-        $students = $evaluation->subject->students;
+        $students = $evaluation->subject->students->sortBy('name');
 
         return view('grades.edit', compact('evaluation', 'students'));
     }
