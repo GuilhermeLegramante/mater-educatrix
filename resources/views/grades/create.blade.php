@@ -54,11 +54,17 @@
             class="bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-200">
             @csrf
             <table class="w-full text-left">
+                {{-- TRECHO ATUALIZADO DO CABEÇALHO DA TABELA --}}
                 <thead class="bg-slate-50 border-b border-slate-100">
                     <tr>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400">Aluno</th>
-                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 w-64 text-center">
+                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400">
+                            Aluno
+                        </th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 text-center">
                             Pontos Obtidos (Máx: {{ $evaluation->max_score }})
+                        </th>
+                        <th class="px-4 py-4 text-[10px] font-black uppercase text-slate-400 text-center w-24">
+                            Adaptação
                         </th>
                     </tr>
                 </thead>
