@@ -16,10 +16,11 @@
             @endcan
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div
+            class="flex md:grid overflow-x-auto md:overflow-visible snap-x snap-mandatory gap-6 pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid-cols-2 lg:grid-cols-3">
             @foreach ($classrooms as $classroom)
                 <a href="{{ route('classrooms.show', $classroom) }}"
-                    class="group bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-gold-500/30 backdrop-blur-sm transition-all">
+                    class="snap-center shrink-0 w-[85vw] sm:w-[60vw] md:w-auto group bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl hover:border-gold-500/30 backdrop-blur-sm transition-all">
 
                     <div class="flex justify-between items-start mb-4">
                         <span
