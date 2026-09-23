@@ -9,12 +9,14 @@
                     Gestão de Turma • Ano Letivo {{ $classroom->year }}
                 </p>
             </div>
-            <div class="flex gap-3">
-                <button onclick="openModal('modal-enroll')"
-                    class="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-navy-900/20">
-                    + Matricular Aluno
-                </button>
-            </div>
+            @can('admin')
+                <div class="flex gap-3">
+                    <button onclick="openModal('modal-enroll')"
+                        class="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-navy-900/20">
+                        + Matricular Aluno
+                    </button>
+                </div>
+            @endcan
         </div>
 
         @include('partials.modals.enrollment', [
@@ -101,16 +103,18 @@
                                                 </svg>
                                             </a>
 
-                                            <button type="button"
-                                                onclick="confirmUnenroll('{{ route('classrooms.unenroll', [$classroom, $student]) }}', '{{ $student->name }}')"
-                                                class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest"
-                                                title="Desmatricular Aluno">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
-                                                    viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6h12a6 6 0 00-6-6zM21 12h-6" />
-                                                </svg>
-                                            </button>
+                                            @can('admin')
+                                                <button type="button"
+                                                    onclick="confirmUnenroll('{{ route('classrooms.unenroll', [$classroom, $student]) }}', '{{ $student->name }}')"
+                                                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white rounded-xl transition-all border border-rose-200 font-bold text-[10px] uppercase tracking-widest"
+                                                    title="Desmatricular Aluno">
+                                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor"
+                                                        viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM9 14a6 6 0 00-6 6h12a6 6 0 00-6-6zM21 12h-6" />
+                                                    </svg>
+                                                </button>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>
