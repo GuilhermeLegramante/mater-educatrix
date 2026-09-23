@@ -229,10 +229,12 @@
                                 </svg>
                                 Grade Curricular
                             </h3>
-                            <button onclick="openModal('modal-curriculum')"
-                                class="text-[10px] bg-white/10 hover:bg-gold-600 hover:text-navy-950 px-2.5 py-1.5 rounded-lg font-bold uppercase tracking-wider transition-all border border-white/10">
-                                Configurar
-                            </button>
+                            @can('admin')
+                                <button onclick="openModal('modal-curriculum')"
+                                    class="text-[10px] bg-white/10 hover:bg-gold-600 hover:text-navy-950 px-2.5 py-1.5 rounded-lg font-bold uppercase tracking-wider transition-all border border-white/10">
+                                    Configurar
+                                </button>
+                            @endcan
                         </div>
 
                         <ul class="space-y-4">
