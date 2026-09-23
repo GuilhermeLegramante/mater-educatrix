@@ -10,8 +10,7 @@
                     <span class="text-xs font-bold text-amber-600 uppercase tracking-wider">Gestão
                         Pedagógica</span>
                     <span class="text-slate-300">•</span>
-                    <span
-                        class="text-xs font-bold bg-amber-500/10 text-amber-700 px-2 py-0.5 rounded-md uppercase">
+                    <span class="text-xs font-bold bg-amber-500/10 text-amber-700 px-2 py-0.5 rounded-md uppercase">
                         {{ $classroom->name }}
                     </span>
                 </div>
@@ -27,8 +26,7 @@
                     instantaneamente a presença na matéria acima.</p>
             </div>
 
-            <div
-                class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-2xl border border-slate-100 w-full md:w-auto">
+            <div class="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-2xl border border-slate-100 w-full md:w-auto">
                 <label class="text-[10px] font-bold text-slate-400 uppercase px-2 hidden sm:block">Mês:</label>
                 <div class="grid grid-cols-3 sm:flex items-center gap-1 w-full">
                     @foreach (range(2, 12) as $m)
@@ -48,8 +46,7 @@
             </div>
         </div>
 
-        <div
-            class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full border-collapse text-left">
                     <thead>
@@ -72,9 +69,7 @@
                                     <div class="flex justify-center mt-0.5">
                                         <span
                                             class="text-sm font-black w-7 h-7 flex items-center justify-center rounded-full transition-all
-                                            {{ $isToday
-                                                ? 'bg-amber-500 text-navy-950 font-black shadow-sm'
-                                                : 'text-slate-700' }}">
+                                            {{ $isToday ? 'bg-amber-500 text-navy-950 font-black shadow-sm' : 'text-slate-700' }}">
                                             {{ $day->date->format('d') }}
                                         </span>
                                     </div>
@@ -143,10 +138,10 @@
             const token = "{{ csrf_token() }}";
             const currentSubjectId = "{{ $subject->id }}";
 
-            // Pega a quantidade atual e incrementa. Se passar de 1 (ou o limite da sua escola), volta para 0.
+            // Pega a quantidade atual e incrementa. Se passar de 3 (ou o limite da sua escola), volta para 0.
             let currentAbsences = parseInt(button.getAttribute('data-current-absences')) || 0;
             let nextAbsences = currentAbsences + 1;
-            if (nextAbsences > 1) { // Altere o '1' para o número máximo de aulas possíveis no mesmo dia
+            if (nextAbsences > 3) { // Altere o '1' para o número máximo de aulas possíveis no mesmo dia
                 nextAbsences = 0;
             }
 

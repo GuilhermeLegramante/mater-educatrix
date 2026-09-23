@@ -63,9 +63,10 @@ class AttendanceController extends Controller
             ->orderBy('date')
             ->get();
 
-        // 3. Mapeia o mapa de faltas filtrando APENAS pela disciplina atual ($subjectId)
+        // 3. Mapeia o mapa de faltas filtrando rigorosamente pela disciplina atual ($subjectId)
         $absenceMap = Attendance::whereIn('student_id', $students->pluck('id'))
             ->whereIn('school_day_id', $schoolDays->pluck('id'))
+            ->where('subject_id', $subjectId) // <--- ADICIONADO: Filtro restrito à matéria atual
             ->get()
             ->groupBy('student_id')
             ->map(function ($attendances) {
@@ -77,13 +78,12 @@ class AttendanceController extends Controller
         return view('attendance.index', [
             'classroom'   => $classroom,
             'subject'     => $subject,
-            'students'     => $students,
-            'schoolDays'   => $schoolDays,
-            'absenceMap'   => $absenceMap,
-            'currentDate'  => $currentDate,
+            'students'    => $students,
+            'schoolDays'  => $schoolDays,
+            'absenceMap'  => $absenceMap,
+            'currentDate' => $currentDate,
         ]);
     }
-
     /**
      * Método disparado via JavaScript Inline (Altera/Acumula as faltas na disciplina)
      */
