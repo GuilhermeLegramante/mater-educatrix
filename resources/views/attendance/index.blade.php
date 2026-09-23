@@ -143,10 +143,10 @@
             const token = "{{ csrf_token() }}";
             const currentSubjectId = "{{ $subject->id }}";
 
-            // Pega a quantidade atual e incrementa. Se passar de 3 (ou o limite da sua escola), volta para 0.
+            // Pega a quantidade atual e incrementa. Se passar de 1 (ou o limite da sua escola), volta para 0.
             let currentAbsences = parseInt(button.getAttribute('data-current-absences')) || 0;
             let nextAbsences = currentAbsences + 1;
-            if (nextAbsences > 3) { // Altere o '3' para o número máximo de aulas possíveis no mesmo dia
+            if (nextAbsences > 1) { // Altere o '1' para o número máximo de aulas possíveis no mesmo dia
                 nextAbsences = 0;
             }
 
