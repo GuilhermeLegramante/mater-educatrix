@@ -58,16 +58,22 @@ class GradeController extends Controller
      */
     public function store(Request $request, Classroom $classroom, Evaluation $evaluation)
     {
-        // Ajuste o 'between' para aceitar até o max_score da avaliação dinâmica
+        // Filtra o array para remover os inputs que vieram vazios
+        $scores = array_filter($request->input('scores', []), function ($value) {
+            return $value !== null && $value !== '';
+        });
+
+        // Valida apenas os scores preenchidos
+        $request->merge(['scores' => $scores]);
+
         $request->validate([
-            'scores'   => 'required|array',
-            'scores.*' => 'required|numeric|between:0,' . $evaluation->max_score,
+            'scores'   => 'nullable|array',
+            'scores.*' => 'numeric|between:0,' . $evaluation->max_score,
         ]);
 
-        // Passamos o ID correto da avaliação
-        $this->academicService->saveGrades($evaluation->id, $request->scores);
+        // Se nenhum campo foi preenchido, você pode optar por retornar um aviso ou salvar vazio
+        $this->academicService->saveGrades($evaluation->id, $scores);
 
-        // Redireciona para o 'show' da avaliação para ver o resultado
         return redirect()->route('evaluations.show', $evaluation->id)
             ->with('success', 'Notas processadas com sucesso!');
     }
