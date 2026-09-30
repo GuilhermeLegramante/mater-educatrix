@@ -83,7 +83,7 @@
                                 <input type="number" id="score_input_{{ $student->id }}"
                                     name="scores[{{ $student->id }}]"
                                     value="{{ $evaluation->grades->where('student_id', $student->id)->first()?->score ?? '' }}"
-                                    step="0.1" max="{{ $evaluation->max_score }}" 
+                                    step="0.1" max="{{ $evaluation->max_score }}" required
                                     class="w-full bg-slate-50 border-slate-200 rounded-lg focus:ring-gold-500 focus:border-gold-500 font-bold text-center py-2 text-sm">
                             </td>
 
