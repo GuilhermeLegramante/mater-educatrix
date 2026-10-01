@@ -12,6 +12,7 @@ use App\Http\Controllers\PreceptoryController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\SchoolSettingController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\BimesterReportController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\DescriptiveEvaluationController;
 use App\Http\Controllers\ReportCardController;
@@ -144,6 +145,9 @@ Route::middleware('auth')->group(function () {
         Route::put('/settings/school', [SchoolSettingController::class, 'update'])
             ->name('settings.school.update');
     });
+
+    Route::get('/relatorios/conceitos', [BimesterReportController::class, 'index'])
+        ->name('reports.bimesters.index');
 });
 
 

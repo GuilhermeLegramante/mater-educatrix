@@ -124,6 +124,16 @@
                 </span>
             </a>
 
+            <!-- Conceitos Bimestrais -->
+            <a href="{{ route('reports.bimesters.index') }}"
+                class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('reports.bimesters.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
+                <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span x-show="sidebarOpen" class="ml-3">Conceitos Bimestrais</span>
+            </a>
+
             <!-- Link para Listagem de Ocorrências (Padronizado) -->
             <a href="{{ route('occurrences.index') }}"
                 class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('occurrences.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
