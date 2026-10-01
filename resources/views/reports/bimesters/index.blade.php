@@ -18,9 +18,9 @@
             </div>
         </div>
 
-        {{-- PAINEL DE FILTROS (4 COLUNAS) --}}
+        {{-- PAINEL DE FILTROS --}}
         <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-            <form method="GET" action="{{ route('reports.bimesters.index') }}"
+            <form id="filter-form" method="GET" action="{{ route('reports.bimesters.index') }}"
                 class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
 
                 {{-- Filtro por Turma --}}
@@ -30,11 +30,11 @@
                     </label>
                     <select name="classroom_id" id="classroom_id"
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-navy-900 font-semibold focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all outline-none"
-                        onchange="this.form.submit()">
+                        onchange="resetStudentAndSubmit(this.form)">
                         <option value="">Selecione uma Turma</option>
                         @foreach ($classrooms as $classroom)
                             <option value="{{ $classroom->id }}"
-                                {{ ($selectedClassroomId ?? request('classroom_id')) == $classroom->id ? 'selected' : '' }}>
+                                {{ $selectedClassroomId == $classroom->id ? 'selected' : '' }}>
                                 {{ $classroom->name }}
                             </option>
                         @endforeach
@@ -51,15 +51,14 @@
                         onchange="this.form.submit()">
                         <option value="">Todas as Disciplinas</option>
                         @foreach ($subjects as $subject)
-                            <option value="{{ $subject->id }}"
-                                {{ ($selectedSubjectId ?? request('subject_id')) == $subject->id ? 'selected' : '' }}>
+                            <option value="{{ $subject->id }}" {{ $selectedSubjectId == $subject->id ? 'selected' : '' }}>
                                 {{ $subject->name }}
                             </option>
                         @endforeach
                     </select>
                 </div>
 
-                {{-- Filtro por Aluno (NOVO) --}}
+                {{-- Filtro por Aluno --}}
                 <div class="space-y-2">
                     <label for="student_id" class="block font-bold text-navy-900 text-[10px] uppercase tracking-widest">
                         Aluno (Opcional)
@@ -68,21 +67,11 @@
                         class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-navy-900 font-semibold focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all outline-none"
                         onchange="this.form.submit()">
                         <option value="">Todos os Alunos</option>
-                        @if (isset($students))
-                            @foreach ($students as $student)
-                                <option value="{{ $student->id }}"
-                                    {{ ($selectedStudentId ?? request('student_id')) == $student->id ? 'selected' : '' }}>
-                                    {{ $student->name }}
-                                </option>
-                            @endforeach
-                        @elseif(isset($studentsData))
-                            @foreach ($studentsData as $item)
-                                <option value="{{ $item['student']->id }}"
-                                    {{ ($selectedStudentId ?? request('student_id')) == $item['student']->id ? 'selected' : '' }}>
-                                    {{ $item['student']->name }}
-                                </option>
-                            @endforeach
-                        @endif
+                        @foreach ($students as $student)
+                            <option value="{{ $student->id }}" {{ $selectedStudentId == $student->id ? 'selected' : '' }}>
+                                {{ $student->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -136,56 +125,50 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($studentsData as $item)
-                            {{-- Filtragem condicional no Blade (caso o filtro não tenha sido aplicado no Controller) --}}
-                            @if (!request('student_id') || $item['student']->id == request('student_id'))
-                                @foreach ($item['subjects'] as $index => $subjectData)
-                                    <tr class="hover:bg-slate-50/50 transition-colors">
-                                        {{-- Nome do Aluno --}}
-                                        @if ($index === 0)
-                                            <td class="px-6 py-4 font-bold text-navy-900 text-sm align-top border-r border-slate-100 bg-slate-50/20"
-                                                rowspan="{{ count($item['subjects']) }}">
-                                                <div class="flex items-center gap-3">
-                                                    <div
-                                                        class="w-8 h-8 rounded-lg bg-navy-900 text-gold-500 flex items-center justify-center font-classic text-sm shrink-0">
-                                                        {{ mb_substr($item['student']->name, 0, 1) }}
-                                                    </div>
-                                                    <span
-                                                        class="uppercase tracking-tight">{{ $item['student']->name }}</span>
+                            @foreach ($item['subjects'] as $index => $subjectData)
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    {{-- Nome do Aluno --}}
+                                    @if ($index === 0)
+                                        <td class="px-6 py-4 font-bold text-navy-900 text-sm align-top border-r border-slate-100 bg-slate-50/20"
+                                            rowspan="{{ count($item['subjects']) }}">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-8 h-8 rounded-lg bg-navy-900 text-gold-500 flex items-center justify-center font-classic text-sm shrink-0">
+                                                    {{ mb_substr($item['student']->name, 0, 1) }}
                                                 </div>
-                                            </td>
-                                        @endif
-
-                                        {{-- Disciplina --}}
-                                        <td class="px-6 py-4 font-bold text-slate-600 text-xs">
-                                            {{ $subjectData['subject']->name }}
+                                                <span class="uppercase tracking-tight">{{ $item['student']->name }}</span>
+                                            </div>
                                         </td>
+                                    @endif
 
-                                        {{-- Conceitos dos 4 Bimestres --}}
-                                        @foreach ([1, 2, 3, 4] as $bimester)
-                                            @php
-                                                $rawConcept = strtoupper(
-                                                    trim($subjectData['bimesters'][$bimester] ?? '-'),
-                                                );
+                                    {{-- Disciplina --}}
+                                    <td class="px-6 py-4 font-bold text-slate-600 text-xs">
+                                        {{ $subjectData['subject']->name }}
+                                    </td>
 
-                                                $badgeClasses = match ($rawConcept) {
-                                                    'A' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
-                                                    'B' => 'bg-blue-100 text-blue-800 border-blue-300',
-                                                    'C' => 'bg-amber-100 text-amber-800 border-amber-300',
-                                                    'D' => 'bg-orange-100 text-orange-800 border-orange-300',
-                                                    'E', 'F' => 'bg-rose-100 text-rose-800 border-rose-300',
-                                                    default => 'bg-slate-100 text-slate-400 border-slate-200',
-                                                };
-                                            @endphp
-                                            <td class="px-4 py-4 text-center">
-                                                <span
-                                                    class="inline-flex items-center justify-center w-8 h-8 rounded-xl font-black text-xs border shadow-sm transition-transform hover:scale-110 {{ $badgeClasses }}">
-                                                    {{ $rawConcept }}
-                                                </span>
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                            @endif
+                                    {{-- Conceitos dos 4 Bimestres --}}
+                                    @foreach ([1, 2, 3, 4] as $bimester)
+                                        @php
+                                            $rawConcept = strtoupper(trim($subjectData['bimesters'][$bimester] ?? '-'));
+
+                                            $badgeClasses = match ($rawConcept) {
+                                                'A' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                                                'B' => 'bg-blue-100 text-blue-800 border-blue-300',
+                                                'C' => 'bg-amber-100 text-amber-800 border-amber-300',
+                                                'D' => 'bg-orange-100 text-orange-800 border-orange-300',
+                                                'E', 'F' => 'bg-rose-100 text-rose-800 border-rose-300',
+                                                default => 'bg-slate-100 text-slate-400 border-slate-200',
+                                            };
+                                        @endphp
+                                        <td class="px-4 py-4 text-center">
+                                            <span
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-xl font-black text-xs border shadow-sm transition-transform hover:scale-110 {{ $badgeClasses }}">
+                                                {{ $rawConcept }}
+                                            </span>
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
                         @empty
                             <tr>
                                 <td colspan="6" class="py-12 text-center text-slate-400 italic font-serif">
@@ -199,4 +182,15 @@
         </div>
 
     </div>
+
+    {{-- SCRIPT AUXILIAR DE LIMPEZA --}}
+    <script>
+        function resetStudentAndSubmit(form) {
+            const studentSelect = form.querySelector('#student_id');
+            if (studentSelect) {
+                studentSelect.value = ''; // Reseta o seletor de aluno para o valor padrão
+            }
+            form.submit();
+        }
+    </script>
 @endsection

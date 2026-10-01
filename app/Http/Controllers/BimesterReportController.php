@@ -17,11 +17,11 @@ class BimesterReportController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Carrega as opções para os seletores de filtro
+        // 1. Carrega todas as turmas e disciplinas para os seletores
         $classrooms = Classroom::orderBy('name')->get();
         $subjects   = Subject::orderBy('name')->get();
 
-        // 2. Obtém os IDs filtrados a partir da requisição HTTP
+        // 2. Obtém os IDs dos filtros
         $selectedClassroomId = $request->input('classroom_id', $classrooms->first()?->id);
         $selectedSubjectId   = $request->input('subject_id');
         $selectedStudentId   = $request->input('student_id');
@@ -30,7 +30,17 @@ class BimesterReportController extends Controller
         $students     = collect();
 
         if ($selectedClassroomId) {
-            // Busca a turma com os alunos (aplicando o filtro de aluno se selecionado)
+            // Obtém a lista completa de alunos pertencentes a esta turma
+            $students = Student::whereHas('classrooms', function ($q) use ($selectedClassroomId) {
+                $q->where('classrooms.id', $selectedClassroomId);
+            })->orderBy('name')->get();
+
+            // Se o aluno selecionado não pertencer à turma atual, resetamos o filtro de aluno
+            if ($selectedStudentId && !$students->contains('id', $selectedStudentId)) {
+                $selectedStudentId = null;
+            }
+
+            // Busca a turma carregando apenas os alunos filtrados (ou todos da turma se $selectedStudentId for nulo)
             $classroom = Classroom::with(['students' => function ($query) use ($selectedStudentId) {
                 $query->orderBy('name');
                 if ($selectedStudentId) {
@@ -39,15 +49,11 @@ class BimesterReportController extends Controller
             }])->find($selectedClassroomId);
 
             if ($classroom) {
-                // Lista de alunos da turma para preencher o campo do filtro "Aluno" na View
-                $students = Classroom::find($selectedClassroomId)->students()->orderBy('name')->get();
-
-                // Filtra as disciplinas se uma disciplina específica foi selecionada
+                // Disciplinas a serem exibidas (todas ou apenas a filtrada)
                 $filteredSubjects = $selectedSubjectId
                     ? $subjects->where('id', $selectedSubjectId)
                     : $subjects;
 
-                // Monta o relatório estruturado por Aluno -> Disciplina -> Bimestres (1 a 4)
                 foreach ($classroom->students as $student) {
                     $studentReport = [
                         'student'  => $student,
@@ -57,7 +63,7 @@ class BimesterReportController extends Controller
                     foreach ($filteredSubjects as $subject) {
                         $bimesters = [];
 
-                        // Consulta os conceitos consolidados nos 4 bimestres
+                        // Consulta os conceitos lançados nos 4 bimestres
                         for ($bimester = 1; $bimester <= 4; $bimester++) {
                             $concept = $student->getConsolidatedConcept(
                                 $classroom->id,
@@ -79,7 +85,6 @@ class BimesterReportController extends Controller
             }
         }
 
-        // 3. Retorna a View enviando todos os dados necessários
         return view('reports.bimesters.index', compact(
             'classrooms',
             'subjects',
