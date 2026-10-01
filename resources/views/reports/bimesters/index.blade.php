@@ -1,23 +1,35 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container mx-auto px-4 py-6">
-        <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between">
+    <div class="max-w-7xl mx-auto space-y-8 animate-fade-in">
+
+        {{-- CABEÇALHO DA PÁGINA --}}
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200 pb-6">
             <div>
-                <h1 class="text-2xl font-bold text-white">Gestão de Conceitos por Turma</h1>
-                <p class="text-gray-400 text-sm">Visualização consolidada de conceitos bimestrais de todos os alunos</p>
+                <p class="text-gold-600 font-bold uppercase tracking-widest text-[10px] mb-1">
+                    Relatório Institucional
+                </p>
+                <h1 class="font-classic text-3xl md:text-4xl text-navy-900 uppercase tracking-tight">
+                    Gestão de Conceitos por Turma
+                </h1>
+                <p class="text-slate-500 text-xs font-medium mt-1">
+                    Visualização consolidada de conceitos bimestrais de todos os estudantes.
+                </p>
             </div>
         </div>
 
-        <!-- Painel de Filtros -->
-        <div class="bg-[#2b2c43] p-4 rounded-lg shadow mb-6">
-            <form method="GET" action="{{ route('reports.bimesters.index') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {{-- PAINEL DE FILTROS --}}
+        <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
+            <form method="GET" action="{{ route('reports.bimesters.index') }}"
+                class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
 
-                <!-- Filtro por Turma -->
-                <div>
-                    <label for="classroom_id" class="block text-sm font-medium text-gray-300 mb-1">Turma</label>
+                {{-- Filtro por Turma --}}
+                <div class="space-y-2">
+                    <label for="classroom_id" class="block font-bold text-navy-900 text-[10px] uppercase tracking-widest">
+                        Turma <span class="text-rose-500">*</span>
+                    </label>
                     <select name="classroom_id" id="classroom_id"
-                        class="w-full bg-[#020916] border border-gray-700 text-white rounded-md p-2"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-navy-900 font-semibold focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all outline-none"
                         onchange="this.form.submit()">
                         <option value="">Selecione uma Turma</option>
                         @foreach ($classrooms as $classroom)
@@ -29,12 +41,13 @@
                     </select>
                 </div>
 
-                <!-- Filtro por Disciplina -->
-                <div>
-                    <label for="subject_id" class="block text-sm font-medium text-gray-300 mb-1">Disciplina
-                        (Opcional)</label>
+                {{-- Filtro por Disciplina --}}
+                <div class="space-y-2">
+                    <label for="subject_id" class="block font-bold text-navy-900 text-[10px] uppercase tracking-widest">
+                        Disciplina (Opcional)
+                    </label>
                     <select name="subject_id" id="subject_id"
-                        class="w-full bg-[#020916] border border-gray-700 text-white rounded-md p-2"
+                        class="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-navy-900 font-semibold focus:border-gold-500 focus:ring-1 focus:ring-gold-500 transition-all outline-none"
                         onchange="this.form.submit()">
                         <option value="">Todas as Disciplinas</option>
                         @foreach ($subjects as $subject)
@@ -45,78 +58,80 @@
                     </select>
                 </div>
 
-                <!-- Botão de Ação -->
-                <div class="flex items-end">
+                {{-- Botão de Ação --}}
+                <div>
                     <button type="submit"
-                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2 px-4 rounded-md transition duration-200">
+                        class="w-full py-3 bg-gold-500 text-navy-900 rounded-xl font-black text-xs uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-gold-500/20 cursor-pointer">
                         Filtrar Resultados
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Tabela Matriz de Conceitos -->
-        <div class="bg-[#2b2c43] rounded-lg shadow overflow-x-auto">
-            <table class="w-full text-left text-sm text-gray-200">
-                <thead class="bg-[#020916] text-xs uppercase text-gray-400 border-b border-gray-700">
-                    <tr>
-                        <th class="py-3 px-4">Aluno</th>
-                        <th class="py-3 px-4">Disciplina</th>
-                        <th class="py-3 px-4 text-center">1º Bimestre</th>
-                        <th class="py-3 px-4 text-center">2º Bimestre</th>
-                        <th class="py-3 px-4 text-center">3º Bimestre</th>
-                        <th class="py-3 px-4 text-center">4º Bimestre</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-700">
-                    @forelse($studentsData as $item)
-                        @foreach ($item['subjects'] as $index => $subjectData)
-                            <tr class="hover:bg-gray-800/50">
-                                {{-- Nome do Aluno (exibido apenas na primeira linha da disciplina) --}}
-                                @if ($index === 0)
-                                    <td class="py-3 px-4 font-medium text-white border-r border-gray-700"
-                                        rowspan="{{ count($item['subjects']) }}">
-                                        {{ $item['student']->name }}
-                                    </td>
-                                @endif
-
-                                <td class="py-3 px-4 text-gray-300 font-semibold">
-                                    {{ $subjectData['subject']->name }}
-                                </td>
-
-                                {{-- Conceitos dos 4 Bimestres --}}
-                                @foreach ([1, 2, 3, 4] as $bimester)
-                                    @php
-                                        $concept = $subjectData['bimesters'][$bimester] ?? '-';
-
-                                        // Definição de cores conforme o conceito
-                                        $colorClass = match ($concept) {
-                                            'A' => 'bg-green-900/60 text-green-300 border-green-600',
-                                            'B' => 'bg-blue-900/60 text-blue-300 border-blue-600',
-                                            'C' => 'bg-yellow-900/60 text-yellow-300 border-yellow-600',
-                                            'D' => 'bg-orange-900/60 text-orange-300 border-orange-600',
-                                            'E', 'F' => 'bg-red-900/60 text-red-300 border-red-600',
-                                            default => 'bg-gray-800 text-gray-400 border-gray-600',
-                                        };
-                                    @endphp
-                                    <td class="py-3 px-4 text-center">
-                                        <span
-                                            class="inline-block px-3 py-1 text-xs font-bold rounded-full border {{ $colorClass }}">
-                                            {{ $concept }}
-                                        </span>
-                                    </td>
-                                @endforeach
-                            </tr>
-                        @endforeach
-                    @empty
+        {{-- TABELA MATRIZ DE CONCEITOS --}}
+        <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden backdrop-blur-sm">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead
+                        class="bg-slate-50 text-slate-400 text-[9px] uppercase font-black tracking-widest border-b border-slate-100">
                         <tr>
-                            <td colspan="6" class="py-8 text-center text-gray-400">
-                                Nenhum registro de conceito encontrado para os filtros selecionados.
-                            </td>
+                            <th class="px-6 py-4">Aluno</th>
+                            <th class="px-6 py-4">Disciplina</th>
+                            <th class="px-4 py-4 text-center">1º Bimestre</th>
+                            <th class="px-4 py-4 text-center">2º Bimestre</th>
+                            <th class="px-4 py-4 text-center">3º Bimestre</th>
+                            <th class="px-4 py-4 text-center">4º Bimestre</th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        @forelse($studentsData as $item)
+                            @foreach ($item['subjects'] as $index => $subjectData)
+                                <tr class="hover:bg-slate-50/50 transition-colors">
+                                    {{-- Nome do Aluno --}}
+                                    @if ($index === 0)
+                                        <td class="px-6 py-4 font-bold text-navy-900 text-sm align-top border-r border-slate-100 bg-slate-50/20"
+                                            rowspan="{{ count($item['subjects']) }}">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="w-8 h-8 rounded-lg bg-navy-900 text-gold-500 flex items-center justify-center font-classic text-sm shrink-0">
+                                                    {{ mb_substr($item['student']->name, 0, 1) }}
+                                                </div>
+                                                <span class="uppercase tracking-tight">{{ $item['student']->name }}</span>
+                                            </div>
+                                        </td>
+                                    @endif
+
+                                    {{-- Disciplina --}}
+                                    <td class="px-6 py-4 font-bold text-slate-600 text-xs">
+                                        {{ $subjectData['subject']->name }}
+                                    </td>
+
+                                    {{-- Conceitos dos 4 Bimestres --}}
+                                    @foreach ([1, 2, 3, 4] as $bimester)
+                                        @php
+                                            $concept = $subjectData['bimesters'][$bimester] ?? '-';
+                                        @endphp
+                                        <td class="px-4 py-4 text-center">
+                                            <span
+                                                class="inline-flex items-center justify-center w-8 h-8 rounded-xl font-black text-[11px] shadow-sm transition-transform hover:scale-105
+                                                {{ $concept != '-' ? 'bg-navy-900 text-gold-500 border border-navy-900' : 'bg-slate-100 text-slate-400' }}">
+                                                {{ $concept }}
+                                            </span>
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-12 text-center text-slate-400 italic font-serif">
+                                    Nenhum registro de conceito encontrado para os filtros selecionados.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
+
     </div>
 @endsection
