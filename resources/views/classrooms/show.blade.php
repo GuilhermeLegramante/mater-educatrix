@@ -192,31 +192,43 @@
                                                             </div>
 
                                                             <div class="flex items-center gap-3">
-                                                                <div class="text-right">
-                                                                    <span
-                                                                        class="block text-[9px] text-slate-400 font-black uppercase">Prévio</span>
-                                                                    <span
-                                                                        class="text-xs font-mono font-bold text-slate-500">
-                                                                        {{ $automaticConcept }}
-                                                                    </span>
-                                                                </div>
-
-                                                                <div class="text-slate-300">→</div>
-
-                                                                <div class="text-right">
-                                                                    <span
-                                                                        class="block text-[9px] text-slate-400 font-black uppercase">Final</span>
-                                                                    <span class="text-xs font-mono font-bold text-navy-900">
-                                                                        {{ $finalConcept }}
-                                                                    </span>
-                                                                </div>
-
                                                                 @if ($isOverridden)
+                                                                    {{-- Exibe Prévio -> Final somente se o conceito foi alterado --}}
+                                                                    <div class="text-right">
+                                                                        <span
+                                                                            class="block text-[9px] text-slate-400 font-black uppercase">Prévio</span>
+                                                                        <span
+                                                                            class="text-xs font-mono font-bold text-slate-400 line-through">
+                                                                            {{ $automaticConcept }}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <div class="text-slate-300">→</div>
+
+                                                                    <div class="text-right">
+                                                                        <span
+                                                                            class="block text-[9px] text-slate-400 font-black uppercase">Final</span>
+                                                                        <span
+                                                                            class="text-xs font-mono font-bold text-navy-900">
+                                                                            {{ $finalConcept }}
+                                                                        </span>
+                                                                    </div>
+
                                                                     <span
                                                                         class="ml-1 px-2 py-0.5 rounded-md text-[8px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-200"
                                                                         title="Conceito ajustado pelo professor">
                                                                         Alterado
                                                                     </span>
+                                                                @else
+                                                                    {{-- Exibe apenas o Conceito Único se não foi alterado --}}
+                                                                    <div class="text-right">
+                                                                        <span
+                                                                            class="block text-[9px] text-slate-400 font-black uppercase">Conceito</span>
+                                                                        <span
+                                                                            class="text-xs font-mono font-bold text-navy-900">
+                                                                            {{ $finalConcept }}
+                                                                        </span>
+                                                                    </div>
                                                                 @endif
                                                             </div>
                                                         </div>
