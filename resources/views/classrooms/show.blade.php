@@ -147,6 +147,12 @@
                                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                                                     @forelse ($classroom->subjects as $subject)
                                                         @php
+                                                            $score = $student->getFormattedBimesterScore(
+                                                                $classroom->id,
+                                                                $subject->id,
+                                                                $selectedBimester,
+                                                            );
+
                                                             $automaticConcept = $student->getConcept(
                                                                 $classroom->id,
                                                                 $subject->id,
@@ -170,9 +176,20 @@
 
                                                         <div
                                                             class="flex items-center justify-between p-3 rounded-xl border border-slate-100 bg-slate-50/50">
-                                                            <span class="text-xs font-bold text-navy-900 uppercase">
-                                                                {{ $subject->name }}
-                                                            </span>
+                                                            <div>
+                                                                <span
+                                                                    class="block text-xs font-bold text-navy-900 uppercase">
+                                                                    {{ $subject->name }}
+                                                                </span>
+                                                                <div class="flex items-center gap-1.5 mt-0.5">
+                                                                    <span
+                                                                        class="text-[9px] text-slate-400 font-bold uppercase">Nota:</span>
+                                                                    <span
+                                                                        class="text-[10px] font-mono font-bold text-navy-900 bg-slate-200/60 px-1.5 py-0.2 rounded">
+                                                                        {{ $score }}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
 
                                                             <div class="flex items-center gap-3">
                                                                 <div class="text-right">
@@ -204,8 +221,9 @@
                                                             </div>
                                                         </div>
                                                     @empty
-                                                        <p class="text-xs text-slate-400 italic col-span-2 py-2">Nenhuma
-                                                            disciplina cadastrada para esta turma.</p>
+                                                        <p class="text-xs text-slate-400 italic col-span-2 py-2">
+                                                            Nenhuma disciplina cadastrada para esta turma.
+                                                        </p>
                                                     @endforelse
                                                 </div>
                                             </div>
