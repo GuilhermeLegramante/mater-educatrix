@@ -160,9 +160,14 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     @if ($occurrence->type)
                                         {{-- BADGE DE VISUALIZAÇÃO DA OCORRÊNCIA COM COR HEXADECIMAL --}}
-                                        <span
+                                        {{-- <span
                                             class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm border border-black/10"
                                             style="background-color: {{ $occurrence->type->color ?? '#3b82f6' }};">
+                                            {{ $occurrence->type->name }}
+                                        </span> --}}
+                                        <span
+                                            class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider text-white shadow-sm"
+                                            style="background-color: {{ str_starts_with($occurrence->type->color, '#') ? $occurrence->type->color : '#3b82f6' }}">
                                             {{ $occurrence->type->name }}
                                         </span>
                                     @else
