@@ -80,13 +80,13 @@ class StudentController extends Controller
     {
         $user = auth()->user();
 
-        // 1. Busca a turma ativa do aluno
+        // 1. Busca a turma ativa do aluno com as disciplinas filtradas pelo professor (se não for admin)
         $activeClassroom = $student->classrooms()
             ->wherePivot('status', 'active')
             ->latest('year')
             ->first();
 
-        // 2. Configurações do sistema para definir o bimestre
+        // Configurações do sistema para definir o bimestre
         $settings = SchoolSetting::first();
 
         $bimester = $request->get(
@@ -96,17 +96,15 @@ class StudentController extends Controller
 
         $subjectId = $request->get('subject');
 
-        // Inicialização das coleções para a view
         $subjects = collect();
 
         if ($activeClassroom) {
 
-            // 3. Busca das Disciplinas para o Modal/Filtro
-            // Carrega as disciplinas vinculadas à turma ativa do aluno
+            // 2. Busca das Disciplinas vinculadas à Turma e ao Professor
             $subjectsQuery = $activeClassroom->subjects();
 
-            // SE O USUÁRIO FOR PROFESSOR: Filtra apenas as disciplinas associadas ao ID dele
-            if ($user->role === 'teacher' || !$user->isAdmin()) {
+            // Se o usuário não for Admin, filtra apenas as disciplinas onde ele está associado
+            if (!$user->isAdmin()) {
                 $subjectsQuery->whereHas('users', function ($q) use ($user) {
                     $q->where('users.id', $user->id);
                 });
@@ -114,19 +112,27 @@ class StudentController extends Controller
 
             $subjects = $subjectsQuery->get();
 
-            // 4. Eager Loading e Busca de Notas/Conceitos
+            // Define a coleção 'subjects' dentro do objeto $activeClassroom para ser usada diretamente no Blade se necessário
+            $activeClassroom->setRelation('subjects', $subjects);
+
+            // 3. Eager Loading e Busca de Notas/Conceitos
             $student->load([
                 'grades.evaluation.subject',
                 'preceptoryReports.subject',
             ]);
 
             $gradesQuery = $student->grades()
-                ->whereHas('evaluation', function ($q) use ($activeClassroom, $bimester, $subjectId) {
+                ->whereHas('evaluation', function ($q) use ($activeClassroom, $bimester, $subjectId, $user) {
                     $q->where('classroom_id', $activeClassroom->id)
                         ->where('bimester', $bimester);
 
                     if ($subjectId) {
                         $q->where('subject_id', $subjectId);
+                    } elseif (!$user->isAdmin()) {
+                        // Opcional: Garante que nas avaliações gerais traga só o que for do professor
+                        $q->whereHas('subject.users', function ($sq) use ($user) {
+                            $sq->where('users.id', $user->id);
+                        });
                     }
                 });
 
@@ -134,7 +140,7 @@ class StudentController extends Controller
                 ->with('evaluation.subject')
                 ->get();
 
-            // 5. Relatórios de Preceptoria
+            // 4. Relatórios de Preceptoria
             $reports = $student->preceptoryReports()
                 ->when($subjectId, function ($q) use ($subjectId) {
                     $q->where('subject_id', $subjectId);
@@ -158,10 +164,9 @@ class StudentController extends Controller
             'bimester',
             'subjectId',
             'occurrenceTypes',
-            'subjects' // Disciplinas liberadas passadas para a modal
+            'subjects'
         ));
     }
-
     public function destroy(Student $student)
     {
         $student->delete();
