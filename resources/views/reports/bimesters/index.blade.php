@@ -199,7 +199,7 @@
                                             <div class="flex flex-col items-center gap-1">
                                                 {{-- Área dos Conceitos --}}
                                                 <div class="flex items-center justify-center gap-1">
-                                                    @if ($isOverridden)
+                                                    @if ($isOverridden && $bimester > 2)
                                                         <span class="text-[10px] font-mono text-slate-400 line-through"
                                                             title="Conceito Prévio">
                                                             {{ $automaticConcept }}
@@ -222,7 +222,7 @@
                                                         {{ $score ?: '-' }}
                                                     </span>
 
-                                                    @if ($isOverridden)
+                                                    @if ($isOverridden && $bimester > 2)
                                                         <span
                                                             class="px-1 py-0.2 rounded text-[7px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-200"
                                                             title="Conceito alterado manualmente">
