@@ -125,7 +125,15 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($studentsData as $item)
+                            @php
+                                $student = $item['student'];
+                            @endphp
+
                             @foreach ($item['subjects'] as $index => $subjectData)
+                                @php
+                                    $subject = $subjectData['subject'];
+                                @endphp
+
                                 <tr class="hover:bg-slate-50/50 transition-colors">
                                     {{-- Nome do Aluno --}}
                                     @if ($index === 0)
@@ -134,22 +142,49 @@
                                             <div class="flex items-center gap-3">
                                                 <div
                                                     class="w-8 h-8 rounded-lg bg-navy-900 text-gold-500 flex items-center justify-center font-classic text-sm shrink-0">
-                                                    {{ mb_substr($item['student']->name, 0, 1) }}
+                                                    {{ mb_substr($student->name, 0, 1) }}
                                                 </div>
-                                                <span class="uppercase tracking-tight">{{ $item['student']->name }}</span>
+                                                <span class="uppercase tracking-tight">{{ $student->name }}</span>
                                             </div>
                                         </td>
                                     @endif
 
                                     {{-- Disciplina --}}
                                     <td class="px-6 py-4 font-bold text-slate-600 text-xs">
-                                        {{ $subjectData['subject']->name }}
+                                        {{ $subject->name }}
                                     </td>
 
-                                    {{-- Conceitos dos 4 Bimestres --}}
+                                    {{-- Conceitos e Notas dos 4 Bimestres --}}
                                     @foreach ([1, 2, 3, 4] as $bimester)
                                         @php
-                                            $rawConcept = strtoupper(trim($subjectData['bimesters'][$bimester] ?? '-'));
+                                            // Nota numérica formatada
+                                            $score = $student->getFormattedBimesterScore(
+                                                $classroom->id ?? $selectedClassroom,
+                                                $subject->id,
+                                                $bimester,
+                                            );
+
+                                            // Conceito automático (prévio) e resultado salvo (final)
+                                            $automaticConcept = $student->getConcept(
+                                                $classroom->id ?? $selectedClassroom,
+                                                $subject->id,
+                                                $bimester,
+                                            );
+
+                                            $bimesterResult = $student->bimesterResults
+                                                ->where('classroom_id', $classroom->id ?? $selectedClassroom)
+                                                ->where('subject_id', $subject->id)
+                                                ->where('bimester', $bimester)
+                                                ->first();
+
+                                            $finalConcept = $bimesterResult?->concept ?? $automaticConcept;
+
+                                            $isOverridden =
+                                                $bimesterResult &&
+                                                $bimesterResult->concept &&
+                                                $bimesterResult->concept !== $automaticConcept;
+
+                                            $rawConcept = strtoupper(trim($finalConcept ?? '-'));
 
                                             $badgeClasses = match ($rawConcept) {
                                                 'A' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
@@ -160,11 +195,45 @@
                                                 default => 'bg-slate-100 text-slate-400 border-slate-200',
                                             };
                                         @endphp
-                                        <td class="px-4 py-4 text-center">
-                                            <span
-                                                class="inline-flex items-center justify-center w-8 h-8 rounded-xl font-black text-xs border shadow-sm transition-transform hover:scale-110 {{ $badgeClasses }}">
-                                                {{ $rawConcept }}
-                                            </span>
+
+                                        <td class="px-4 py-4 text-center align-middle">
+                                            <div class="flex flex-col items-center gap-1">
+                                                {{-- Container dos Conceitos --}}
+                                                <div class="flex items-center justify-center gap-1">
+                                                    @if ($isOverridden)
+                                                        {{-- Prévio / Automático Riscado --}}
+                                                        <span class="text-[10px] font-mono text-slate-400 line-through"
+                                                            title="Conceito Prévio">
+                                                            {{ $automaticConcept }}
+                                                        </span>
+                                                        <span class="text-[10px] text-slate-300">→</span>
+                                                    @endif
+
+                                                    {{-- Conceito Final / Badge com o esquema de cores original --}}
+                                                    <span
+                                                        class="inline-flex items-center justify-center w-8 h-8 rounded-xl font-black text-xs border shadow-sm transition-transform hover:scale-110 {{ $badgeClasses }}"
+                                                        title="{{ $isOverridden ? 'Conceito ajustado pelo professor' : 'Conceito Bimestral' }}">
+                                                        {{ $rawConcept }}
+                                                    </span>
+                                                </div>
+
+                                                {{-- Badge da Nota e Indicador de Alteração --}}
+                                                <div class="flex items-center gap-1">
+                                                    <span
+                                                        class="text-[9px] font-mono font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded"
+                                                        title="Nota do aluno">
+                                                        {{ $score }}
+                                                    </span>
+
+                                                    @if ($isOverridden)
+                                                        <span
+                                                            class="px-1 py-0.2 rounded text-[7px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-200"
+                                                            title="Conceito alterado manualmente">
+                                                            Alt.
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </td>
                                     @endforeach
                                 </tr>
