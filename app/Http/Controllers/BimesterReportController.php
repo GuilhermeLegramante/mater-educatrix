@@ -17,7 +17,7 @@ class BimesterReportController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Carrega turmas e disciplinas
+        // 1. Carrega todas as turmas e disciplinas para os seletores
         $classrooms = Classroom::orderBy('name')->get();
         $subjects   = Subject::orderBy('name')->get();
 
@@ -30,16 +30,17 @@ class BimesterReportController extends Controller
         $students     = collect();
 
         if ($selectedClassroomId) {
-            // Alunos pertencentes a esta turma
+            // Obtém a lista completa de alunos pertencentes a esta turma
             $students = Student::whereHas('classrooms', function ($q) use ($selectedClassroomId) {
                 $q->where('classrooms.id', $selectedClassroomId);
             })->orderBy('name')->get();
 
+            // Se o aluno selecionado não pertencer à turma atual, resetamos o filtro de aluno
             if ($selectedStudentId && !$students->contains('id', $selectedStudentId)) {
                 $selectedStudentId = null;
             }
 
-            // Carrega a turma com os alunos
+            // Busca a turma carregando apenas os alunos filtrados (ou todos da turma se $selectedStudentId for nulo)
             $classroom = Classroom::with(['students' => function ($query) use ($selectedStudentId) {
                 $query->orderBy('name');
                 if ($selectedStudentId) {
@@ -48,6 +49,7 @@ class BimesterReportController extends Controller
             }])->find($selectedClassroomId);
 
             if ($classroom) {
+                // Disciplinas a serem exibidas (todas ou apenas a filtrada)
                 $filteredSubjects = $selectedSubjectId
                     ? $subjects->where('id', $selectedSubjectId)
                     : $subjects;
@@ -59,52 +61,22 @@ class BimesterReportController extends Controller
                     ];
 
                     foreach ($filteredSubjects as $subject) {
-                        $bimestersData = [];
+                        $bimesters = [];
 
+                        // Consulta os conceitos lançados nos 4 bimestres
                         for ($bimester = 1; $bimester <= 4; $bimester++) {
-                            // 1. Nota Formata
-                            $score = method_exists($student, 'getFormattedBimesterScore')
-                                ? $student->getFormattedBimesterScore($classroom->id, $subject->id, $bimester)
-                                : '-';
+                            $concept = $student->getConsolidatedConcept(
+                                $classroom->id,
+                                $subject->id,
+                                $bimester
+                            );
 
-                            // 2. Conceito Automático (Calculado/Prévio)
-                            $automaticConcept = method_exists($student, 'getConcept')
-                                ? $student->getConcept($classroom->id, $subject->id, $bimester)
-                                : null;
-
-                            // 3. Conceito Consolidado/Salvo
-                            $consolidatedConcept = method_exists($student, 'getConsolidatedConcept')
-                                ? $student->getConsolidatedConcept($classroom->id, $subject->id, $bimester)
-                                : null;
-
-                            // 4. Busca direta do registro alterado no relacionamento ou no banco
-                            $bimesterResult = $student->bimesterResults()
-                                ->where('classroom_id', $classroom->id)
-                                ->where('subject_id', $subject->id)
-                                ->where('bimester', $bimester)
-                                ->first();
-
-                            $finalConcept = $bimesterResult?->concept
-                                ?? $consolidatedConcept
-                                ?? $automaticConcept
-                                ?? '-';
-
-                            $isOverridden = $bimesterResult
-                                && $bimesterResult->concept
-                                && $automaticConcept
-                                && $bimesterResult->concept !== $automaticConcept;
-
-                            $bimestersData[$bimester] = [
-                                'score'             => $score ?: '-',
-                                'automatic_concept' => $automaticConcept ?: '-',
-                                'final_concept'     => $finalConcept,
-                                'is_overridden'     => (bool) $isOverridden,
-                            ];
+                            $bimesters[$bimester] = $concept;
                         }
 
                         $studentReport['subjects'][] = [
                             'subject'   => $subject,
-                            'bimesters' => $bimestersData,
+                            'bimesters' => $bimesters,
                         ];
                     }
 
