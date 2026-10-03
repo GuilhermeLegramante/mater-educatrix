@@ -17,7 +17,7 @@ class BimesterReportController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Carrega todas as turmas e disciplinas para os seletores
+        // 1. Carrega turmas e disciplinas
         $classrooms = Classroom::orderBy('name')->get();
         $subjects   = Subject::orderBy('name')->get();
 
@@ -30,26 +30,25 @@ class BimesterReportController extends Controller
         $students     = collect();
 
         if ($selectedClassroomId) {
-            // Obtém a lista completa de alunos pertencentes a esta turma
+            // Alunos pertencentes a esta turma para o dropdown de filtro
             $students = Student::whereHas('classrooms', function ($q) use ($selectedClassroomId) {
                 $q->where('classrooms.id', $selectedClassroomId);
             })->orderBy('name')->get();
 
-            // Se o aluno selecionado não pertencer à turma atual, resetamos o filtro de aluno
             if ($selectedStudentId && !$students->contains('id', $selectedStudentId)) {
                 $selectedStudentId = null;
             }
 
-            // Busca a turma carregando apenas os alunos filtrados (ou todos da turma se $selectedStudentId for nulo)
+            // Carrega a turma e Eager Load das relações de bimesterResults
             $classroom = Classroom::with(['students' => function ($query) use ($selectedStudentId) {
-                $query->orderBy('name');
+                $query->orderBy('name')
+                    ->with(['bimesterResults']); // Carrega os resultados salvos para evitar N+1
                 if ($selectedStudentId) {
                     $query->where('students.id', $selectedStudentId);
                 }
             }])->find($selectedClassroomId);
 
             if ($classroom) {
-                // Disciplinas a serem exibidas (todas ou apenas a filtrada)
                 $filteredSubjects = $selectedSubjectId
                     ? $subjects->where('id', $selectedSubjectId)
                     : $subjects;
@@ -61,22 +60,39 @@ class BimesterReportController extends Controller
                     ];
 
                     foreach ($filteredSubjects as $subject) {
-                        $bimesters = [];
+                        $bimestersData = [];
 
-                        // Consulta os conceitos lançados nos 4 bimestres
                         for ($bimester = 1; $bimester <= 4; $bimester++) {
-                            $concept = $student->getConsolidatedConcept(
-                                $classroom->id,
-                                $subject->id,
-                                $bimester
-                            );
+                            // Nota Formatada
+                            $score = $student->getFormattedBimesterScore($classroom->id, $subject->id, $bimester);
 
-                            $bimesters[$bimester] = $concept;
+                            // Conceito Automático (Prévio)
+                            $automaticConcept = $student->getConcept($classroom->id, $subject->id, $bimester);
+
+                            // Resultado Sobrescrito / Salvo no banco
+                            $bimesterResult = $student->bimesterResults
+                                ->where('classroom_id', $classroom->id)
+                                ->where('subject_id', $subject->id)
+                                ->where('bimester', $bimester)
+                                ->first();
+
+                            $finalConcept = $bimesterResult?->concept ?? $automaticConcept;
+
+                            $isOverridden = $bimesterResult &&
+                                $bimesterResult->concept &&
+                                $bimesterResult->concept !== $automaticConcept;
+
+                            $bimestersData[$bimester] = [
+                                'score'             => $score,
+                                'automatic_concept' => $automaticConcept,
+                                'final_concept'     => $finalConcept,
+                                'is_overridden'     => $isOverridden,
+                            ];
                         }
 
                         $studentReport['subjects'][] = [
                             'subject'   => $subject,
-                            'bimesters' => $bimesters,
+                            'bimesters' => $bimestersData,
                         ];
                     }
 
