@@ -136,8 +136,9 @@
                     </a>
 
                     {{-- CARDS: DISCIPLINAS INDIVIDUAIS --}}
-                    @foreach ($activeClassroom->subjects as $subject)
+                    @foreach ($subjects as $subject)
                         @php
+                            $score = $student->getFormattedBimesterScore($activeClassroom->id, $subject->id, $bimester);
                             $concept = $student->getConsolidatedConcept($activeClassroom->id, $subject->id, $bimester);
                             $activeSubject = request('subject') == $subject->id;
                         @endphp
@@ -152,9 +153,16 @@
                                         class="block font-black text-navy-900 text-[11px] uppercase tracking-tight group-hover:text-gold-500 transition-colors">
                                         {{ $subject->name }}
                                     </span>
-                                    <span class="text-[9px] text-slate-400 font-bold uppercase">
-                                        Média Bimestral
-                                    </span>
+
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-[9px] text-slate-400 font-bold uppercase">
+                                            Média Bimestral
+                                        </span>
+                                        <span
+                                            class="text-[10px] font-mono font-bold text-navy-900 bg-slate-100 px-1.5 py-0.5 rounded-md">
+                                            {{ $score }}
+                                        </span>
+                                    </div>
                                 </div>
 
                                 <div

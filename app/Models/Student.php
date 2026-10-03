@@ -194,4 +194,41 @@ class Student extends Model
             })
             ->count();
     }
+
+    /**
+     * Calcula a nota numérica do aluno em escala de 0 a 10 no bimestre/disciplina.
+     * Retorna float (ex: 8.5) ou null caso não haja notas cadastradas.
+     */
+    public function getBimesterScore($classroomId, $subjectId, $bimester): ?float
+    {
+        $grades = $this->grades()->whereHas('evaluation', function ($q) use ($classroomId, $subjectId, $bimester) {
+            $q->where('classroom_id', $classroomId)
+                ->where('subject_id', $subjectId)
+                ->where('bimester', $bimester);
+        })->with('evaluation')->get();
+
+        if ($grades->isEmpty()) {
+            return null;
+        }
+
+        $totalScore = $grades->sum('score');
+        $totalMax = $grades->sum(fn($g) => $g->evaluation->max_score);
+
+        if ($totalMax == 0) {
+            return null;
+        }
+
+        // Calcula a nota proporcional de 0 a 10
+        return round(($totalScore / $totalMax) * 10, 1);
+    }
+
+    /**
+     * Retorna a nota formatada (ex: "8,5") ou um valor padrão para quando não houver nota.
+     */
+    public function getFormattedBimesterScore($classroomId, $subjectId, $bimester, $default = '-'): string
+    {
+        $score = $this->getBimesterScore($classroomId, $subjectId, $bimester);
+
+        return $score !== null ? number_format($score, 1, ',', '.') : $default;
+    }
 }
