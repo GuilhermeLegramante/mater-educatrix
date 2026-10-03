@@ -30,7 +30,7 @@ class BimesterReportController extends Controller
         $students     = collect();
 
         if ($selectedClassroomId) {
-            // Alunos pertencentes a esta turma para o dropdown de filtro
+            // Alunos pertencentes a esta turma
             $students = Student::whereHas('classrooms', function ($q) use ($selectedClassroomId) {
                 $q->where('classrooms.id', $selectedClassroomId);
             })->orderBy('name')->get();
@@ -39,10 +39,9 @@ class BimesterReportController extends Controller
                 $selectedStudentId = null;
             }
 
-            // Carrega a turma e Eager Load das relações de bimesterResults
+            // Carrega a turma com os alunos
             $classroom = Classroom::with(['students' => function ($query) use ($selectedStudentId) {
-                $query->orderBy('name')
-                    ->with(['bimesterResults']); // Carrega os resultados salvos para evitar N+1
+                $query->orderBy('name');
                 if ($selectedStudentId) {
                     $query->where('students.id', $selectedStudentId);
                 }
@@ -63,30 +62,43 @@ class BimesterReportController extends Controller
                         $bimestersData = [];
 
                         for ($bimester = 1; $bimester <= 4; $bimester++) {
-                            // Nota Formatada
-                            $score = $student->getFormattedBimesterScore($classroom->id, $subject->id, $bimester);
+                            // 1. Nota Formata
+                            $score = method_exists($student, 'getFormattedBimesterScore')
+                                ? $student->getFormattedBimesterScore($classroom->id, $subject->id, $bimester)
+                                : '-';
 
-                            // Conceito Automático (Prévio)
-                            $automaticConcept = $student->getConcept($classroom->id, $subject->id, $bimester);
+                            // 2. Conceito Automático (Calculado/Prévio)
+                            $automaticConcept = method_exists($student, 'getConcept')
+                                ? $student->getConcept($classroom->id, $subject->id, $bimester)
+                                : null;
 
-                            // Resultado Sobrescrito / Salvo no banco
-                            $bimesterResult = $student->bimesterResults
+                            // 3. Conceito Consolidado/Salvo
+                            $consolidatedConcept = method_exists($student, 'getConsolidatedConcept')
+                                ? $student->getConsolidatedConcept($classroom->id, $subject->id, $bimester)
+                                : null;
+
+                            // 4. Busca direta do registro alterado no relacionamento ou no banco
+                            $bimesterResult = $student->bimesterResults()
                                 ->where('classroom_id', $classroom->id)
                                 ->where('subject_id', $subject->id)
                                 ->where('bimester', $bimester)
                                 ->first();
 
-                            $finalConcept = $bimesterResult?->concept ?? $automaticConcept;
+                            $finalConcept = $bimesterResult?->concept
+                                ?? $consolidatedConcept
+                                ?? $automaticConcept
+                                ?? '-';
 
-                            $isOverridden = $bimesterResult &&
-                                $bimesterResult->concept &&
-                                $bimesterResult->concept !== $automaticConcept;
+                            $isOverridden = $bimesterResult
+                                && $bimesterResult->concept
+                                && $automaticConcept
+                                && $bimesterResult->concept !== $automaticConcept;
 
                             $bimestersData[$bimester] = [
-                                'score'             => $score,
-                                'automatic_concept' => $automaticConcept,
+                                'score'             => $score ?: '-',
+                                'automatic_concept' => $automaticConcept ?: '-',
                                 'final_concept'     => $finalConcept,
-                                'is_overridden'     => $isOverridden,
+                                'is_overridden'     => (bool) $isOverridden,
                             ];
                         }
 
