@@ -219,33 +219,49 @@
                     Voltar ao Perfil
                 </a>
 
-                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+                {{-- BOTÕES DE AÇÃO NA BASE DA PÁGINA --}}
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
 
-                    {{-- Formulário de Exclusão da Avaliação --}}
-                    @if (!empty($existingRatings))
-                        <form method="POST" action="{{ route('descriptive-evaluation.destroy', $student) }}"
-                            onsubmit="return confirm('Tem certeza de que deseja apagar todas as respostas desta avaliação?');">
-                            @csrf
-                            @method('DELETE')
+                    {{-- Link de Voltar --}}
+                    <a href="{{ route('students.show', [$student, 'bimester' => $bimester]) }}"
+                        class="px-6 py-3.5 rounded-xl border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all text-xs uppercase tracking-widest font-black inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                        </svg>
+                        Voltar ao Perfil
+                    </a>
 
-                            <input type="hidden" name="bimester" value="{{ $bimester }}">
-                            <input type="hidden" name="year" value="{{ $year }}">
+                    <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
 
-                            <button type="submit"
-                                class="bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl text-xs transition-all cursor-pointer">
+                        {{-- Botão de Eliminação associado ao formulário externo --}}
+                        @if (!empty($existingRatings))
+                            <button type="submit" form="form-delete"
+                                class="bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl text-xs transition-all cursor-pointer"
+                                onclick="return confirm('Tem certeza de que deseja apagar todas as respostas desta avaliação?');">
                                 Eliminar Avaliação
                             </button>
-                        </form>
-                    @endif
+                        @endif
 
-                    {{-- Botão Principal de Submissão --}}
-                    <button type="submit"
-                        class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 text-xs active:scale-[0.98] cursor-pointer">
-                        Salvar Avaliação Descritiva
-                    </button>
+                        {{-- Botão Principal de Submissão --}}
+                        <button type="submit"
+                            class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 text-xs active:scale-[0.98] cursor-pointer">
+                            Salvar Avaliação Descritiva
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-        </form>
+        </form> {{-- Fim do Formulário Principal --}}
+
+        {{-- Formulário de Exclusão da Avaliação (Fora do form principal) --}}
+        @if (!empty($existingRatings))
+            <form id="form-delete" method="POST" action="{{ route('descriptive-evaluation.destroy', $student) }}"
+                class="hidden">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="bimester" value="{{ $bimester }}">
+                <input type="hidden" name="year" value="{{ $year }}">
+            </form>
+        @endif
     </div>
 @endsection
