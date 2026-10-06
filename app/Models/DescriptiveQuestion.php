@@ -2,15 +2,34 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class DescriptiveQuestion extends Model
 {
-    protected $fillable = ['subject_id', 'question_text', 'order_index'];
+    use HasFactory;
 
-    public function subject(): BelongsTo
+    // Campos permitidos para atribuição em massa
+    protected $fillable = [
+        'question_text',    // Texto da questão
+        'subject_id',   // Matéria/Disciplina (opcional)
+        'classroom_id', // Turma associada (opcional)
+        'order_index',  // Ordem de exibição na planilha
+    ];
+
+    /**
+     * Relacionamento com a Disciplina/Matéria.
+     */
+    public function subject()
     {
         return $this->belongsTo(Subject::class);
+    }
+
+    /**
+     * Relacionamento com a Turma (Classroom).
+     */
+    public function classroom()
+    {
+        return $this->belongsTo(Classroom::class);
     }
 }

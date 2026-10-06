@@ -15,6 +15,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BimesterReportController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\DescriptiveEvaluationController;
+use App\Http\Controllers\DescriptiveQuestionController;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\OccurrenceController;
 use App\Http\Controllers\OccurrenceTypeController;
@@ -148,6 +149,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/relatorios/conceitos', [BimesterReportController::class, 'index'])
         ->name('reports.bimesters.index');
+
+    // Rota Resource completa para o CRUD de Questões
+    Route::resource('questions', DescriptiveQuestionController::class);
 });
 
 

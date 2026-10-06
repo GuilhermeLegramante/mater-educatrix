@@ -188,7 +188,7 @@
         // Reabre o modal automaticamente se houver qualquer erro de validação vindo do Laravel
         document.addEventListener('DOMContentLoaded', function() {
             @if ($errors->any())
-                openProfileModal();
+                // openProfileModal();
             @endif
         });
     </script>
