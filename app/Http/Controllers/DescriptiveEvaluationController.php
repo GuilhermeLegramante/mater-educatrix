@@ -11,40 +11,50 @@ use Illuminate\Support\Facades\DB;
 
 class DescriptiveEvaluationController extends Controller
 {
-    // Exibe a planilha de avaliação do aluno escolhido
+    /**
+     * Exibe a planilha de avaliação do aluno escolhido,
+     * carregando EXCLUSIVAMENTE as questões cadastradas para a sua turma.
+     */
     public function edit(Student $student, Request $request)
     {
-        // Pegando os dados ativos do request ou definindo padrões
+        // 1. Obtém os parâmetros ativos da requisição (ou define o padrão)
         $bimester = $request->input('bimester', 1);
         $year = $request->input('year', date('Y'));
 
-        // 1. Busca TODAS as perguntas de matérias (onde subject_id NÃO é nulo) agrupadas pelo ID da matéria
+        // 2. Identifica o ID da turma vinculada ao aluno
+        $classroomId = $student->currentClassroom->first()->id ?? null;
+
+        // 3. Busca APENAS as perguntas de matérias cadastradas para a turma deste aluno
         $groupedQuestions = DescriptiveQuestion::whereNotNull('subject_id')
-            ->orderBy('order_index')
+            ->where('classroom_id', $classroomId)
+            ->orderBy('order_index', 'asc')
             ->get()
             ->groupBy('subject_id');
 
-        // 2. Busca TODAS as perguntas de conduta/comportamento (onde subject_id É nulo)
+        // 4. Busca APENAS as perguntas de comportamento cadastradas para a turma deste aluno
         $behaviorQuestions = DescriptiveQuestion::whereNull('subject_id')
-            ->orderBy('order_index')
+            ->where('classroom_id', $classroomId)
+            ->orderBy('order_index', 'asc')
             ->get();
 
-        // Busca todas as disciplinas para mapear os nomes nos cabeçalhos dos blocos
+
+        // 5. Busca todas as disciplinas para mapear os nomes nos cabeçalhos da visualização
         $subjects = Subject::all()->keyBy('id');
 
-        // Busca os lançamentos já salvos para este aluno neste bimestre/ano para preencher a planilha
+        // 6. Carrega os lançamentos de notas/avaliações já salvos previamente para este aluno
         $existingRatings = DescriptiveRating::where('student_id', $student->id)
             ->where('bimester', $bimester)
             ->where('year', $year)
             ->pluck('rating', 'descriptive_question_id')
             ->toArray();
 
+        // 7. Retorna a view enviando todas as variáveis necessárias
         return view('evaluations.descriptive-matrix', compact(
             'student',
             'bimester',
             'year',
             'groupedQuestions',
-            'behaviorQuestions', // Nova variável explícita
+            'behaviorQuestions',
             'subjects',
             'existingRatings'
         ));

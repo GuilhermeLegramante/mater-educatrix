@@ -50,7 +50,6 @@
                         </label>
                         <select name="classroom_id"
                             class="w-full bg-slate-50 border-2 @error('classroom_id') border-rose-500 @else border-slate-100 @enderror rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900">
-                            <option value="">Geral (Aplicável a todas as turmas)</option>
                             @foreach ($classrooms as $c)
                                 <option value="{{ $c->id }}" {{ old('classroom_id') == $c->id ? 'selected' : '' }}>
                                     {{ $c->name }}

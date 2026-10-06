@@ -73,9 +73,8 @@
             <input type="hidden" name="bimester" value="{{ $bimester }}">
             <input type="hidden" name="year" value="{{ $year }}">
 
-            {{-- 1. LOOP DAS PERGUNTAS VINCULADAS ÀS DISCIPLINAS (Matriz Tipo 1) --}}
+            {{-- 1. LOOP DAS PERGUNTAS VINCULADAS ÀS DISCIPLINAS --}}
             @foreach ($groupedQuestions as $subjectId => $questions)
-                {{-- Garantimos que só entra no bloco se o subjectId for válido e não-vazio --}}
                 @if ($subjectId !== null && $subjectId !== '' && $subjectId !== 0)
                     @php $subject = $subjects->get($subjectId); @endphp
 
@@ -97,11 +96,11 @@
                                     {{-- Texto da Pergunta --}}
                                     <div class="lg:max-w-xl">
                                         <p class="text-sm text-slate-200 font-medium leading-relaxed">
-                                            {{ $q->question_text }}
+                                            {{ $q->statement ?? $q->question_text }}
                                         </p>
                                     </div>
 
-                                    {{-- Opções de Seleção (Estrutura Isolada de Input e Label) --}}
+                                    {{-- Opções de Seleção --}}
                                     <div class="grid grid-cols-3 gap-2 w-full lg:w-[450px] shrink-0">
                                         @foreach ([
             'optimal' => ['label' => 'Muito Bem', 'color' => 'peer-checked:bg-emerald-500/20 peer-checked:text-emerald-400 peer-checked:border-emerald-500'],
@@ -109,14 +108,11 @@
             'critical' => ['label' => 'Não', 'color' => 'peer-checked:bg-rose-500/20 peer-checked:text-rose-400 peer-checked:border-rose-500'],
         ] as $optionKey => $optionData)
                                             @php
-                                                // ID composto 100% único
                                                 $inputUniqueId = "sub_{$subjectId}_q_{$q->id}_{$optionKey}";
-                                                $isChecked = false;
-                                                if (isset($existingRatings) && is_array($existingRatings)) {
-                                                    $isChecked =
-                                                        (string) ($existingRatings[$q->id] ?? '') ===
-                                                        (string) $optionKey;
-                                                }
+                                                $isChecked =
+                                                    isset($existingRatings) &&
+                                                    is_array($existingRatings) &&
+                                                    (string) ($existingRatings[$q->id] ?? '') === (string) $optionKey;
                                             @endphp
                                             <div class="relative">
                                                 <input type="radio" id="{{ $inputUniqueId }}"
@@ -138,19 +134,9 @@
                 @endif
             @endforeach
 
-            {{-- 2. BLOCO DAS PERGUNTAS GERAIS / DE CONDUTA (Matriz Tipo 2) --}}
-            @php
-                $emptyQuestions = collect();
-                if (isset($groupedQuestions[''])) {
-                    $emptyQuestions = $emptyQuestions->merge($groupedQuestions['']);
-                }
-                if (isset($groupedQuestions[null])) {
-                    $emptyQuestions = $emptyQuestions->merge($groupedQuestions[null]);
-                }
-            @endphp
-
-            @if ($emptyQuestions->isNotEmpty())
-                <div class="bg-[#0f1a34] rounded-3xl border border-amber-500/10 shadow-2xl overflow-hidden">
+            {{-- 2. BLOCO DAS PERGUNTAS GERAIS / COMPORTAMENTO E VIRTUDES --}}
+            @if (isset($behaviorQuestions) && $behaviorQuestions->isNotEmpty())
+                <div class="bg-[#0f1a34] rounded-3xl border border-amber-500/10 shadow-2xl overflow-hidden mb-8">
 
                     {{-- Título da Seção Geral --}}
                     <div class="p-5 bg-[#0b1329] border-b border-amber-500/10">
@@ -161,14 +147,14 @@
 
                     {{-- Lista de Questões de Conduta --}}
                     <div class="divide-y divide-slate-800/60">
-                        @foreach ($emptyQuestions as $q)
+                        @foreach ($behaviorQuestions as $q)
                             <div
                                 class="p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 hover:bg-[#13203e]/40 transition-colors">
 
                                 {{-- Texto da Pergunta --}}
                                 <div class="lg:max-w-xl">
                                     <p class="text-sm text-slate-200 font-medium leading-relaxed">
-                                        {{ $q->question_text }}
+                                        {{ $q->statement ?? $q->question_text }}
                                     </p>
                                 </div>
 
@@ -181,11 +167,10 @@
         ] as $optionKey => $optionData)
                                         @php
                                             $behaviorUniqueId = "general_q_{$q->id}_{$optionKey}";
-                                            $isChecked = false;
-                                            if (isset($existingRatings) && is_array($existingRatings)) {
-                                                $isChecked =
-                                                    (string) ($existingRatings[$q->id] ?? '') === (string) $optionKey;
-                                            }
+                                            $isChecked =
+                                                isset($existingRatings) &&
+                                                is_array($existingRatings) &&
+                                                (string) ($existingRatings[$q->id] ?? '') === (string) $optionKey;
                                         @endphp
                                         <div class="relative">
                                             <input type="radio" id="{{ $behaviorUniqueId }}"
@@ -219,37 +204,24 @@
                     Voltar ao Perfil
                 </a>
 
-                {{-- BOTÕES DE AÇÃO NA BASE DA PÁGINA --}}
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4">
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
 
-                    {{-- Link de Voltar --}}
-                    <a href="{{ route('students.show', [$student, 'bimester' => $bimester]) }}"
-                        class="px-6 py-3.5 rounded-xl border border-slate-800 text-slate-400 hover:text-white hover:border-slate-700 transition-all text-xs uppercase tracking-widest font-black inline-flex items-center gap-2">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-                                d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                        </svg>
-                        Voltar ao Perfil
-                    </a>
-
-                    <div class="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
-
-                        {{-- Botão de Eliminação associado ao formulário externo --}}
-                        @if (!empty($existingRatings))
-                            <button type="submit" form="form-delete"
-                                class="bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl text-xs transition-all cursor-pointer"
-                                onclick="return confirm('Tem certeza de que deseja apagar todas as respostas desta avaliação?');">
-                                Eliminar Avaliação
-                            </button>
-                        @endif
-
-                        {{-- Botão Principal de Submissão --}}
-                        <button type="submit"
-                            class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 text-xs active:scale-[0.98] cursor-pointer">
-                            Salvar Avaliação Descritiva
+                    {{-- Botão de Eliminação --}}
+                    @if (!empty($existingRatings))
+                        <button type="submit" form="form-delete"
+                            class="bg-rose-950/60 hover:bg-rose-900 border border-rose-800/50 text-rose-300 font-bold uppercase tracking-widest px-6 py-4 rounded-xl text-xs transition-all cursor-pointer"
+                            onclick="return confirm('Tem certeza de que deseja apagar todas as respostas desta avaliação?');">
+                            Eliminar Avaliação
                         </button>
-                    </div>
+                    @endif
+
+                    {{-- Botão Principal de Submissão --}}
+                    <button type="submit"
+                        class="w-full sm:w-auto bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black uppercase tracking-widest px-10 py-4 rounded-xl transition-all shadow-lg shadow-amber-500/10 hover:shadow-amber-500/20 text-xs active:scale-[0.98] cursor-pointer">
+                        Salvar Avaliação Descritiva
+                    </button>
                 </div>
+            </div>
 
         </form> {{-- Fim do Formulário Principal --}}
 
@@ -263,5 +235,6 @@
                 <input type="hidden" name="year" value="{{ $year }}">
             </form>
         @endif
+
     </div>
 @endsection

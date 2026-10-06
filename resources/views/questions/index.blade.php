@@ -86,7 +86,6 @@
                 <label class="block text-[10px] font-black uppercase text-slate-400 mb-1">Turma</label>
                 <select name="classroom_id" onchange="this.form.submit()"
                     class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-navy-900 outline-none focus:border-gold-500">
-                    <option value="">Todas as Turmas (ou Gerais)</option>
                     @foreach ($classrooms as $c)
                         <option value="{{ $c->id }}" {{ request('classroom_id') == $c->id ? 'selected' : '' }}>
                             {{ $c->name }}
