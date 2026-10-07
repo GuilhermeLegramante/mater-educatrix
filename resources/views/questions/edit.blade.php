@@ -67,8 +67,8 @@
                     <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">
                         Enunciado / Descrição da Questão
                     </label>
-                    <textarea name="statement" rows="4" required
-                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900 resize-none">{{ old('statement', $question->statement) }}</textarea>
+                    <textarea name="question_text" rows="4" required
+                        class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900 resize-none">{{ old('question_text', $question->question_text) }}</textarea>
                 </div>
 
                 {{-- Ordem na Planilha --}}
