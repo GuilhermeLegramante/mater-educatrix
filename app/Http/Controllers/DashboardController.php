@@ -23,16 +23,17 @@ class DashboardController extends Controller
             $globalConcept = $this->calculateConcept($averageScore);
 
             // 2. Acompanhamento do Lançamento de Notas por Avaliação
-            $evaluationsProgress = Evaluation::with(['classroom.classrooms', 'subject'])
+            // Traz a turma com a contagem de alunos vinculados e a contagem de notas lançadas
+            $evaluationsProgress = Evaluation::with(['classroom' => function ($query) {
+                $query->withCount('students');
+            }, 'subject'])
                 ->withCount('grades')
                 ->latest()
                 ->take(10)
                 ->get()
                 ->map(function ($evaluation) {
-                    // Busca total de alunos com matrícula ativa/vinculados na turma da avaliação
-                    $totalStudents = $evaluation->classroom
-                        ? $evaluation->classroom->students()->count()
-                        : 0;
+                    // Obtém a quantidade total de alunos matriculados na turma da avaliação
+                    $totalStudents = $evaluation->classroom->students_count ?? 0;
 
                     $gradesCount = $evaluation->grades_count;
 
@@ -83,7 +84,7 @@ class DashboardController extends Controller
                 'pendingEvaluations',
                 'recentGrades',
                 'recentEvaluations',
-                'recentOccurrences'
+                'recentOccurrences',
             ));
         }
 
