@@ -643,12 +643,25 @@
 
     <table class="footer-signatures">
         <tr>
+            <!-- Assinatura da Coordenação -->
             <td class="signature-space">
-                <div class="signature-line">Assinatura da Direção / Coordenação</div>
+                <div class="signature-container">
+                    <img src="{{ public_path('img/assinaturas/coordenacao.png') }}" alt="Assinatura Direção / Coordenação"
+                        class="signature-img">
+                    <div class="signature-line">Assinatura da Direção / Coordenação</div>
+                </div>
             </td>
+
+            <!-- Espaçador entre assinaturas -->
             <td width="10%"></td>
+
+            <!-- Assinatura do Tutor -->
             <td class="signature-space">
-                <div class="signature-line">Assinatura do Tutor da Turma</div>
+                <div class="signature-container">
+                    <img src="{{ public_path('img/assinaturas/tutor.png') }}" alt="Assinatura do Tutor"
+                        class="signature-img">
+                    <div class="signature-line">Assinatura do Tutor da Turma</div>
+                </div>
             </td>
         </tr>
     </table>
