@@ -68,28 +68,27 @@
                 </div>
             </div>
 
-            <!-- Novo Card de Indicador: Avaliações Pendentes -->
+            <!-- Card de Indicador Complementar: Lançamentos Pendentes -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500 flex justify-between items-center">
                 <div>
-                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lançamentos Pendentes</span>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Avaliações Incompletas</span>
                     <div class="text-3xl font-black text-navy-900 mt-1">{{ $pendingEvaluations }}</div>
-                    <span class="text-[10px] text-amber-600 font-bold">Avaliações incompletas</span>
+                    <span class="text-[10px] text-amber-600 font-bold">Aguardando lançamento</span>
                 </div>
                 <div class="text-2xl opacity-40">⏳</div>
             </div>
 
-            <!-- BLOCO: Acompanhamento de Lançamento de Notas pelos Professores -->
+            <!-- Tabela de Acompanhamento do Progresso de Notas -->
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <div
-                    class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                     <div>
-                        <h3 class="font-bold text-lg text-navy-900">Acompanhamento de Lançamento de Notas</h3>
-                        <p class="text-xs text-slate-400">Progresso do preenchimento das avaliações por professor e turma.
+                        <h3 class="font-bold text-lg text-navy-900">Acompanhamento do Lançamento de Notas</h3>
+                        <p class="text-xs text-slate-400">Progresso do preenchimento das avaliações por turma e disciplina.
                         </p>
                     </div>
                     <span
                         class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                        Gestão Ativa
+                        Acompanhamento Pedagógico
                     </span>
                 </div>
 
@@ -99,8 +98,7 @@
                             <tr>
                                 <th class="px-6 py-4 text-left">Avaliação / Disciplina</th>
                                 <th class="px-6 py-4 text-left">Turma</th>
-                                <th class="px-6 py-4 text-left">Professor Responsável</th>
-                                <th class="px-6 py-4 text-center">Progresso de Lançamento</th>
+                                <th class="px-6 py-4 text-center">Lançamentos / Total Alunos</th>
                                 <th class="px-6 py-4 text-right">Status</th>
                             </tr>
                         </thead>
@@ -114,16 +112,13 @@
                                     <td class="px-6 py-4 text-xs font-semibold text-slate-600">
                                         {{ $eval['classroom'] }}
                                     </td>
-                                    <td class="px-6 py-4 text-xs text-slate-700 font-medium">
-                                        {{ $eval['teacher_name'] }}
-                                    </td>
                                     <td class="px-6 py-4 text-center">
                                         <div class="w-full max-w-xs mx-auto">
                                             <div
                                                 class="flex justify-between items-center text-[10px] font-mono font-bold mb-1">
                                                 <span
                                                     class="text-slate-500">{{ $eval['grades_count'] }}/{{ $eval['total_students'] }}
-                                                    alunos</span>
+                                                    notas</span>
                                                 <span
                                                     class="{{ $eval['percentage'] == 100 ? 'text-emerald-600' : 'text-amber-600' }}">
                                                     {{ $eval['percentage'] }}%
@@ -151,7 +146,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs italic">
+                                    <td colspan="4" class="px-6 py-8 text-center text-slate-400 text-xs italic">
                                         Nenhuma avaliação cadastrada até o momento.
                                     </td>
                                 </tr>

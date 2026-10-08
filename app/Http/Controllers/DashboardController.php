@@ -7,9 +7,7 @@ use App\Models\Student;
 use App\Models\Classroom;
 use App\Models\Evaluation;
 use App\Models\Occurrence;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -19,21 +17,22 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         if ($user->isAdmin()) {
-            // 1. Totalizadores Globais
+            // 1. Indicadores Globais
             $totalStudents = Student::count();
             $averageScore = Grade::avg('score') ?? 0;
             $globalConcept = $this->calculateConcept($averageScore);
 
-            // 2. Acompanhamento do Lançamento de Notas por Avaliação/Professor
-            // Traz as avaliações com contagem de notas já lançadas e total de alunos da turma
-            $evaluationsProgress = Evaluation::with(['classroom.students', 'subject', 'user']) // 'user' assume ser o professor responsável
+            // 2. Acompanhamento do Lançamento de Notas por Avaliação
+            $evaluationsProgress = Evaluation::with(['classroom.classrooms', 'subject'])
                 ->withCount('grades')
                 ->latest()
                 ->take(10)
                 ->get()
                 ->map(function ($evaluation) {
-                    $totalStudents = $evaluation->classroom->students_count
-                        ?? $evaluation->classroom->students()->count();
+                    // Busca total de alunos com matrícula ativa/vinculados na turma da avaliação
+                    $totalStudents = $evaluation->classroom
+                        ? $evaluation->classroom->students()->count()
+                        : 0;
 
                     $gradesCount = $evaluation->grades_count;
 
@@ -42,26 +41,30 @@ class DashboardController extends Controller
                         : 0;
 
                     return [
-                        'id'              => $evaluation->id,
-                        'title'           => $evaluation->title,
-                        'classroom'       => $evaluation->classroom->name ?? 'N/A',
-                        'subject'         => $evaluation->subject->name ?? 'N/A',
-                        'teacher_name'    => $evaluation->user->name ?? 'Não atribuído',
-                        'grades_count'    => $gradesCount,
-                        'total_students'  => $totalStudents,
-                        'percentage'      => min($percentage, 100),
-                        'is_completed'    => $percentage >= 100,
-                        'created_at'      => $evaluation->created_at,
+                        'id'             => $evaluation->id,
+                        'title'          => $evaluation->title ?? 'Sem título',
+                        'classroom'      => $evaluation->classroom->name ?? 'N/A',
+                        'subject'        => $evaluation->subject->name ?? 'N/A',
+                        'grades_count'   => $gradesCount,
+                        'total_students' => $totalStudents,
+                        'percentage'     => min($percentage, 100),
+                        'is_completed'   => $percentage >= 100 && $totalStudents > 0,
+                        'created_at'     => $evaluation->created_at,
                     ];
                 });
 
-            // 3. Resumo de Pendências Globais
+            // Métrica de Pendências Globais
             $totalEvaluations = Evaluation::count();
             $completedEvaluations = $evaluationsProgress->where('is_completed', true)->count();
             $pendingEvaluations = $totalEvaluations - $completedEvaluations;
 
-            // 4. Registros Recentes (Global)
+            // 3. Registros Recentes (Global)
             $recentGrades = Grade::with(['student', 'evaluation.subject'])
+                ->latest()
+                ->take(5)
+                ->get();
+
+            $recentEvaluations = Evaluation::with(['classroom', 'subject'])
                 ->latest()
                 ->take(5)
                 ->get();
@@ -79,10 +82,12 @@ class DashboardController extends Controller
                 'totalEvaluations',
                 'pendingEvaluations',
                 'recentGrades',
+                'recentEvaluations',
                 'recentOccurrences'
             ));
         }
 
+        // Visão do Professor / Usuário Padrão
         return view('dashboard.index');
     }
 
