@@ -645,8 +645,8 @@
         <tr>
             <!-- Assinatura da Coordenação -->
             <td class="signature-space" width="45%">
-                <img src="{{ public_path('img/assinaturas/coordenacao.png') }}" alt="Assinatura Direção / Coordenação"
-                    class="signature-img-pdf">
+                <img src="{{ public_path('img/assinaturas/coordenacao.png') }}" alt="Assinatura Coordenação"
+                    class="signature-img-mini">
                 <div class="signature-line">Assinatura da Direção / Coordenação</div>
             </td>
 
@@ -655,13 +655,12 @@
 
             <!-- Assinatura do Tutor -->
             <td class="signature-space" width="45%">
-                <img src="{{ public_path('img/assinaturas/tutor.png') }}" alt="Assinatura do Tutor"
-                    class="signature-img-pdf">
+                <img src="{{ public_path('img/assinaturas/tutor.png') }}" alt="Assinatura Tutor"
+                    class="signature-img-mini">
                 <div class="signature-line">Assinatura do Tutor da Turma</div>
             </td>
         </tr>
     </table>
-
 </body>
 
 </html>
