@@ -88,6 +88,26 @@ class ReportCardController extends Controller
                 ->sum('quantity');
         };
 
+        $tutor = '';
+
+        if ($classroom->name == '1° Ano') {
+            $tutor = 'elisa';
+        } elseif ($classroom->name == '2° Ano') {
+            $tutor = 'simone';
+        } elseif ($classroom->name == '3° Ano') {
+            $tutor = 'maiara';
+        } elseif ($classroom->name == '4° Ano') {
+            $tutor = 'rafaella';
+        } elseif ($classroom->name == '5° Ano') {
+            $tutor = 'graziele';
+        } elseif ($classroom->name == '6° Ano') {
+            $tutor = 'joelson';
+        } elseif ($classroom->name == '7° Ano') {
+            $tutor = 'luma';
+        } elseif ($classroom->name == '8° Ano') {
+            $tutor = 'pablo';
+        }
+
         $data = [
             'classroom'                 => $classroom,
             'student'                   => $student,
@@ -100,6 +120,7 @@ class ReportCardController extends Controller
             'showOccurrences'           => $request->has('include_occurrences'),
             'showDescriptiveEvaluation' => $request->has('include_descriptive_evaluation'),
             'descriptiveData'           => $descriptiveData,
+            'tutor'                     => $tutor,
         ];
 
         $pdf = Pdf::loadView('pdf.report-card', $data)->setPaper('a4', 'portrait');

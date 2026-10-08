@@ -685,7 +685,7 @@
 
             <!-- Assinatura do Tutor -->
             <td class="signature-space" width="45%">
-                <img src="{{ public_path('img/assinaturas/tutor.png') }}" alt="Assinatura Tutor"
+                <img src="{{ public_path("img/assinaturas/{$tutor}.png") }}" alt="Assinatura Tutor"
                     class="signature-img-mini">
                 <div class="signature-line">Assinatura do Tutor da Turma</div>
             </td>
