@@ -68,6 +68,99 @@
                 </div>
             </div>
 
+            <!-- Novo Card de Indicador: Avaliações Pendentes -->
+            <div class="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-amber-500 flex justify-between items-center">
+                <div>
+                    <span class="text-xs font-bold text-slate-400 uppercase tracking-wider">Lançamentos Pendentes</span>
+                    <div class="text-3xl font-black text-navy-900 mt-1">{{ $pendingEvaluations }}</div>
+                    <span class="text-[10px] text-amber-600 font-bold">Avaliações incompletas</span>
+                </div>
+                <div class="text-2xl opacity-40">⏳</div>
+            </div>
+
+            <!-- BLOCO: Acompanhamento de Lançamento de Notas pelos Professores -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <div
+                    class="p-6 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    <div>
+                        <h3 class="font-bold text-lg text-navy-900">Acompanhamento de Lançamento de Notas</h3>
+                        <p class="text-xs text-slate-400">Progresso do preenchimento das avaliações por professor e turma.
+                        </p>
+                    </div>
+                    <span
+                        class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
+                        Gestão Ativa
+                    </span>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse">
+                        <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400 tracking-widest">
+                            <tr>
+                                <th class="px-6 py-4 text-left">Avaliação / Disciplina</th>
+                                <th class="px-6 py-4 text-left">Turma</th>
+                                <th class="px-6 py-4 text-left">Professor Responsável</th>
+                                <th class="px-6 py-4 text-center">Progresso de Lançamento</th>
+                                <th class="px-6 py-4 text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            @forelse ($evaluationsProgress as $eval)
+                                <tr class="hover:bg-slate-50/60 transition duration-150">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-xs text-slate-800">{{ $eval['title'] }}</p>
+                                        <p class="text-[10px] text-slate-400">{{ $eval['subject'] }}</p>
+                                    </td>
+                                    <td class="px-6 py-4 text-xs font-semibold text-slate-600">
+                                        {{ $eval['classroom'] }}
+                                    </td>
+                                    <td class="px-6 py-4 text-xs text-slate-700 font-medium">
+                                        {{ $eval['teacher_name'] }}
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="w-full max-w-xs mx-auto">
+                                            <div
+                                                class="flex justify-between items-center text-[10px] font-mono font-bold mb-1">
+                                                <span
+                                                    class="text-slate-500">{{ $eval['grades_count'] }}/{{ $eval['total_students'] }}
+                                                    alunos</span>
+                                                <span
+                                                    class="{{ $eval['percentage'] == 100 ? 'text-emerald-600' : 'text-amber-600' }}">
+                                                    {{ $eval['percentage'] }}%
+                                                </span>
+                                            </div>
+                                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+                                                <div class="h-2 rounded-full transition-all duration-300 {{ $eval['percentage'] == 100 ? 'bg-emerald-500' : ($eval['percentage'] > 50 ? 'bg-amber-500' : 'bg-rose-500') }}"
+                                                    style="width: {{ $eval['percentage'] }}%"></div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        @if ($eval['is_completed'])
+                                            <span
+                                                class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                Concluído
+                                            </span>
+                                        @else
+                                            <span
+                                                class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
+                                                Pendente
+                                            </span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs italic">
+                                        Nenhuma avaliação cadastrada até o momento.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
             <!-- Bloco de Atividades Recentes: Avaliações + Ocorrências -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
@@ -83,7 +176,8 @@
                             <div
                                 class="p-3 bg-slate-50 rounded-xl flex justify-between items-center border border-slate-100">
                                 <div>
-                                    <p class="font-bold text-xs text-slate-800">{{ $eval->title ?? 'Avaliação sem título' }}
+                                    <p class="font-bold text-xs text-slate-800">
+                                        {{ $eval->title ?? 'Avaliação sem título' }}
                                     </p>
                                     <p class="text-[10px] text-slate-400 mt-0.5">
                                         Turma: {{ $eval->classroom->name ?? 'N/A' }} • Disciplina:
