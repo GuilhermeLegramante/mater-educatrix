@@ -479,7 +479,10 @@
                                 </span>
                             </td>
                             <td style="background-color: #fff; color: #64748b; font-size: 9pt; font-family: monospace;">
-                                {{ $getAbsencesCount($subject->id, $bimester) }}
+                                {{-- Comentado para evitar que o número de faltas seja exibido no PDF --}}
+                                {{-- Se desejar exibir, descomente a linha acima e remova esta linha de comentário. --}}
+                                {{-- {{ $getAbsencesCount($subject->id, $bimester) }} --}}
+                                -
                             </td>
                         @endfor
 
