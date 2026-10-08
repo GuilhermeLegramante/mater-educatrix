@@ -159,7 +159,7 @@ class ClassroomController extends Controller
         return redirect()->route('classrooms.index')->with('success', 'Turma removida.');
     }
 
-    public function updateQualitativeEval(Request $request, Classroom $classroom)
+    public function updateConcept(Request $request, Classroom $classroom)
     {
         $request->validate([
             'student_id'       => 'required|exists:students,id',
