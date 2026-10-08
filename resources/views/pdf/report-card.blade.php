@@ -276,8 +276,8 @@
         .footer-signatures {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 40px;
             page-break-inside: avoid;
+            margin-top: 15px;
         }
 
         .signature-space {
@@ -362,6 +362,36 @@
             /* Cola a legenda logo abaixo da tabela de notas */
             margin-bottom: 30px;
             page-break-inside: avoid;
+        }
+
+        /* Célula da assinatura */
+        .signature-space {
+            text-align: center;
+            vertical-align: bottom;
+            padding: 0 5px;
+        }
+
+        /* Imagem da assinatura em versão pequena */
+        .signature-img-mini {
+            height: 30px;
+            /* Reduzido para 30px (se quiser menor, use 25px) */
+            width: auto;
+            max-width: 120px;
+            /* Trava a largura máxima */
+            display: block;
+            margin: 0 auto 2px auto;
+            /* Mantém centralizada e colada na linha */
+        }
+
+        /* Linha e texto explicativo */
+        .signature-line {
+            border-top: 1px solid #1e293b;
+            padding-top: 3px;
+            font-size: 9px;
+            /* Fonte reduzida para acompanhar a assinatura menor */
+            font-weight: bold;
+            color: #1e293b;
+            text-transform: uppercase;
         }
     </style>
 </head>
