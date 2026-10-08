@@ -123,8 +123,6 @@ class ReportCardController extends Controller
             'tutor'                     => $tutor,
         ];
 
-        dd($data);
-
         $pdf = Pdf::loadView('pdf.report-card', $data)->setPaper('a4', 'portrait');
         return $pdf->stream("boletim_{$student->name}_{$classroom->name}.pdf");
     }
