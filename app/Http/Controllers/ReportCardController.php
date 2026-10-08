@@ -90,21 +90,21 @@ class ReportCardController extends Controller
 
         $tutor = '';
 
-        if ($classroom->name == '1° Ano') {
+        if ($classroom->name == '1º Ano') {
             $tutor = 'elisa';
-        } elseif ($classroom->name == '2° Ano') {
+        } elseif ($classroom->name == '2º Ano') {
             $tutor = 'simone';
-        } elseif ($classroom->name == '3° Ano') {
+        } elseif ($classroom->name == '3º Ano') {
             $tutor = 'maiara';
-        } elseif ($classroom->name == '4° Ano') {
+        } elseif ($classroom->name == '4º Ano') {
             $tutor = 'rafaella';
-        } elseif ($classroom->name == '5° Ano') {
+        } elseif ($classroom->name == '5º Ano') {
             $tutor = 'graziele';
-        } elseif ($classroom->name == '6° Ano') {
+        } elseif ($classroom->name == '6º Ano') {
             $tutor = 'joelson';
-        } elseif ($classroom->name == '7° Ano') {
+        } elseif ($classroom->name == '7º Ano') {
             $tutor = 'luma';
-        } elseif ($classroom->name == '8° Ano') {
+        } elseif ($classroom->name == '8º Ano') {
             $tutor = 'pablo';
         }
 
