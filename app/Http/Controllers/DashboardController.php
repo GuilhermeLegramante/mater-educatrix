@@ -9,6 +9,7 @@ use App\Models\Evaluation;
 use App\Models\Subject;
 use App\Models\Occurrence;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
 {
@@ -51,13 +52,30 @@ class DashboardController extends Controller
                 $evaluationsQuery->where('subject_id', $request->input('subject_id'));
             }
 
+            // Filtro por Status (Pendentes / Concluídas)
+            if ($request->filled('status')) {
+                $status = $request->input('status');
+
+                if ($status === 'pending') {
+                    // Traz avaliações onde a quantidade de notas é menor que o total de alunos da turma
+                    $evaluationsQuery->where(function ($q) {
+                        $q->whereRaw('(SELECT COUNT(*) FROM grades WHERE grades.evaluation_id = evaluations.id) < (SELECT COUNT(*) FROM enrollments WHERE enrollments.classroom_id = evaluations.classroom_id AND enrollments.status = "active")')
+                            ->orWhereRaw('(SELECT COUNT(*) FROM grades WHERE grades.evaluation_id = evaluations.id) = 0');
+                    });
+                } elseif ($status === 'completed') {
+                    // Traz avaliações onde a quantidade de notas atingiu ou superou o total de alunos
+                    $evaluationsQuery->whereRaw('(SELECT COUNT(*) FROM grades WHERE grades.evaluation_id = evaluations.id) >= (SELECT COUNT(*) FROM enrollments WHERE enrollments.classroom_id = evaluations.classroom_id AND enrollments.status = "active")')
+                        ->whereRaw('(SELECT COUNT(*) FROM enrollments WHERE enrollments.classroom_id = evaluations.classroom_id AND enrollments.status = "active") > 0');
+                }
+            }
+
             // 4. Paginação com preservação dos parâmetros de busca
             $evaluationsProgress = $evaluationsQuery
                 ->latest()
                 ->paginate(10)
                 ->withQueryString();
 
-            // Transforma os itens da página atual mantendo a estrutura do objeto de Paginação
+            // Transforma os itens da página atual
             $evaluationsProgress->through(function ($evaluation) {
                 $totalStudents = $evaluation->classroom->students_count ?? 0;
                 $gradesCount = $evaluation->grades_count;
@@ -80,16 +98,9 @@ class DashboardController extends Controller
                 ];
             });
 
-            // Indicadores de Pendências
+            // Indicador Global de Pendências
             $totalEvaluations = Evaluation::count();
-            $pendingEvaluations = Evaluation::whereHas('classroom.students')
-                ->get()
-                ->filter(function ($eval) {
-                    $total = $eval->classroom->students()->count();
-                    $grades = $eval->grades()->count();
-                    return $total == 0 || $grades < $total;
-                })
-                ->count();
+            $pendingEvaluations = Evaluation::whereRaw('(SELECT COUNT(*) FROM grades WHERE grades.evaluation_id = evaluations.id) < (SELECT COUNT(*) FROM enrollments WHERE enrollments.classroom_id = evaluations.classroom_id AND enrollments.status = "active")')->count();
 
             // 5. Registros Recentes
             $recentGrades = Grade::with(['student', 'evaluation.subject'])

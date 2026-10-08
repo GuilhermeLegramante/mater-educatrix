@@ -68,164 +68,83 @@
                 </div>
             </div>
 
-            <!-- BLOCO: Acompanhamento do Lançamento de Notas com Filtros e Paginação -->
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-                <!-- Cabeçalho e Filtros -->
-                <div class="p-6 border-b border-slate-100 space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                        <div>
-                            <h3 class="font-bold text-lg text-navy-900">Acompanhamento do Lançamento de Notas</h3>
-                            <p class="text-xs text-slate-400">Filtre por bimestre, turma e disciplina para monitorar a
-                                digitação das notas.</p>
-                        </div>
-                        <span
-                            class="text-[10px] bg-amber-50 text-amber-700 border border-amber-200 px-3 py-1 rounded-full font-bold uppercase tracking-wider">
-                            Acompanhamento Pedagógico
-                        </span>
-                    </div>
-
-                    <!-- Formulário de Filtros -->
-                    <form method="GET" action="{{ route('dashboard') }}"
-                        class="grid grid-cols-1 sm:grid-cols-4 gap-3 pt-2">
-                        <!-- Bimestre -->
-                        <div>
-                            <label for="bimester"
-                                class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Bimestre</label>
-                            <select name="bimester" id="bimester"
-                                class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900">
-                                <option value="">Todos os Bimestres</option>
-                                @foreach ([1, 2, 3, 4] as $b)
-                                    <option value="{{ $b }}" {{ request('bimester') == $b ? 'selected' : '' }}>
-                                        {{ $b }}º Bimestre
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Turma -->
-                        <div>
-                            <label for="classroom_id"
-                                class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Turma</label>
-                            <select name="classroom_id" id="classroom_id"
-                                class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900">
-                                <option value="">Todas as Turmas</option>
-                                @foreach ($classrooms as $classroom)
-                                    <option value="{{ $classroom->id }}"
-                                        {{ request('classroom_id') == $classroom->id ? 'selected' : '' }}>
-                                        {{ $classroom->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Disciplina -->
-                        <div>
-                            <label for="subject_id"
-                                class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Disciplina</label>
-                            <select name="subject_id" id="subject_id"
-                                class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900">
-                                <option value="">Todas as Disciplinas</option>
-                                @foreach ($subjects as $subject)
-                                    <option value="{{ $subject->id }}"
-                                        {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
-                                        {{ $subject->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- Botões de Ação -->
-                        <div class="flex items-end gap-2">
-                            <button type="submit"
-                                class="w-full bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold py-2 px-4 rounded-xl transition duration-150 shadow-sm">
-                                Filtrar
-                            </button>
-                            @if (request()->hasAny(['bimester', 'classroom_id', 'subject_id']))
-                                <a href="{{ route('dashboard') }}"
-                                    class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-2 px-3 rounded-xl transition duration-150"
-                                    title="Limpar Filtros">
-                                    ✕
-                                </a>
-                            @endif
-                        </div>
-                    </form>
+            <!-- Formulário de Filtros (Ajustado para 5 Colunas) -->
+            <form method="GET" action="{{ route('dashboard') }}" class="grid grid-cols-1 sm:grid-cols-5 gap-3 pt-2">
+                <!-- Status (Pendentes / Concluídas) -->
+                <div>
+                    <label for="status" class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Status de
+                        Lançamento</label>
+                    <select name="status" id="status"
+                        class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900 font-semibold">
+                        <option value="">Todos os Status</option>
+                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>⚠️ Apenas Pendentes
+                        </option>
+                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>✅ Apenas
+                            Concluídos</option>
+                    </select>
                 </div>
 
-                <!-- Tabela de Resultados -->
-                <div class="overflow-x-auto">
-                    <table class="w-full border-collapse">
-                        <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400 tracking-widest">
-                            <tr>
-                                <th class="px-6 py-4 text-left">Avaliação / Disciplina</th>
-                                <th class="px-6 py-4 text-left">Turma</th>
-                                <th class="px-6 py-4 text-center">Bimestre</th>
-                                <th class="px-6 py-4 text-center">Lançamentos / Alunos</th>
-                                <th class="px-6 py-4 text-right">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse ($evaluationsProgress as $eval)
-                                <tr class="hover:bg-slate-50/60 transition duration-150">
-                                    <td class="px-6 py-4">
-                                        <p class="font-bold text-xs text-slate-800">{{ $eval['title'] }}</p>
-                                        <p class="text-[10px] text-slate-400">{{ $eval['subject'] }}</p>
-                                    </td>
-                                    <td class="px-6 py-4 text-xs font-semibold text-slate-600">
-                                        {{ $eval['classroom'] }}
-                                    </td>
-                                    <td class="px-6 py-4 text-center font-mono font-bold text-xs text-slate-500">
-                                        {{ $eval['bimester'] }}º
-                                    </td>
-                                    <td class="px-6 py-4 text-center">
-                                        <div class="w-full max-w-xs mx-auto">
-                                            <div
-                                                class="flex justify-between items-center text-[10px] font-mono font-bold mb-1">
-                                                <span
-                                                    class="text-slate-500">{{ $eval['grades_count'] }}/{{ $eval['total_students'] }}
-                                                    notas</span>
-                                                <span
-                                                    class="{{ $eval['percentage'] == 100 ? 'text-emerald-600' : 'text-amber-600' }}">
-                                                    {{ $eval['percentage'] }}%
-                                                </span>
-                                            </div>
-                                            <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                                                <div class="h-2 rounded-full transition-all duration-300 {{ $eval['percentage'] == 100 ? 'bg-emerald-500' : ($eval['percentage'] > 50 ? 'bg-amber-500' : 'bg-rose-500') }}"
-                                                    style="width: {{ $eval['percentage'] }}%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        @if ($eval['is_completed'])
-                                            <span
-                                                class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                                Concluído
-                                            </span>
-                                        @else
-                                            <span
-                                                class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200">
-                                                Pendente
-                                            </span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="5" class="px-6 py-8 text-center text-slate-400 text-xs italic">
-                                        Nenhuma avaliação encontrada com os filtros selecionados.
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                <!-- Bimestre -->
+                <div>
+                    <label for="bimester" class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Bimestre</label>
+                    <select name="bimester" id="bimester"
+                        class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900">
+                        <option value="">Todos os Bimestres</option>
+                        @foreach ([1, 2, 3, 4] as $b)
+                            <option value="{{ $b }}" {{ request('bimester') == $b ? 'selected' : '' }}>
+                                {{ $b }}º Bimestre
+                            </option>
+                        @endforeach
+                    </select>
                 </div>
 
-                <!-- Paginação -->
-                @if ($evaluationsProgress->hasPages())
-                    <div class="p-4 border-t border-slate-100 bg-slate-50">
-                        {{ $evaluationsProgress->links() }}
-                    </div>
-                @endif
-            </div>
+                <!-- Turma -->
+                <div>
+                    <label for="classroom_id"
+                        class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Turma</label>
+                    <select name="classroom_id" id="classroom_id"
+                        class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900">
+                        <option value="">Todas as Turmas</option>
+                        @foreach ($classrooms as $classroom)
+                            <option value="{{ $classroom->id }}"
+                                {{ request('classroom_id') == $classroom->id ? 'selected' : '' }}>
+                                {{ $classroom->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Disciplina -->
+                <div>
+                    <label for="subject_id"
+                        class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Disciplina</label>
+                    <select name="subject_id" id="subject_id"
+                        class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-slate-700 focus:outline-none focus:border-navy-900">
+                        <option value="">Todas as Disciplinas</option>
+                        @foreach ($subjects as $subject)
+                            <option value="{{ $subject->id }}"
+                                {{ request('subject_id') == $subject->id ? 'selected' : '' }}>
+                                {{ $subject->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Botões de Ação -->
+                <div class="flex items-end gap-2">
+                    <button type="submit"
+                        class="w-full bg-navy-900 hover:bg-navy-800 text-white text-xs font-bold py-2 px-4 rounded-xl transition duration-150 shadow-sm">
+                        Filtrar
+                    </button>
+                    @if (request()->hasAny(['status', 'bimester', 'classroom_id', 'subject_id']))
+                        <a href="{{ route('dashboard') }}"
+                            class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold py-2 px-3 rounded-xl transition duration-150 flex items-center justify-center"
+                            title="Limpar Filtros">
+                            ✕
+                        </a>
+                    @endif
+                </div>
+            </form>
 
             <!-- Bloco de Atividades Recentes: Avaliações + Ocorrências -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
