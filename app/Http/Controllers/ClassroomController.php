@@ -46,7 +46,7 @@ class ClassroomController extends Controller
         return view('classrooms.index', compact('classrooms', 'allSubjects', 'settings'));
     }
 
-   /**
+    /**
      * Exibe os detalhes de uma turma específica com o resumo de conceitos e filtros
      */
     public function show(Request $request, $id)
@@ -63,7 +63,7 @@ class ClassroomController extends Controller
             'students' => function ($query) {
                 // Ordena os alunos alfabeticamente por nome
                 $query->orderBy('name')
-                      ->with(['bimesterResults', 'grades.evaluation']);
+                    ->with(['bimesterResults', 'grades.evaluation']);
             }
         ])->findOrFail($id);
 
@@ -159,29 +159,29 @@ class ClassroomController extends Controller
         return redirect()->route('classrooms.index')->with('success', 'Turma removida.');
     }
 
-    public function updateConcept(Request $request, Classroom $classroom)
+    public function updateQualitativeEval(Request $request, Classroom $classroom)
     {
         $request->validate([
-            'student_id' => 'required|exists:students,id',
-            'subject_id' => 'required|exists:subjects,id', // Validando a disciplina
-            'bimester'   => 'required|integer|min:1|max:4',
-            'concept'    => 'required|string|max:2',
+            'student_id'       => 'required|exists:students,id',
+            'subject_id'       => 'required|exists:subjects,id',
+            'bimester'         => 'required|integer|min:1|max:4',
+            'qualitative_eval' => 'required|numeric|between:-1.0,1.0',
         ]);
 
         \App\Models\BimesterResult::updateOrCreate(
             [
                 'classroom_id' => $classroom->id,
                 'student_id'   => $request->student_id,
-                'subject_id'   => $request->subject_id, // Chave única composta
+                'subject_id'   => $request->subject_id,
                 'bimester'     => $request->bimester,
             ],
             [
-                'concept'      => $request->concept,
-                'teacher_note' => $request->teacher_note,
+                'qualitative_eval' => $request->qualitative_eval,
+                'teacher_note'     => $request->teacher_note ?? null,
             ]
         );
 
-        return back()->with('success', 'Conceito da disciplina atualizado!');
+        return back()->with('success', 'Avaliação qualitativa atualizada com sucesso!');
     }
 
     public function updateCurriculum(Request $request, Classroom $classroom)

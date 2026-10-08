@@ -9,7 +9,16 @@ class BimesterResult extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['student_id', 'classroom_id', 'subject_id', 'bimester', 'concept', 'average_score', 'teacher_note'];
+    protected $fillable = [
+        'student_id',
+        'classroom_id',
+        'subject_id',
+        'bimester',
+        'concept',
+        'average_score',
+        'teacher_note',
+        'qualitative_eval',
+    ];
 
     public static function calculateConcept($score)
     {

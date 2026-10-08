@@ -88,7 +88,7 @@
 
                     <button type="button" onclick="openConceptModal()"
                         class="px-6 py-3 bg-gold-500 text-navy-900 rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-gold-600 transition-all shadow-lg shadow-gold-500/20 cursor-pointer">
-                        Lançar Conceito
+                        Avaliação Qualitativa
                     </button>
                 </div>
             </div>
