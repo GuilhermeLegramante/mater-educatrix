@@ -373,8 +373,8 @@
 
         /* Imagem da assinatura em versão pequena */
         .signature-img-mini {
-            height: 30px;
-            /* Reduzido para 30px (se quiser menor, use 25px) */
+            height: 40px;
+            /* Reduzido para 40px (se quiser menor, use 30px) */
             width: auto;
             max-width: 120px;
             /* Trava a largura máxima */
