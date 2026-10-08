@@ -79,42 +79,6 @@ class Student extends Model
     }
 
     /**
-     * Calcula o conceito consolidado, priorizando lançamentos manuais do professor.
-     */
-    // public function getConsolidatedConcept($classroomId, $subjectId, $bimester)
-    // {
-    //     // 1. Tenta buscar o resultado oficial/manual lançado pelo professor
-    //     $manualResult = \App\Models\BimesterResult::where('student_id', $this->id)
-    //         ->where('classroom_id', $classroomId)
-    //         ->where('subject_id', $subjectId)
-    //         ->where('bimester', $bimester)
-    //         ->first();
-
-    //     // 2. Se o professor já lançou um conceito manual, ele PREVALECE
-    //     if ($manualResult && $manualResult->concept) {
-    //         return $manualResult->concept;
-    //     }
-
-    //     // 3. Caso contrário, faz o cálculo automático baseado nas notas das avaliações
-    //     $grades = $this->grades()->whereHas('evaluation', function ($q) use ($classroomId, $subjectId, $bimester) {
-    //         $q->where('classroom_id', $classroomId)
-    //             ->where('subject_id', $subjectId)
-    //             ->where('bimester', $bimester);
-    //     })->get();
-
-    //     if ($grades->isEmpty()) return '-';
-
-    //     $totalScore = $grades->sum('score');
-    //     $totalMax = $grades->sum(fn($g) => $g->evaluation->max_score);
-
-    //     if ($totalMax == 0) return '-';
-
-    //     $percentage = ($totalScore / $totalMax) * 100;
-
-    //     return $this->calculateGradeConcept($percentage);
-    // }
-
-    /**
      * Retorna a turma atual do aluno
      */
     public function currentClassroom()
@@ -181,47 +145,6 @@ class Student extends Model
     }
 
     /**
-     * Calcula a nota numérica do aluno em escala de 0 a 10 no bimestre/disciplina,
-     * somando o ajuste da Avaliação Qualitativa (-1,0 a +1,0).
-     */
-    public function getBimesterScore($classroomId, $subjectId, $bimester): ?float
-    {
-        $grades = $this->grades()->whereHas('evaluation', function ($q) use ($classroomId, $subjectId, $bimester) {
-            $q->where('classroom_id', $classroomId)
-                ->where('subject_id', $subjectId)
-                ->where('bimester', $bimester);
-        })->with('evaluation')->get();
-
-        if ($grades->isEmpty()) {
-            return null;
-        }
-
-        $totalScore = $grades->sum('score');
-        $totalMax = $grades->sum(fn($g) => $g->evaluation->max_score);
-
-        if ($totalMax == 0) {
-            return null;
-        }
-
-        // 1. Nota quantitativa de 0 a 10
-        $baseScore = ($totalScore / $totalMax) * 10;
-
-        // 2. Busca a avaliação qualitativa lançada
-        $bimesterResult = BimesterResult::where('student_id', $this->id)
-            ->where('classroom_id', $classroomId)
-            ->where('subject_id', $subjectId)
-            ->where('bimester', $bimester)
-            ->first();
-
-        $qualitative = $bimesterResult ? (float) $bimesterResult->qualitative_eval : 0.0;
-
-        // 3. Aplica o ajuste qualitativo limitando o resultado final entre 0 e 10
-        $finalScore = min(10.0, max(0.0, $baseScore + $qualitative));
-
-        return round($finalScore, 1);
-    }
-
-    /**
      * Retorna a Avaliação Qualitativa do aluno no bimestre (-1,0 a +1,0)
      */
     public function getQualitativeEval($classroomId, $subjectId, $bimester): float
@@ -233,20 +156,6 @@ class Student extends Model
             ->first();
 
         return $result ? (float) $result->qualitative_eval : 0.0;
-    }
-
-    /**
-     * Calcula o conceito consolidado baseado na nota final com ajuste qualitativo.
-     */
-    public function getConsolidatedConcept($classroomId, $subjectId, $bimester)
-    {
-        $finalScore = $this->getBimesterScore($classroomId, $subjectId, $bimester);
-
-        if ($finalScore === null) {
-            return '-';
-        }
-
-        return $this->calculateGradeConcept($finalScore);
     }
 
     /**
@@ -272,5 +181,80 @@ class Student extends Model
         $score = $this->getBimesterScore($classroomId, $subjectId, $bimester);
 
         return $score !== null ? number_format($score, 1, ',', '.') : $default;
+    }
+
+    /**
+     * Calcula a nota numérica do aluno em escala de 0 a 10 no bimestre/disciplina,
+     * somando o ajuste da Avaliação Qualitativa (-1,0 a +1,0).
+     */
+    public function getBimesterScore($classroomId, $subjectId, $bimester): ?float
+    {
+        // 1. Busca se existe um registro lançado na tabela bimester_results
+        $bimesterResult = BimesterResult::where('student_id', $this->id)
+            ->where('classroom_id', $classroomId)
+            ->where('subject_id', $subjectId)
+            ->where('bimester', $bimester)
+            ->first();
+
+        // 2. Busca as notas das avaliações do bimestre
+        $grades = $this->grades()->whereHas('evaluation', function ($q) use ($classroomId, $subjectId, $bimester) {
+            $q->where('classroom_id', $classroomId)
+                ->where('subject_id', $subjectId)
+                ->where('bimester', $bimester);
+        })->with('evaluation')->get();
+
+        // CASO REGISTRO ANTIGO/LEGADO: Se não houver notas de avaliações, mas existir média ou conceito gravado no banco
+        if ($grades->isEmpty()) {
+            if ($bimesterResult && $bimesterResult->average_score !== null) {
+                return (float) $bimesterResult->average_score;
+            }
+            return null;
+        }
+
+        $totalScore = $grades->sum('score');
+        $totalMax = $grades->sum(fn($g) => $g->evaluation->max_score);
+
+        if ($totalMax == 0) {
+            return null;
+        }
+
+        // 3. Nota quantitativa base de 0 a 10
+        $baseScore = ($totalScore / $totalMax) * 10;
+
+        // 4. Aplica o ajuste qualitativo (-1,0 a +1,0)
+        $qualitative = $bimesterResult ? (float) $bimesterResult->qualitative_eval : 0.0;
+
+        $finalScore = min(10.0, max(0.0, $baseScore + $qualitative));
+
+        return round($finalScore, 1);
+    }
+
+    /**
+     * Calcula o conceito consolidado priorizando lançamentos legados ou calculando via nota final.
+     */
+    public function getConsolidatedConcept($classroomId, $subjectId, $bimester)
+    {
+        // 1. Busca se existe registro no bimester_results
+        $bimesterResult = BimesterResult::where('student_id', $this->id)
+            ->where('classroom_id', $classroomId)
+            ->where('subject_id', $subjectId)
+            ->where('bimester', $bimester)
+            ->first();
+
+        // 2. Tenta calcular a nota final com as regras atuais
+        $finalScore = $this->getBimesterScore($classroomId, $subjectId, $bimester);
+
+        // Se houver nota calculada (ou vinda do average_score legado), retorna o conceito equivalente
+        if ($finalScore !== null) {
+            return $this->calculateGradeConcept($finalScore);
+        }
+
+        // 3. FALLBACK PARA LANÇAMENTO DIRETO ANTIGO:
+        // Se não há avaliações/notas, mas existia um conceito gravado manualmente no banco, ele prevalece
+        if ($bimesterResult && !empty($bimesterResult->concept)) {
+            return $bimesterResult->concept;
+        }
+
+        return '-';
     }
 }
