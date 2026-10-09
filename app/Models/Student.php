@@ -174,6 +174,21 @@ class Student extends Model
     }
 
     /**
+     * Lógica de conceito com base na nota final (0 a 10)
+     */
+    public function calculateEvaluationConcept($score)
+    {
+        return match (true) {
+            $score >= 90 => 'A',
+            $score >= 75 => 'B',
+            $score >= 60 => 'C',
+            $score >= 45 => 'D',
+            $score >= 30 => 'E',
+            default       => 'F',
+        };
+    }
+
+    /**
      * Retorna a nota formatada (ex: "8,5") ou um valor padrão para quando não houver nota.
      */
     public function getFormattedBimesterScore($classroomId, $subjectId, $bimester, $default = '-'): string

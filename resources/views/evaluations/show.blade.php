@@ -87,7 +87,7 @@
                                 $percentage = $grade ? ($grade->score / $evaluation->max_score) * 100 : 0;
 
                                 // Usando o método de cálculo de conceito que você tem no model Student
-                                $concept = $grade ? $student->calculateGradeConcept($percentage) : '--';
+                                $concept = $grade ? $student->calculateEvaluationConcept($percentage) : '--';
                             @endphp
                             <tr class="hover:bg-slate-50/50 transition-colors group">
                                 <td class="px-6 py-4">
