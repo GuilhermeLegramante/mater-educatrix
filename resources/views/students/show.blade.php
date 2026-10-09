@@ -242,11 +242,7 @@
                                             <td class="px-8 py-4 text-center">
                                                 <span
                                                     class="inline-block w-8 py-1 rounded bg-slate-100 text-slate-800 font-black text-[10px]">
-                                                    {{ $student->getConsolidatedConcept(
-                                                        $grade->evaluation->classroom_id,
-                                                        $grade->evaluation->subject_id,
-                                                        $grade->evaluation->bimester,
-                                                    ) }}
+                                                    {{ $student->calculateEvaluationConcept($perc) }}
                                                 </span>
                                             </td>
                                         </tr>
