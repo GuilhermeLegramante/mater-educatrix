@@ -211,7 +211,7 @@ class Student extends Model
             ->where('bimester', $bimester)
             ->first();
 
-        // 2. Busca as notas das avaliações do bimestre
+        // 2. Busca as notas das avaliações do bimestre com as avaliações carregadas
         $grades = $this->grades()->whereHas('evaluation', function ($q) use ($classroomId, $subjectId, $bimester) {
             $q->where('classroom_id', $classroomId)
                 ->where('subject_id', $subjectId)
@@ -226,15 +226,29 @@ class Student extends Model
             return null;
         }
 
-        $totalScore = $grades->sum('score');
-        $totalMax = $grades->sum(fn($g) => $g->evaluation->max_score);
+        $totalWeightedScore = 0;
+        $totalWeight = 0;
 
-        if ($totalMax == 0) {
+        foreach ($grades as $grade) {
+            $maxScore = $grade->evaluation->max_score;
+            $weight = $grade->evaluation->weight;
+
+            if ($maxScore > 0) {
+                // Converte a nota do aluno na avaliação para a escala de 0 a 10 proporcionalmente
+                $normalizedScore = ($grade->score / $maxScore) * 10;
+
+                // Acumula a nota ponderada e a soma dos pesos
+                $totalWeightedScore += $normalizedScore * $weight;
+                $totalWeight += $weight;
+            }
+        }
+
+        if ($totalWeight == 0) {
             return null;
         }
 
-        // 3. Nota quantitativa base de 0 a 10
-        $baseScore = ($totalScore / $totalMax) * 10;
+        // 3. Média Ponderada base de 0 a 10 considerando os pesos
+        $baseScore = $totalWeightedScore / $totalWeight;
 
         // 4. Aplica o ajuste qualitativo (-1,0 a +1,0)
         $qualitative = $bimesterResult ? (float) $bimesterResult->qualitative_eval : 0.0;
