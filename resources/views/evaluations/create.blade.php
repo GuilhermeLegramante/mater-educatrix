@@ -95,9 +95,13 @@
                     </div>
 
                     <div class="space-y-2">
-                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Peso</label>
-                        <input type="number" name="weight" step="0.1" value="{{ old('weight', '1.0') }}"
+                        <label class="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">Peso (1 a
+                            10)</label>
+                        <input type="number" name="weight" step="0.1" min="1" max="10"
+                            value="{{ old('weight', '1.0') }}" required
                             class="w-full bg-slate-50 border-2 border-slate-100 rounded-2xl px-5 py-4 outline-none focus:border-gold-500 transition-all font-bold text-navy-900 text-center">
+                        <p class="text-[9px] text-slate-400 font-bold ml-1">Defina a relevância desta avaliação na média (de
+                            1,0 a 10,0).</p>
                     </div>
 
                     <div class="space-y-2">

@@ -116,7 +116,7 @@ class EvaluationController extends Controller
             'title'        => 'required|string|max:255',
             'bimester'     => 'required|integer|between:1,4',
             'max_score'    => 'required|integer|min:1',
-            'weight'       => 'required|numeric|min:0',
+            'weight'       => 'required|numeric|between:1,10',
         ]);
 
         // 2. Criação da Avaliação
@@ -178,7 +178,8 @@ class EvaluationController extends Controller
             'title'        => 'required|string|max:255',
             'bimester'     => 'required|integer|between:1,4',
             'max_score'    => 'required|integer|min:1',
-            'weight'       => 'required|numeric|min:0',
+            'weight'       => 'required|numeric|between:1,10',
+
         ]);
 
         // Atualização do registro
