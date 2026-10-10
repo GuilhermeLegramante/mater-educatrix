@@ -40,7 +40,7 @@
                     <div
                         class="w-20 h-20 bg-navy-900 rounded-2xl flex items-center justify-center border-b-4 border-gold-500 shadow-xl shrink-0">
                         <span class="text-gold-500 font-classic text-4xl">
-                            {{ mb_substr($student->name, 0, 1) }}[cite: 1]
+                            {{ mb_substr($student->name, 0, 1) }}
                         </span>
                     </div>
 
@@ -51,18 +51,18 @@
 
                         <h1
                             class="font-classic text-4xl lg:text-5xl text-navy-900 uppercase tracking-tight transition-colors">
-                            {{ $student->name }}[cite: 1]
+                            {{ $student->name }}
                         </h1>
 
                         <div class="flex flex-wrap gap-2 mt-2">
                             <span
                                 class="px-3 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                                Matrícula: {{ $student->registration_number }}[cite: 1]
+                                Matrícula: {{ $student->registration_number }}
                             </span>
 
                             <span
                                 class="px-3 py-1 rounded-xl bg-gold-500/10 text-gold-600 text-[10px] font-black uppercase tracking-widest border border-gold-500/20">
-                                {{ $activeClassroom->name }} • {{ $activeClassroom->year }}[cite: 1]
+                                {{ $activeClassroom->name }} • {{ $activeClassroom->year }}
                             </span>
                         </div>
                     </div>
@@ -157,7 +157,7 @@
                                 <div>
                                     <span
                                         class="block font-black text-navy-900 text-[11px] uppercase tracking-tight group-hover:text-gold-500 transition-colors">
-                                        {{ $subject->name }}[cite: 1]
+                                        {{ $subject->name }}
                                     </span>
 
                                     <div class="flex items-center gap-2 mt-0.5">
@@ -226,29 +226,29 @@
                                         <tr class="hover:bg-slate-50/40 transition-colors">
                                             <td class="px-8 py-4">
                                                 <span class="font-bold text-navy-900 text-sm block">
-                                                    {{ $grade->evaluation->title }}[cite: 1]
+                                                    {{ $grade->evaluation->title }}
                                                 </span>
                                                 <span class="text-[10px] text-gold-600 font-bold uppercase tracking-widest">
-                                                    {{ $grade->evaluation->subject->name }}[cite: 1]
+                                                    {{ $grade->evaluation->subject->name }}
                                                 </span>
                                             </td>
                                             <td class="px-8 py-4 text-center font-mono text-xs text-slate-600">
                                                 <span class="font-bold text-navy-900">
-                                                    {{ $grade->score }}[cite: 1]
+                                                    {{ $grade->score }}
                                                 </span>
                                                 <span class="text-slate-300 mx-1">de</span>
-                                                {{ $grade->evaluation->max_score }}[cite: 1]
+                                                {{ $grade->evaluation->max_score }}
                                             </td>
                                             <td class="px-8 py-4 text-center">
                                                 <span
                                                     class="text-[11px] font-black {{ $perc >= 60 ? 'text-green-600' : 'text-red-500' }}">
-                                                    {{ number_format($perc, 0) }}%[cite: 1]
+                                                    {{ number_format($perc, 0) }}%
                                                 </span>
                                             </td>
                                             <td class="px-8 py-4 text-center">
                                                 <span
                                                     class="inline-block w-8 py-1 rounded bg-slate-100 text-slate-800 font-black text-[10px]">
-                                                    {{ $student->calculateEvaluationConcept($perc) }}[cite: 1]
+                                                    {{ $student->calculateEvaluationConcept($perc) }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -307,16 +307,16 @@
                                             <div class="flex flex-col gap-0.5 min-w-0">
                                                 <span
                                                     class="text-{{ $occurrence->type->color }}-400 font-bold text-[10px] uppercase tracking-widest truncate">
-                                                    {{ $occurrence->type->name }}[cite: 1]
+                                                    {{ $occurrence->type->name }}
                                                 </span>
                                                 <span class="text-white/30 text-[9px] truncate">
-                                                    por {{ $occurrence?->user?->name }}[cite: 1]
+                                                    por {{ $occurrence?->user?->name }}
                                                 </span>
                                             </div>
 
                                             <div class="flex items-center gap-2 flex-shrink-0">
                                                 <span class="text-white/30 text-[10px] font-mono whitespace-nowrap pt-1">
-                                                    {{ $occurrence->date->format('d/m/Y') }}[cite: 1]
+                                                    {{ $occurrence->date->format('d/m/Y') }}
                                                     {{ $occurrence->time ? ' ' . substr($occurrence->time, 0, 5) : '' }}[cite:
                                                     1]
                                                 </span>
@@ -339,7 +339,7 @@
                                         </div>
 
                                         <p class="text-white/80 font-sans text-sm leading-relaxed mb-3 break-words">
-                                            {{ $occurrence->description }}[cite: 1]
+                                            {{ $occurrence->description }}
                                         </p>
 
                                         @if ($occurrence->actions_taken)
@@ -349,7 +349,7 @@
                                                     Providências Tomadas
                                                 </span>
                                                 <p class="text-white/60 italic text-xs break-words">
-                                                    {{ $occurrence->actions_taken }}[cite: 1]
+                                                    {{ $occurrence->actions_taken }}
                                                 </p>
                                             </div>
                                         @endif
@@ -437,7 +437,7 @@
                                         Parecer Descritivo
                                     </h3>
                                     <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">
-                                        {{ $bimester }}º Bimestre[cite: 1]
+                                        {{ $bimester }}º Bimestre
                                     </p>
                                 </div>
 
@@ -471,12 +471,12 @@
                                         <div class="flex justify-between items-start mb-3 gap-4">
                                             <span
                                                 class="text-gold-500 font-bold text-[10px] uppercase tracking-widest truncate">
-                                                {{ $report->subject->name ?? 'Desenvolvimento Geral' }}[cite: 1]
+                                                {{ $report->subject->name ?? 'Desenvolvimento Geral' }}
                                             </span>
 
                                             <div class="flex items-center gap-2 flex-shrink-0">
                                                 <span class="text-white/30 text-[10px] font-mono">
-                                                    {{ $report->created_at->format('d/m/Y') }}[cite: 1]
+                                                    {{ $report->created_at->format('d/m/Y') }}
                                                 </span>
 
                                                 {{-- BOTÃO EXCLUIR (MOBILE) --}}
@@ -497,7 +497,7 @@
                                         </div>
 
                                         <p class="text-white/80 font-serif italic text-lg leading-relaxed break-words">
-                                            "{!! nl2br(e($report->content)) !!}"[cite: 1]
+                                            "{!! nl2br(e($report->content)) !!}"
                                         </p>
 
                                         {{-- BOTÃO EXCLUIR (DESKTOP - VISÍVEL NO HOVER) --}}
