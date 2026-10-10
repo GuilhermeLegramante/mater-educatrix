@@ -1,6 +1,12 @@
 @extends('layouts.app')
 
 @section('content')
+    @php
+        $currentUser = auth()->user();
+        // Utiliza o método isAdmin() já definido no model User.php
+        $isAdmin = $currentUser ? $currentUser->isAdmin() : false;
+    @endphp
+
     @if (!$activeClassroom)
         {{-- TELA: ALUNO NÃO MATRICULADO --}}
         <div
@@ -34,7 +40,7 @@
                     <div
                         class="w-20 h-20 bg-navy-900 rounded-2xl flex items-center justify-center border-b-4 border-gold-500 shadow-xl shrink-0">
                         <span class="text-gold-500 font-classic text-4xl">
-                            {{ mb_substr($student->name, 0, 1) }}
+                            {{ mb_substr($student->name, 0, 1) }}[cite: 1]
                         </span>
                     </div>
 
@@ -45,18 +51,18 @@
 
                         <h1
                             class="font-classic text-4xl lg:text-5xl text-navy-900 uppercase tracking-tight transition-colors">
-                            {{ $student->name }}
+                            {{ $student->name }}[cite: 1]
                         </h1>
 
                         <div class="flex flex-wrap gap-2 mt-2">
                             <span
                                 class="px-3 py-1 rounded-xl bg-slate-100 text-slate-600 text-[10px] font-black uppercase tracking-widest">
-                                Matrícula: {{ $student->registration_number }}
+                                Matrícula: {{ $student->registration_number }}[cite: 1]
                             </span>
 
                             <span
                                 class="px-3 py-1 rounded-xl bg-gold-500/10 text-gold-600 text-[10px] font-black uppercase tracking-widest border border-gold-500/20">
-                                {{ $activeClassroom->name }} • {{ $activeClassroom->year }}
+                                {{ $activeClassroom->name }} • {{ $activeClassroom->year }}[cite: 1]
                             </span>
                         </div>
                     </div>
@@ -151,7 +157,7 @@
                                 <div>
                                     <span
                                         class="block font-black text-navy-900 text-[11px] uppercase tracking-tight group-hover:text-gold-500 transition-colors">
-                                        {{ $subject->name }}
+                                        {{ $subject->name }}[cite: 1]
                                     </span>
 
                                     <div class="flex items-center gap-2 mt-0.5">
@@ -220,29 +226,29 @@
                                         <tr class="hover:bg-slate-50/40 transition-colors">
                                             <td class="px-8 py-4">
                                                 <span class="font-bold text-navy-900 text-sm block">
-                                                    {{ $grade->evaluation->title }}
+                                                    {{ $grade->evaluation->title }}[cite: 1]
                                                 </span>
                                                 <span class="text-[10px] text-gold-600 font-bold uppercase tracking-widest">
-                                                    {{ $grade->evaluation->subject->name }}
+                                                    {{ $grade->evaluation->subject->name }}[cite: 1]
                                                 </span>
                                             </td>
                                             <td class="px-8 py-4 text-center font-mono text-xs text-slate-600">
                                                 <span class="font-bold text-navy-900">
-                                                    {{ $grade->score }}
+                                                    {{ $grade->score }}[cite: 1]
                                                 </span>
                                                 <span class="text-slate-300 mx-1">de</span>
-                                                {{ $grade->evaluation->max_score }}
+                                                {{ $grade->evaluation->max_score }}[cite: 1]
                                             </td>
                                             <td class="px-8 py-4 text-center">
                                                 <span
                                                     class="text-[11px] font-black {{ $perc >= 60 ? 'text-green-600' : 'text-red-500' }}">
-                                                    {{ number_format($perc, 0) }}%
+                                                    {{ number_format($perc, 0) }}%[cite: 1]
                                                 </span>
                                             </td>
                                             <td class="px-8 py-4 text-center">
                                                 <span
                                                     class="inline-block w-8 py-1 rounded bg-slate-100 text-slate-800 font-black text-[10px]">
-                                                    {{ $student->calculateEvaluationConcept($perc) }}
+                                                    {{ $student->calculateEvaluationConcept($perc) }}[cite: 1]
                                                 </span>
                                             </td>
                                         </tr>
@@ -289,6 +295,11 @@
                             {{-- GRID DE OCORRÊNCIAS --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 @forelse($student->occurrences as $occurrence)
+                                    @php
+                                        // Permite exclusão se for admin ou se for o criador da ocorrência
+                                        $canDeleteOccurrence = $isAdmin || $occurrence->user_id === $currentUser->id;
+                                    @endphp
+
                                     <div
                                         class="bg-white/5 border-l-4 border-{{ $occurrence->type->color }}-500 p-5 sm:p-6 rounded-r-2xl hover:bg-white/[0.08] transition-colors relative group">
 
@@ -296,36 +307,39 @@
                                             <div class="flex flex-col gap-0.5 min-w-0">
                                                 <span
                                                     class="text-{{ $occurrence->type->color }}-400 font-bold text-[10px] uppercase tracking-widest truncate">
-                                                    {{ $occurrence->type->name }}
+                                                    {{ $occurrence->type->name }}[cite: 1]
                                                 </span>
                                                 <span class="text-white/30 text-[9px] truncate">
-                                                    por {{ $occurrence?->user?->name }}
+                                                    por {{ $occurrence?->user?->name }}[cite: 1]
                                                 </span>
                                             </div>
 
                                             <div class="flex items-center gap-2 flex-shrink-0">
                                                 <span class="text-white/30 text-[10px] font-mono whitespace-nowrap pt-1">
-                                                    {{ $occurrence->date->format('d/m/Y') }}
-                                                    {{ $occurrence->time ? ' ' . substr($occurrence->time, 0, 5) : '' }}
+                                                    {{ $occurrence->date->format('d/m/Y') }}[cite: 1]
+                                                    {{ $occurrence->time ? ' ' . substr($occurrence->time, 0, 5) : '' }}[cite:
+                                                    1]
                                                 </span>
 
                                                 {{-- BOTÃO EXCLUIR (MOBILE) --}}
-                                                <button type="button"
-                                                    @click="deleteUrl = '{{ route('occurrences.destroy', $occurrence->id) }}'; showDeleteModal = true"
-                                                    class="p-2 -mr-2 text-slate-400 hover:text-rose-400 active:scale-95 transition-all md:hidden cursor-pointer"
-                                                    title="Excluir Ocorrência">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
+                                                @if ($canDeleteOccurrence)
+                                                    <button type="button"
+                                                        @click="deleteUrl = '{{ route('occurrences.destroy', $occurrence->id) }}'; showDeleteModal = true"
+                                                        class="p-2 -mr-2 text-slate-400 hover:text-rose-400 active:scale-95 transition-all md:hidden cursor-pointer"
+                                                        title="Excluir Ocorrência">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                @endif
                                             </div>
                                         </div>
 
                                         <p class="text-white/80 font-sans text-sm leading-relaxed mb-3 break-words">
-                                            {{ $occurrence->description }}
+                                            {{ $occurrence->description }}[cite: 1]
                                         </p>
 
                                         @if ($occurrence->actions_taken)
@@ -335,22 +349,24 @@
                                                     Providências Tomadas
                                                 </span>
                                                 <p class="text-white/60 italic text-xs break-words">
-                                                    {{ $occurrence->actions_taken }}
+                                                    {{ $occurrence->actions_taken }}[cite: 1]
                                                 </p>
                                             </div>
                                         @endif
 
                                         {{-- BOTÃO EXCLUIR (DESKTOP) --}}
-                                        <button type="button"
-                                            @click="deleteUrl = '{{ route('occurrences.destroy', $occurrence->id) }}'; showDeleteModal = true"
-                                            class="hidden md:flex absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20 items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 shadow-md cursor-pointer"
-                                            title="Excluir Ocorrência">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
+                                        @if ($canDeleteOccurrence)
+                                            <button type="button"
+                                                @click="deleteUrl = '{{ route('occurrences.destroy', $occurrence->id) }}'; showDeleteModal = true"
+                                                class="hidden md:flex absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20 items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 shadow-md cursor-pointer"
+                                                title="Excluir Ocorrência">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        @endif
                                     </div>
                                 @empty
                                     <div
@@ -409,7 +425,7 @@
                         </div>
                     </div>
 
-                    {{-- BLOCO: RELATOS DE PRECEPTORIA --}}
+                    {{-- BLOCO: RELATOS DE PRECEPTORIA (PARECER DESCRITIVO) --}}
                     <div x-data="{ showDeleteModal: false, deleteUrl: '' }"
                         class="bg-navy-900 rounded-3xl p-8 shadow-2xl relative overflow-hidden border border-transparent transition-all">
 
@@ -421,7 +437,7 @@
                                         Parecer Descritivo
                                     </h3>
                                     <p class="text-white/40 text-[10px] font-bold uppercase tracking-widest">
-                                        {{ $bimester }}º Bimestre
+                                        {{ $bimester }}º Bimestre[cite: 1]
                                     </p>
                                 </div>
 
@@ -440,12 +456,14 @@
                             {{-- GRID DE RELATOS --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 @forelse($reports as $report)
-                                    {{-- Montagem da rota aninhada (Preceptoria dentro de Turma) --}}
                                     @php
                                         $destroyUrl = route('preceptory.destroy', [
                                             'classroom' => $classroom->id ?? $report->classroom_id,
                                             'preceptory' => $report->id,
                                         ]);
+
+                                        // Permite exclusão se for admin ou se for o autor do parecer
+                                        $canDeleteReport = $isAdmin || $report->user_id === $currentUser->id;
                                     @endphp
 
                                     <div
@@ -453,44 +471,48 @@
                                         <div class="flex justify-between items-start mb-3 gap-4">
                                             <span
                                                 class="text-gold-500 font-bold text-[10px] uppercase tracking-widest truncate">
-                                                {{ $report->subject->name ?? 'Desenvolvimento Geral' }}
+                                                {{ $report->subject->name ?? 'Desenvolvimento Geral' }}[cite: 1]
                                             </span>
 
                                             <div class="flex items-center gap-2 flex-shrink-0">
                                                 <span class="text-white/30 text-[10px] font-mono">
-                                                    {{ $report->created_at->format('d/m/Y') }}
+                                                    {{ $report->created_at->format('d/m/Y') }}[cite: 1]
                                                 </span>
 
                                                 {{-- BOTÃO EXCLUIR (MOBILE) --}}
-                                                <button type="button"
-                                                    @click="deleteUrl = '{{ $destroyUrl }}'; showDeleteModal = true"
-                                                    class="p-1 -mr-1 text-slate-400 hover:text-rose-400 active:scale-95 transition-all md:hidden cursor-pointer"
-                                                    title="Excluir Relato">
-                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                        viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round"
-                                                            stroke-width="2"
-                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
+                                                @if ($canDeleteReport)
+                                                    <button type="button"
+                                                        @click="deleteUrl = '{{ $destroyUrl }}'; showDeleteModal = true"
+                                                        class="p-1 -mr-1 text-slate-400 hover:text-rose-400 active:scale-95 transition-all md:hidden cursor-pointer"
+                                                        title="Excluir Relato">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                            viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                                stroke-width="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        </svg>
+                                                    </button>
+                                                @endif
                                             </div>
                                         </div>
 
                                         <p class="text-white/80 font-serif italic text-lg leading-relaxed break-words">
-                                            "{!! nl2br(e($report->content)) !!}"
+                                            "{!! nl2br(e($report->content)) !!}"[cite: 1]
                                         </p>
 
                                         {{-- BOTÃO EXCLUIR (DESKTOP - VISÍVEL NO HOVER) --}}
-                                        <button type="button"
-                                            @click="deleteUrl = '{{ $destroyUrl }}'; showDeleteModal = true"
-                                            class="hidden md:flex absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20 items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 shadow-md cursor-pointer"
-                                            title="Excluir Relato">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor"
-                                                viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                            </svg>
-                                        </button>
+                                        @if ($canDeleteReport)
+                                            <button type="button"
+                                                @click="deleteUrl = '{{ $destroyUrl }}'; showDeleteModal = true"
+                                                class="hidden md:flex absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-200 transform scale-95 group-hover:scale-100 z-20 items-center justify-center w-8 h-8 rounded-xl bg-slate-900/40 backdrop-blur-sm border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/30 shadow-md cursor-pointer"
+                                                title="Excluir Relato">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        @endif
                                     </div>
                                 @empty
                                     <div
