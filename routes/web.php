@@ -145,6 +145,12 @@ Route::middleware('auth')->group(function () {
 
         Route::put('/settings/school', [SchoolSettingController::class, 'update'])
             ->name('settings.school.update');
+
+        // Geração de Boletins em Lote (Protegido por Administrador)
+        Route::prefix('reports/report-cards')->name('reports.report-cards.')->group(function () {
+            Route::get('/batch', [ReportCardController::class, 'batchIndex'])->name('batch-index');
+            Route::get('/generate-batch', [ReportCardController::class, 'generateBatchPDF'])->name('generate-batch');
+        });
     });
 
     Route::get('/relatorios/conceitos', [BimesterReportController::class, 'index'])

@@ -134,6 +134,16 @@
                 <span x-show="sidebarOpen" class="ml-3">Conceitos Bimestrais</span>
             </a>
 
+            <!-- Geração de Boletins em Lote -->
+            <a href="{{ route('reports.report-cards.batch-index') }}"
+                class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('reports.report-cards.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
+                <svg class="w-5 h-5 min-w-[20px]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span x-show="sidebarOpen" class="ml-3">Gerar Boletins (Lotes)</span>
+            </a>
+
             <!-- Link para Listagem de Ocorrências (Padronizado) -->
             <a href="{{ route('occurrences.index') }}"
                 class="flex items-center p-3 rounded-xl transition-all {{ request()->routeIs('occurrences.*') ? 'bg-gold-500 text-navy-950 font-bold shadow-lg shadow-gold-500/20' : 'text-slate-400 hover:bg-slate-800 hover:text-gold-500' }}">
