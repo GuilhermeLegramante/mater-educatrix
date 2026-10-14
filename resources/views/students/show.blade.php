@@ -12,6 +12,18 @@
         <div
             class="max-w-4xl mx-auto bg-white border border-slate-100 rounded-3xl p-10 text-center shadow-sm backdrop-blur-sm transition-all">
 
+            {{-- BOTÃO VOLTAR (TELA SEM MATRÍCULA) --}}
+            <div class="flex justify-start mb-6">
+                <a href="javascript:history.back()"
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-xl font-bold text-xs uppercase tracking-wider transition-all border border-slate-200/60 shadow-sm cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    Voltar
+                </a>
+            </div>
+
             <div class="text-6xl mb-4">📚</div>
 
             <h2 class="text-2xl font-classic text-navy-900 mb-2">
@@ -31,6 +43,19 @@
         </div>
     @else
         <div class="max-w-7xl mx-auto space-y-8 animate-fade-in">
+
+            {{-- BOTÃO VOLTAR (TOPO DA PÁGINA) --}}
+            <div class="flex items-center justify-between">
+                <a href="javascript:history.back()"
+                    class="inline-flex items-center gap-2 px-4 py-2.5 bg-white hover:bg-slate-50 text-navy-900 rounded-xl font-black text-xs uppercase tracking-widest border border-slate-200 shadow-sm hover:border-gold-500 transition-all group cursor-pointer">
+                    <svg class="w-4 h-4 text-slate-400 group-hover:text-gold-600 group-hover:-translate-x-1 transition-all"
+                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                    </svg>
+                    <span>Voltar</span>
+                </a>
+            </div>
 
             {{-- HEADER DO PERFIL --}}
             <div class="flex flex-col lg:flex-row justify-between gap-6 border-b border-slate-200 pb-6">
@@ -228,7 +253,8 @@
                                                 <span class="font-bold text-navy-900 text-sm block">
                                                     {{ $grade->evaluation->title }}
                                                 </span>
-                                                <span class="text-[10px] text-gold-600 font-bold uppercase tracking-widest">
+                                                <span
+                                                    class="text-[10px] text-gold-600 font-bold uppercase tracking-widest">
                                                     {{ $grade->evaluation->subject->name }}
                                                 </span>
                                             </td>
