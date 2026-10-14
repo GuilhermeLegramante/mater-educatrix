@@ -53,8 +53,9 @@
         }
 
         .header-logo img {
-            width: 65px;
-            height: 65px;
+            max-height: 65px;
+            width: auto;
+            display: block;
         }
 
         .header-title {
