@@ -15,7 +15,7 @@ class StoreOccurrenceTypeRequest extends FormRequest
     {
         return [
             'name'  => 'required|string|max:255|unique:occurrence_types,name,' . $this->route('occurrence_type'),
-            'color' => 'required|string|in:slate,gray,zinc,neutral,stone,red,orange,amber,yellow,lime,green,emerald,teal,cyan,sky,blue,indigo,violet,purple,fuchsia,pink,rose',
+            'color' => 'required|string',
         ];
     }
 }
