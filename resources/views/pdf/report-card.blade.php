@@ -433,12 +433,35 @@
                     <span style="font-size: 6.5pt; letter-spacing: 0.5px;">Documento oficial gerado eletronicamente
                         através do sistema de gestão.</span>
                 </td>
-                <td class="footer-page">
-                    Pág. <span class="page-number"></span> de <span class="page-total"></span>
+                <td class="footer-page"
+                    style="text-align: right; font-size: 8pt; font-family: monospace; color: #64748b;">
+                    {{-- Deixe vazio ou utilize o script PHP abaixo para injetar o texto exato --}}
                 </td>
             </tr>
         </table>
     </footer>
+
+    {{-- SCRIPT PHP DO DOMPDF PARA PREENCHER O TOTAL DE PÁGINAS CORRETAMENTE --}}
+    <script type="text/php">
+        if (isset($pdf)) {
+            $font = $pdf->getFontMetrics()->getFont("Courier", "normal");
+            $size = 8;
+            $color = array(100, 116, 139);
+            
+            // Percorre todas as páginas geradas e escreve a numeração exata no canto inferior direito
+            $text = "Pág. {PAGE_NUM} de {PAGE_COUNT}";
+            
+            // Largura estimada da página A4 em pontos (aprox 595.28) menos margens
+            $width = $pdf->get_width();
+            $height = $pdf->get_height();
+            
+            // Posicionamento correspondente à coluna da direita do seu footer
+            $x = $width - 45 - $pdf->getTextWidth($text, $font, $size);
+            $y = $height - 25;
+            
+            $pdf->page_text($x, $y, $text, $font, $size, $color);
+        }
+    </script>
 
     <table class="student-box">
         <tr>
@@ -693,13 +716,5 @@
         </tr>
     </table>
 </body>
-<script type="text/php">
-    if (isset($pdf)) {
-        // Força o DomPDF a calcular e registrar o total de páginas para os contadores CSS
-        $pdf->page_script('
-            $pdf->class_loader; 
-        ');
-    }
-</script>
 
 </html>
