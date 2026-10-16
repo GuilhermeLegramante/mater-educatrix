@@ -433,40 +433,30 @@
                     <span style="font-size: 6.5pt; letter-spacing: 0.5px;">Documento oficial gerado eletronicamente
                         através do sistema de gestão.</span>
                 </td>
-                <td class="footer-page"
-                    style="text-align: right; font-size: 8pt; font-family: monospace; color: #64748b;">
-                    {{-- Deixe vazio ou utilize o script PHP abaixo para injetar o texto exato --}}
+                <td class="footer-page">
+                    Pág. <span class="page-number"></span> de <span class="page-total"></span>
                 </td>
             </tr>
         </table>
     </footer>
 
-    {{-- SCRIPT PHP DO DOMPDF SIMPLIFICADO E SEGURO --}}
     <script type="text/php">
         if (isset($pdf)) {
-            // Fonte padrão segura do sistema
-            $font = $pdf->getFontMetrics()->getFont("helvetica", "normal");
+            $font = $fontMetrics->getFont("Helvetica", "normal");
             $size = 8;
-            $color = array(100, 116, 139); // Cor slate-500
-            
-            // Texto do contador de páginas nativo do DomPDF
-            $text = "Pág. {PAGE_NUM} de {PAGE_COUNT}";
-            
-            // Largura e Altura padrão A4 em pontos (aprox. 595 x 842)
-            $w = 595.28;
-            $h = 842.28;
-            
-            // Coordenada X (Alinhado à direita considerando margem de ~42pt / 15mm)
-            // 595.28 - 120 (espaço seguro para o texto) = 475
-            $x = 475; 
-            
-            // Coordenada Y (Próximo ao rodapé, subindo 35 pontos de baixo para cima)
-            $y = $h - 35;
-            
-            $pdf->page_text($x, $y, $text, $font, $size, $color);
+            $color = [0.39, 0.45, 0.55];
+
+            $pdf->page_text(
+                500,
+                820,
+                "Pág. {PAGE_NUM} de {PAGE_COUNT}",
+                $font,
+                $size,
+                $color
+            );
         }
     </script>
-    
+
     <table class="student-box">
         <tr>
             <td width="50%">
