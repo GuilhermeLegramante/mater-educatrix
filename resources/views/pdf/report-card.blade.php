@@ -693,5 +693,13 @@
         </tr>
     </table>
 </body>
+<script type="text/php">
+    if (isset($pdf)) {
+        // Força o DomPDF a calcular e registrar o total de páginas para os contadores CSS
+        $pdf->page_script('
+            $pdf->class_loader; 
+        ');
+    }
+</script>
 
 </html>
