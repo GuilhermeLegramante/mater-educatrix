@@ -434,7 +434,8 @@
                         através do sistema de gestão.</span>
                 </td>
                 <td class="footer-page">
-                    Pág. <span class="page-number"></span> de <span class="page-total"></span>
+                    {{-- Pág. <span class="page-number"></span> de <span class="page-total"></span> --}}
+                    Pág. <span class="page-number"></span> 
                 </td>
             </tr>
         </table>
