@@ -441,28 +441,32 @@
         </table>
     </footer>
 
-    {{-- SCRIPT PHP DO DOMPDF PARA PREENCHER O TOTAL DE PÁGINAS CORRETAMENTE --}}
+    {{-- SCRIPT PHP DO DOMPDF SIMPLIFICADO E SEGURO --}}
     <script type="text/php">
         if (isset($pdf)) {
-            $font = $pdf->getFontMetrics()->getFont("Courier", "normal");
+            // Fonte padrão segura do sistema
+            $font = $pdf->getFontMetrics()->getFont("helvetica", "normal");
             $size = 8;
-            $color = array(100, 116, 139);
+            $color = array(100, 116, 139); // Cor slate-500
             
-            // Percorre todas as páginas geradas e escreve a numeração exata no canto inferior direito
+            // Texto do contador de páginas nativo do DomPDF
             $text = "Pág. {PAGE_NUM} de {PAGE_COUNT}";
             
-            // Largura estimada da página A4 em pontos (aprox 595.28) menos margens
-            $width = $pdf->get_width();
-            $height = $pdf->get_height();
+            // Largura e Altura padrão A4 em pontos (aprox. 595 x 842)
+            $w = 595.28;
+            $h = 842.28;
             
-            // Posicionamento correspondente à coluna da direita do seu footer
-            $x = $width - 45 - $pdf->getTextWidth($text, $font, $size);
-            $y = $height - 25;
+            // Coordenada X (Alinhado à direita considerando margem de ~42pt / 15mm)
+            // 595.28 - 120 (espaço seguro para o texto) = 475
+            $x = 475; 
+            
+            // Coordenada Y (Próximo ao rodapé, subindo 35 pontos de baixo para cima)
+            $y = $h - 35;
             
             $pdf->page_text($x, $y, $text, $font, $size, $color);
         }
     </script>
-
+    
     <table class="student-box">
         <tr>
             <td width="50%">
